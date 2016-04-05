@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/primaryColorDark" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_1_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="1"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_1"
+                android:layout_centerHorizontal="true"
+                android:text=""
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_2_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="2"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_2"
+                android:layout_centerHorizontal="true"
+                android:text="ABC"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_3_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="3"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_3"
+                android:layout_centerHorizontal="true"
+                android:text="DEF"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/primaryColorDark" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_4_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="4"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_4"
+                android:layout_centerHorizontal="true"
+                android:text="GHI"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_5_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="5"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_5"
+                android:layout_centerHorizontal="true"
+                android:text="IJK"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_6_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="6"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_6"
+                android:layout_centerHorizontal="true"
+                android:text="MNO"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/primaryColorDark" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_7_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="7"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_7"
+                android:layout_centerHorizontal="true"
+                android:text="PQRS"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_8_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="8"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_8"
+                android:layout_centerHorizontal="true"
+                android:text="TUV"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_9_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="9"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialpad_9"
+                android:layout_centerHorizontal="true"
+                android:text="WXYZ"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/primaryColorDark" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_hash_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_hash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="#"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_0_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="0"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+        <RelativeLayout
+            android:id="@+id/dialpad_star_layout"
+            android:layout_width="96dp"
+            android:layout_height="96dp">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/dialpad_star"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="*"
+                android:textColor="@color/accentColor"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="0.8dp"
+            android:layout_height="match_parent"
+            android:background="@color/primaryColorDark" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/primaryColorDark" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/dialer_call_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_rectangle_rounded_fill_green"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingLeft="48dp"
+            android:paddingRight="48dp"
+            android:paddingTop="10dp"
+            android:text="CALL"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

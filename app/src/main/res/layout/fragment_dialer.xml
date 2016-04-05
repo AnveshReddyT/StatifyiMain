@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context="statifyi.com.statifyi.fragment.DialerFragment">
+
+    <statifyi.com.statifyi.widget.TextView
+        android:id="@+id/dialer_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/dialer_shadow"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center"
+        android:textColor="@color/accentColor"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/dialer_input_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/dialer_shadow"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@id/dialer_text"
+        android:padding="16dp"
+        android:src="@drawable/ic_dial_back" />
+
+    <View
+        android:id="@+id/dialer_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_above="@+id/layout_dialpad"
+        android:background="@drawable/drop_shadow_top" />
+
+    <include
+        android:id="@+id/layout_dialpad"
+        layout="@layout/layout_dialpad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dialer_radio_group"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/dialer_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/primaryColor"
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/actionBarSize"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <statifyi.com.statifyi.widget.RadioButton
+            android:id="@+id/dialerradio_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@drawable/ic_call_emergency"
+            android:gravity="center"
+            android:text="EMERGENCY"
+            android:textSize="10sp" />
+
+        <statifyi.com.statifyi.widget.RadioButton
+            android:id="@+id/dialerradio_contacts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@drawable/ic_call_business"
+            android:gravity="center"
+            android:text="BUSINESS"
+            android:textSize="10sp" />
+
+        <statifyi.com.statifyi.widget.RadioButton
+            android:id="@+id/dialerradio_calllog"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@drawable/ic_call_casual"
+            android:gravity="center"
+            android:text="CASUAL"
+            android:textSize="10sp" />
+
+        <statifyi.com.statifyi.widget.RadioButton
+            android:id="@+id/dialerradio_dialpad"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@drawable/ic_call_custom"
+            android:gravity="center"
+            android:text="CUSTOM"
+            android:textSize="10sp" />
+
+    </RadioGroup>
+</RelativeLayout>

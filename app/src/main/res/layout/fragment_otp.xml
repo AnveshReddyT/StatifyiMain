@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin"
+    tools:context="statifyi.com.statifyi.fragment.OTPFragment">
+
+    <statifyi.com.statifyi.widget.TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/register_otp_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:gravity="center"
+        android:text="@string/otp_message"
+        android:textColor="#FFFFFF" />
+
+    <LinearLayout
+        android:id="@+id/register_otp_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:orientation="vertical">
+
+        <statifyi.com.statifyi.widget.EditText
+            android:id="@+id/register_otp_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="@string/hint_otp"
+            android:inputType="phone"
+            android:padding="10dp"
+            android:textColor="@color/accentColor"
+            android:textColorHint="@color/accentColor" />
+
+        <statifyi.com.statifyi.widget.TextView
+            android:id="@+id/register_otp_change_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:gravity="center"
+            android:text="@string/change_mobile"
+            android:textColor="#EEEEEE" />
+
+    </LinearLayout>
+
+    <statifyi.com.statifyi.widget.Button
+        android:id="@+id/register_otp_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_otp_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:background="@color/white"
+        android:paddingLeft="48dp"
+        android:paddingRight="48dp"
+        android:text="@string/verify_mobile"
+        android:textColor="@color/accentColor" />
+
+</RelativeLayout>

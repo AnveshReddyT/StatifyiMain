@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin"
+    tools:context="statifyi.com.statifyi.fragment.WelcomeFragment">
+
+    <statifyi.com.statifyi.widget.TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/register_mobile_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:gravity="center"
+        android:text="@string/register_message"
+        android:textColor="#FFFFFF" />
+
+    <LinearLayout
+        android:id="@+id/register_mobile_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:orientation="vertical">
+
+        <statifyi.com.statifyi.widget.TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/hint_country"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <Spinner
+            android:id="@+id/register_mobile_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/white" />
+
+        <statifyi.com.statifyi.widget.TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/hint_mobile"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <statifyi.com.statifyi.widget.EditText
+            android:id="@+id/register_mobile_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/white"
+            android:inputType="phone"
+            android:padding="10dp"
+            android:textColor="@color/accentColor" />
+
+    </LinearLayout>
+
+    <statifyi.com.statifyi.widget.Button
+        android:id="@+id/register_mobile_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_mobile_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:background="@color/white"
+        android:paddingLeft="48dp"
+        android:paddingRight="48dp"
+        android:text="@string/join_statifyi"
+        android:textColor="@color/accentColor" />
+
+</RelativeLayout>
