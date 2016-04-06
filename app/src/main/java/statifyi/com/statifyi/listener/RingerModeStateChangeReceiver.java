@@ -36,6 +36,9 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
 
         }
 
+        if (!sharedPreferences.getBoolean(context.getString(R.string.key_auto_status), false)) {
+            return;
+        }
         AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         String status;
         boolean auto_vibrate_status_enabled = sharedPreferences.getBoolean(context.getResources().getString(R.string.key_vibrating_mode), false);

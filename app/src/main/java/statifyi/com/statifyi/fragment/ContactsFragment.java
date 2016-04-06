@@ -115,6 +115,14 @@ public class ContactsFragment extends BaseFragment implements SearchView.OnQuery
         contactsListview.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            showContent();
+        }
+    }
+
     private Subscriber<List<Contact>> contentObserver() {
 
         return new Subscriber<List<Contact>>() {

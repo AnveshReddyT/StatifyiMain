@@ -35,6 +35,7 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, SectionIndexer {
 
+    private DBHelper dbHelper;
     private Context mContext;
     private String mSections = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private List<Contact> originalData = null;
@@ -44,14 +45,14 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
     public ContactsAdapter(Context mContext, List<Contact> contacts) {
         this.mContext = mContext;
-        DBHelper dbHelper = new DBHelper(mContext);
+        dbHelper = new DBHelper(mContext);
         setData(contacts);
-        users = dbHelper.getAllUsers();
     }
 
     public void setData(List<Contact> contacts) {
         this.filteredData = contacts;
         this.originalData = contacts;
+        users = dbHelper.getAllUsers();
     }
 
     @Override

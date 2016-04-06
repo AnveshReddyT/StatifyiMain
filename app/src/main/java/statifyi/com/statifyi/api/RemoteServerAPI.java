@@ -9,6 +9,7 @@ import retrofit.http.Query;
 import rx.Observable;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
+import statifyi.com.statifyi.api.model.GCMRequest;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -32,6 +33,9 @@ public interface RemoteServerAPI {
     @POST(BASE_CONTEXT + "/activate")
     Observable<Response<Void>> activateUser(@Body ActivateUserRequest request);
 
-    @POST(BASE_CONTEXT + "/customcall")
-    Observable<Response<Void>> customCall(@Body CustomCallRequest request);
+    @POST(BASE_CONTEXT + "/custom")
+    Observable<Response<Boolean>> customCall(@Body CustomCallRequest request);
+
+    @POST(BASE_CONTEXT + "/gcmId")
+    Observable<Response<Void>> registerGCM(@Body GCMRequest request);
 }

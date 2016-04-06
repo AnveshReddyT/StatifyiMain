@@ -6,9 +6,9 @@ package statifyi.com.statifyi.widget;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -20,8 +20,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 
 
@@ -43,6 +45,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private TextView statusTime;
     private ImageView statusIcon;
     private ImageView statusMenu;
+    private String mobile;
     private boolean isShowing;
 
     /**
@@ -209,12 +212,23 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
             notifyOption.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    Log.d("STAT", "Notify on status change");
+                    if (mobile != null && !TextUtils.isEmpty(mobile) && mobile.length() == 10) {
+                        StatusUtils.addNotifyStatus(ctx, mobile);
+                        Toast.makeText(ctx, "Reminder added!", Toast.LENGTH_LONG).show();
+                    }
                     return false;
                 }
             });
         }
         popup.show();
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public boolean isShowing() {

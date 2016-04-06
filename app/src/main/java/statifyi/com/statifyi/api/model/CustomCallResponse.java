@@ -6,13 +6,10 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by KT on 04/04/16.
  */
-public class CustomCallRequest {
+public class CustomCallResponse {
 
-    @SerializedName("fromMobile")
+    @SerializedName("from")
     private String fromMobile;
-
-    @SerializedName("mobile")
-    private String mobile;
 
     @SerializedName("message")
     private String message;
@@ -23,14 +20,6 @@ public class CustomCallRequest {
 
     public void setFromMobile(String fromMobile) {
         this.fromMobile = fromMobile;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
     }
 
     public String getMessage() {

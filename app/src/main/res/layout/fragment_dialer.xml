@@ -40,12 +40,12 @@
         layout="@layout/layout_dialpad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/dialer_radio_group"
+        android:layout_above="@+id/dialer_button_group"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp" />
 
-    <RadioGroup
-        android:id="@+id/dialer_radio_group"
+    <LinearLayout
+        android:id="@+id/dialer_button_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -56,53 +56,53 @@
         android:paddingBottom="5dp"
         android:paddingTop="5dp">
 
-        <statifyi.com.statifyi.widget.RadioButton
-            android:id="@+id/dialerradio_status"
+        <statifyi.com.statifyi.widget.Button
+            android:id="@+id/dialer_button_emergency"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
+            android:background="@null"
             android:drawablePadding="5dp"
             android:drawableTop="@drawable/ic_call_emergency"
             android:gravity="center"
             android:text="EMERGENCY"
             android:textSize="10sp" />
 
-        <statifyi.com.statifyi.widget.RadioButton
-            android:id="@+id/dialerradio_contacts"
+        <statifyi.com.statifyi.widget.Button
+            android:id="@+id/dialer_button_business"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
+            android:background="@null"
             android:drawablePadding="5dp"
             android:drawableTop="@drawable/ic_call_business"
             android:gravity="center"
             android:text="BUSINESS"
             android:textSize="10sp" />
 
-        <statifyi.com.statifyi.widget.RadioButton
-            android:id="@+id/dialerradio_calllog"
+        <statifyi.com.statifyi.widget.Button
+            android:id="@+id/dialer_button_casual"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
+            android:background="@null"
             android:drawablePadding="5dp"
             android:drawableTop="@drawable/ic_call_casual"
             android:gravity="center"
             android:text="CASUAL"
             android:textSize="10sp" />
 
-        <statifyi.com.statifyi.widget.RadioButton
-            android:id="@+id/dialerradio_dialpad"
+        <statifyi.com.statifyi.widget.Button
+            android:id="@+id/dialer_button_custom"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
+            android:background="@null"
             android:drawablePadding="5dp"
             android:drawableTop="@drawable/ic_call_custom"
             android:gravity="center"
             android:text="CUSTOM"
             android:textSize="10sp" />
 
-    </RadioGroup>
+    </LinearLayout>
 </RelativeLayout>

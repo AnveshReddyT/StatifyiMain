@@ -4,6 +4,7 @@ import retrofit.Response;
 import rx.Observable;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
+import statifyi.com.statifyi.api.model.GCMRequest;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -21,5 +22,7 @@ public interface UserAPIService {
 
     Observable<Response<StatusResponse>> activateUser(ActivateUserRequest request);
 
-    Observable<Response<Void>> customCall(CustomCallRequest request);
+    Observable<Response<Boolean>> customCall(CustomCallRequest request);
+
+    Observable<Response<Void>> registerGCM(GCMRequest request);
 }

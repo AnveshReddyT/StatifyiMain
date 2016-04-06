@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -111,6 +112,15 @@ public class CallLogFragment extends BaseFragment implements SearchView.OnQueryT
     public void showProgress() {
         pBar.setVisibility(View.VISIBLE);
         calllogListview.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            Log.d("STAT", "Show content");
+            showContent();
+        }
     }
 
     private Subscriber<List<CallLog>> contentObserver() {

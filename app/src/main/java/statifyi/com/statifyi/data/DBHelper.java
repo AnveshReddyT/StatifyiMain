@@ -7,10 +7,12 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.User;
 
 /**
@@ -21,18 +23,29 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "statifyi.db";
 
     public static final String USERS_TABLE_NAME = "users";
+    public static final String CUSTOM_CALLS_TABLE_NAME = "custom_calls";
 
     public static final String USERS_COLUMN_MOBILE = "mobile";
     public static final String USERS_COLUMN_STATUS = "status";
     public static final String USERS_COLUMN_ACTIVE = "active";
     public static final String USERS_COLUMN_ICON = "icon";
     public static final String USERS_COLUMN_UPDATED = "updated";
+
+    public static final String CUSTOM_CALLS_COLUMN_MOBILE = "mobile";
+    public static final String CUSTOM_CALLS_COLUMN_MESSAGE = "message";
+    public static final String CUSTOM_CALLS_COLUMN_TIME = "time";
+
     private static final String CREATE_TABLE_USERS = "create table " + USERS_TABLE_NAME + " (" +
             USERS_COLUMN_MOBILE + " text," +
             USERS_COLUMN_STATUS + " text," +
             USERS_COLUMN_ACTIVE + " integer," +
             USERS_COLUMN_ICON + " text," +
             USERS_COLUMN_UPDATED + " text)";
+
+    private static final String CREATE_TABLE_CUSTOM_CALLS = "create table " + CUSTOM_CALLS_TABLE_NAME + " (" +
+            CUSTOM_CALLS_COLUMN_MOBILE + " text," +
+            CUSTOM_CALLS_COLUMN_MESSAGE + " text," +
+            CUSTOM_CALLS_COLUMN_TIME + " integer)";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -41,18 +54,20 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
+        db.execSQL(CREATE_TABLE_CUSTOM_CALLS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CUSTOM_CALLS_TABLE_NAME);
         onCreate(db);
     }
 
     public boolean insertOrUpdateUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         User existingUser = getUser(user.getMobile());
-        ContentValues contentValues = getContentValues(user);
+        ContentValues contentValues = getUserContentValues(user);
         if (existingUser == null) {
             db.insert(USERS_TABLE_NAME, null, contentValues);
         } else {
@@ -62,7 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @NonNull
-    private ContentValues getContentValues(User user) {
+    private ContentValues getUserContentValues(User user) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(USERS_COLUMN_MOBILE, user.getMobile());
         contentValues.put(USERS_COLUMN_STATUS, user.getStatus());
@@ -92,7 +107,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return user;
     }
 
-    public int numberOfRows() {
+    public int numberOfUsers() {
         SQLiteDatabase db = this.getReadableDatabase();
         return (int) DatabaseUtils.queryNumEntries(db, USERS_TABLE_NAME);
     }
@@ -128,5 +143,51 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         return array_list;
+    }
+
+    public boolean insertOrUpdateCustomCall(CustomCall customCall) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        CustomCall existingCall = getCustomCall(customCall.getMobile());
+        ContentValues contentValues = getCustomCallContentValues(customCall);
+        if (existingCall == null) {
+            db.insert(CUSTOM_CALLS_TABLE_NAME, null, contentValues);
+        } else {
+            db.update(CUSTOM_CALLS_TABLE_NAME, contentValues, CUSTOM_CALLS_COLUMN_MOBILE + " = ?", new String[]{customCall.getMobile()});
+        }
+        return true;
+    }
+
+    @NonNull
+    private ContentValues getCustomCallContentValues(CustomCall customCall) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CUSTOM_CALLS_COLUMN_MOBILE, customCall.getMobile());
+        contentValues.put(CUSTOM_CALLS_COLUMN_MESSAGE, customCall.getMessage());
+        contentValues.put(CUSTOM_CALLS_COLUMN_TIME, customCall.getTime());
+        return contentValues;
+    }
+
+    public CustomCall getCustomCall(String mobile) {
+        Log.d("STAT", "Deleted calls:  " + deleteExpiredCustomCalls());
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + CUSTOM_CALLS_TABLE_NAME + " where " + CUSTOM_CALLS_COLUMN_MOBILE + "=" + mobile, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            return getCustomCallFromCursor(cursor);
+        }
+        return null;
+    }
+
+    @NonNull
+    private CustomCall getCustomCallFromCursor(Cursor cursor) {
+        CustomCall customCall = new CustomCall();
+        customCall.setMobile(cursor.getString(cursor.getColumnIndex(CUSTOM_CALLS_COLUMN_MOBILE)));
+        customCall.setMessage(cursor.getString(cursor.getColumnIndex(CUSTOM_CALLS_COLUMN_MESSAGE)));
+        customCall.setTime(cursor.getLong(cursor.getColumnIndex(CUSTOM_CALLS_COLUMN_TIME)));
+        return customCall;
+    }
+
+    public Integer deleteExpiredCustomCalls() {
+        long expiryTime = System.currentTimeMillis() - 2 * 60 * 1000;
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(CUSTOM_CALLS_TABLE_NAME, CUSTOM_CALLS_COLUMN_TIME + " < ?", new String[]{String.valueOf(expiryTime)});
     }
 }

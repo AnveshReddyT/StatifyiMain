@@ -14,7 +14,7 @@
         android:background="@color/primaryColor"
         android:gravity="center"
         android:weightSum="1">
-        <!--What you want to show-->
+        <!--What you want mobile show-->
 
         <ImageView
             android:id="@+id/contact_list_item_call"
@@ -31,7 +31,7 @@
         android:background="#ffffff"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
-        <!--What you want to show in SurfaceView-->
+        <!--What you want mobile show in SurfaceView-->
         <include
             android:id="@+id/contact_list_item_surface"
             layout="@layout/contact_list_item_surface" />

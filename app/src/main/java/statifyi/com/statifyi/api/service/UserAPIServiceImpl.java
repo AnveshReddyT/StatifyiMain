@@ -8,6 +8,7 @@ import rx.schedulers.Schedulers;
 import statifyi.com.statifyi.api.RemoteServerAPI;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
+import statifyi.com.statifyi.api.model.GCMRequest;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -62,8 +63,15 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Observable<Response<Void>> customCall(CustomCallRequest request) {
+    public Observable<Response<Boolean>> customCall(CustomCallRequest request) {
         return remoteServerAPI.customCall(request)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<Response<Void>> registerGCM(GCMRequest request) {
+        return remoteServerAPI.registerGCM(request)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }

@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
@@ -46,24 +47,35 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     @InjectView(R.id.status_add_text_layout)
     RelativeLayout addStatusLayout;
+
     @InjectView(R.id.status_current_text_layout)
     RelativeLayout currentStatusLayout;
+
     @InjectView(R.id.status_auto_text_layout)
     RelativeLayout autoStatusLayout;
+
     @InjectView(R.id.status_add_text)
     TextView addStatusText;
+
     @InjectView(R.id.status_current_text)
     TextView currentStatusText;
+
     @InjectView(R.id.status_auto_text)
     TextView autoStatusText;
+
     @InjectView(R.id.status_current_icon)
     ImageView currentStatusIcon;
+
     @InjectView(R.id.status_auto_text_checkbox)
     CheckBox autoStatusCheckbox;
+
     @InjectView(R.id.status_grid)
     GridView statusGrid;
+
     private UserAPIService userAPIService;
+
     private DataUtils dataUtils;
+
     private ProgressDialog progressDialog;
 
     public StatusFragment() {
@@ -116,10 +128,16 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         autoStatusLayout.setLayoutParams(layoutParams);
         addStatusLayout.setOnClickListener(this);
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        autoStatusText.setText(preferences.getBoolean(getString(R.string.key_auto_status), false) ? "ON" : "OFF");
         autoStatusCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 autoStatusText.setText(isChecked ? "ON" : "OFF");
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(getString(R.string.key_auto_status), isChecked);
+                editor.apply();
             }
         });
 

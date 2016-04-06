@@ -34,6 +34,9 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
             userAPIService = NetworkUtils.provideUserAPIService(context);
         }
 
+        if (!sharedPreferences.getBoolean(context.getString(R.string.key_auto_status), false)) {
+            return;
+        }
         if (sharedPreferences.getBoolean(context.getResources().getString(R.string.key_low_battery), false)) {
             String action = intent.getAction();
             if (Intent.ACTION_BATTERY_LOW.equals(action)) {

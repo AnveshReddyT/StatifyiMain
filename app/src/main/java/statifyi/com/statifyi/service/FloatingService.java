@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import retrofit.Response;
 import rx.functions.Action1;
@@ -35,7 +34,6 @@ public class FloatingService extends Service {
     private BroadcastReceiver OutgoingCallReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("STATIFYI", " OUT GOING CALL RECEIVER ");
             String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
             int length = phoneNumber.length();
             phoneNumber = length > 10 ? phoneNumber.substring(length - 10, length) : phoneNumber;
@@ -88,7 +86,7 @@ public class FloatingService extends Service {
                         String status = s.getStatus().toUpperCase();
                         String icon = s.getIcon();
                         long time = s.getUpdatedTime().getTime();
-                        Log.d("STAT", s.toString() + "   ===   " + time);
+                        floatingPopup.setMobile(phoneNumber);
                         if (status.isEmpty()) {
                             statusMessage = contactName + getResources().getString(R.string.status_not_set);
                         } else {
@@ -121,6 +119,7 @@ public class FloatingService extends Service {
                     } else {
                         statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
                     }
+                    floatingPopup.setMobile(phoneNumber);
                     floatingPopup.setPopupMenu(false);
                     floatingPopup.setTime(user.getUpdated() + "");
                     floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));

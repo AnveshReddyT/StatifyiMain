@@ -2,9 +2,11 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -17,8 +19,15 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Response;
+import rx.functions.Action1;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.api.model.CustomCallRequest;
+import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
+import statifyi.com.statifyi.widget.Button;
 import statifyi.com.statifyi.widget.TextView;
 
 
@@ -55,6 +64,17 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     ImageView deleteText;
     @InjectView(R.id.dialer_call_btn)
     android.widget.TextView dialerCallBtn;
+    @InjectView(R.id.dialer_button_emergency)
+    Button emergencyBtn;
+    @InjectView(R.id.dialer_button_business)
+    Button businessBtn;
+    @InjectView(R.id.dialer_button_casual)
+    Button casualbtn;
+    @InjectView(R.id.dialer_button_custom)
+    Button customBtn;
+    private UserAPIService userAPIService;
+    private DataUtils dataUtils;
+    private ProgressDialog progressDialog;
 
     public DialerFragment() {
         // Required empty public constructor
@@ -80,6 +100,11 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_dialer, container, false);
         ButterKnife.inject(this, root);
+        userAPIService = NetworkUtils.provideUserAPIService(getActivity());
+        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getResources().getString(R.string.please_wait));
+        progressDialog.setCancelable(false);
 
         if (getActivity().getIntent().hasExtra(PARAM_MOBILE_NUM)) {
             dialerText.setText(getActivity().getIntent().getStringExtra(PARAM_MOBILE_NUM));
@@ -101,6 +126,11 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             layout.setLayoutParams(layoutParams);
             layout.setOnClickListener(this);
         }
+
+        emergencyBtn.setOnClickListener(this);
+        businessBtn.setOnClickListener(this);
+        casualbtn.setOnClickListener(this);
+        customBtn.setOnClickListener(this);
 
         deleteText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,9 +190,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.dialer_call_btn:
                 CharSequence phone = dialerText.getText();
-                if (TextUtils.isEmpty(phone)) {
-                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
-                } else if (Patterns.PHONE.matcher(phone).matches()) {
+                if (Patterns.PHONE.matcher(phone).matches()) {
                     Intent intent = new Intent(Intent.ACTION_CALL);
                     intent.setData(Uri.parse("tel:" + phone.toString()));
                     startActivity(intent);
@@ -170,8 +198,53 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
                 }
                 break;
+            case R.id.dialer_button_emergency:
+                if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
+                    makeCustomCallRequest("Emergency Call");
+                } else {
+                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.dialer_button_business:
+                if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
+                    makeCustomCallRequest("Business Call");
+                } else {
+                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.dialer_button_casual:
+                if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
+                    makeCustomCallRequest("Casual Call");
+                } else {
+                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.dialer_button_custom:
+                break;
             default:
                 break;
         }
     }
+
+    private void makeCustomCallRequest(String message) {
+        CustomCallRequest request = new CustomCallRequest();
+        request.setFromMobile(dataUtils.getMobileNumber());
+        request.setMobile(Utils.getLastTenDigits(dialerText.getText().toString()));
+        request.setMessage(message);
+        progressDialog.show();
+        userAPIService.customCall(request).subscribe(new Action1<Response<Boolean>>() {
+            @Override
+            public void call(Response<Boolean> response) {
+                progressDialog.dismiss();
+                if (response.code() == 200) {
+                    if (response.body()) {
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+    }
+
 }

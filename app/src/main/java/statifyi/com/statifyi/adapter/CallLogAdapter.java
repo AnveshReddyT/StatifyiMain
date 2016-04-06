@@ -33,6 +33,7 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
 
+    private DBHelper dbHelper;
     private Context mContext;
     private List<CallLog> originalData = null;
     private List<statifyi.com.statifyi.model.CallLog> filteredData = null;
@@ -41,14 +42,14 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
 
     public CallLogAdapter(Context mContext, List<CallLog> callLogs) {
         this.mContext = mContext;
-        DBHelper dbHelper = new DBHelper(mContext);
+        dbHelper = new DBHelper(mContext);
         setData(callLogs);
-        users = dbHelper.getAllUsers();
     }
 
     public void setData(List<CallLog> callLogs) {
         this.filteredData = callLogs;
         this.originalData = callLogs;
+        users = dbHelper.getAllUsers();
     }
 
     public int getCount() {
