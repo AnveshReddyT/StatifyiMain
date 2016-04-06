@@ -115,6 +115,7 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
             holder.time.setVisibility(View.VISIBLE);
             holder.status.setText(mUser.getStatus());
             holder.icon.setImageResource(Utils.getDrawableResByName(mContext, mUser.getStatus()));
+            holder.time.setText(Utils.timeAgo(mUser.getUpdated()));
         } else {
             holder.statusLayout.setVisibility(View.INVISIBLE);
             holder.time.setVisibility(View.INVISIBLE);

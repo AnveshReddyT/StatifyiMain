@@ -225,7 +225,7 @@ public class Utils {
         long ago = System.currentTimeMillis() - millis;
         long ago_mins = ago / 1000 / 60;
         if (ago_mins == 0) {
-            return "min ago";
+            return "less than a min ago";
         } else if (ago_mins < 60) {
             return ago_mins + " mins ago";
         } else if (ago_mins > 60 && ago_mins < 60 * 24) {
@@ -259,11 +259,12 @@ public class Utils {
         return name == null ? telNum : name;
     }
 
-    public static void saveUserStatusToLocal(String status, String icon, String phoneNumber, DBHelper dbHelper) {
+    public static void saveUserStatusToLocal(String status, String icon, String phoneNumber, long time, DBHelper dbHelper) {
         User user = new User();
         user.setMobile(phoneNumber);
         user.setStatus(status);
         user.setIcon(icon);
+        user.setUpdated(time);
         dbHelper.insertOrUpdateUser(user);
     }
 

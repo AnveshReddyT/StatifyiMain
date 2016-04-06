@@ -1,15 +1,23 @@
 package statifyi.com.statifyi.api.model;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Date;
 
 /**
  * Created by KT on 27/12/15.
  */
 public class StatusResponse {
 
+    @SerializedName("status")
     private String status;
+
+    @SerializedName("icon")
     private String icon;
-    private String updatedTime;
+
+    @SerializedName("updatedTime")
+    private Date updatedTime;
 
     public String getStatus() {
         return status;
@@ -27,11 +35,11 @@ public class StatusResponse {
         this.icon = icon;
     }
 
-    public String getUpdatedTime() {
+    public Date getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(String updatedTime) {
+    public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
     }
 

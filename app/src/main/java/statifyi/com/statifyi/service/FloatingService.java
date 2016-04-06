@@ -87,14 +87,16 @@ public class FloatingService extends Service {
                         StatusResponse s = response.body();
                         String status = s.getStatus().toUpperCase();
                         String icon = s.getIcon();
+                        long time = s.getUpdatedTime().getTime();
+                        Log.d("STAT", s.toString() + "   ===   " + time);
                         if (status.isEmpty()) {
                             statusMessage = contactName + getResources().getString(R.string.status_not_set);
                         } else {
-                            Utils.saveUserStatusToLocal(status, icon, phoneNumber, dbHelper);
-                            statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
+                            Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
+                            statusMessage = contactName + " is " + status;
                         }
                         floatingPopup.setPopupMenu(false);
-                        floatingPopup.setTime(s.getUpdatedTime());
+                        floatingPopup.setTime(Utils.timeAgo(s.getUpdatedTime().getTime()));
                         floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
                     } else {
                         floatingPopup.setPopupMenu(true);

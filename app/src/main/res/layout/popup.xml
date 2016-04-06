@@ -47,7 +47,6 @@
                 android:id="@+id/popup_status_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="updated 10h 22m ago"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="10sp"
                 android:textStyle="italic" />
