@@ -3,6 +3,7 @@ package statifyi.com.statifyi.fragment;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import rx.functions.Action1;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.dialog.CustomCallDialog;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -220,6 +222,20 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.dialer_button_custom:
+                if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
+                    final CustomCallDialog customCallDialog = new CustomCallDialog(getActivity());
+                    customCallDialog.show();
+                    customCallDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            if (!TextUtils.isEmpty(customCallDialog.getMessage())) {
+                                makeCustomCallRequest(customCallDialog.getMessage());
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 break;

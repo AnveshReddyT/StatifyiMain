@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="192dp"
-    android:background="?attr/colorPrimaryDark"
+    android:background="@drawable/banner"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
@@ -11,6 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="right"
         android:text="+91-9676316323"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 </LinearLayout>

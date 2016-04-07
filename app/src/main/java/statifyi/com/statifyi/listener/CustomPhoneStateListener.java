@@ -3,12 +3,9 @@ package statifyi.com.statifyi.listener;
 import android.content.Context;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import statifyi.com.statifyi.api.model.CustomCall;
-import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
-import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
 
@@ -16,8 +13,6 @@ import statifyi.com.statifyi.widget.FloatingPopup;
  * Created by KT on 9/27/15.
  */
 public class CustomPhoneStateListener extends PhoneStateListener {
-
-    private UserAPIService userAPIService;
 
     private Context mContext;
 
@@ -30,7 +25,6 @@ public class CustomPhoneStateListener extends PhoneStateListener {
     public CustomPhoneStateListener(Context mContext, FloatingPopup floatingPopup) {
         this.mContext = mContext;
         this.floatingPopup = floatingPopup;
-        userAPIService = NetworkUtils.provideUserAPIService(mContext);
         dbHelper = new DBHelper(mContext);
     }
 
@@ -46,7 +40,6 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 if (lastState == TelephonyManager.CALL_STATE_IDLE) {
                     // Incolimg call
                     CustomCall customCall = dbHelper.getCustomCall(Utils.getLastTenDigits(incomingNumber));
-                    Log.d("STAT", customCall + "  custom call ");
                     if (customCall != null) {
                         final String contactName = Utils.getContactName(mContext, incomingNumber);
                         floatingPopup.show();

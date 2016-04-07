@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -129,7 +130,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         addStatusLayout.setOnClickListener(this);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        autoStatusText.setText(preferences.getBoolean(getString(R.string.key_auto_status), false) ? "ON" : "OFF");
+        boolean autoStatus = preferences.getBoolean(getString(R.string.key_auto_status), false);
+        autoStatusText.setText(autoStatus ? "ON" : "OFF");
+        autoStatusCheckbox.setChecked(autoStatus);
         autoStatusCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -247,7 +250,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                 statusDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
+                        if (!TextUtils.isEmpty(statusDialog.getMessage())) {
+                            updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
+                        }
                     }
                 });
                 break;
