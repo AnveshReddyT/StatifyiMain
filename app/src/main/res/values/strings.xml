@@ -75,6 +75,12 @@
         <item>With Family</item>
     </string-array>
 
+    <string name="emergency_call">Emergency Call</string>
+    <string name="business_call">Business Call</string>
+    <string name="casual_call">Casual Call</string>
+
+    <string name="invalid_number">Invalid number!</string>
+
     <string name="key_auto_status">autoStatus</string>
     <string name="key_low_battery">lowBattery</string>
     <string name="key_silent_mode">silentMode</string>

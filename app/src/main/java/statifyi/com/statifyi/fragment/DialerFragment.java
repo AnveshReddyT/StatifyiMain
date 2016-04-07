@@ -197,28 +197,28 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     intent.setData(Uri.parse("tel:" + phone.toString()));
                     startActivity(intent);
                 } else {
-                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.dialer_button_emergency:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
-                    makeCustomCallRequest("Emergency Call");
+                    makeCustomCallRequest(getString(R.string.emergency_call));
                 } else {
-                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.dialer_button_business:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
-                    makeCustomCallRequest("Business Call");
+                    makeCustomCallRequest(getString(R.string.business_call));
                 } else {
-                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.dialer_button_casual:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
-                    makeCustomCallRequest("Casual Call");
+                    makeCustomCallRequest(getString(R.string.casual_call));
                 } else {
-                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.dialer_button_custom:
@@ -234,7 +234,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                         }
                     });
                 } else {
-                    Toast.makeText(getActivity(), "Invalid number!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
                 break;
             default:

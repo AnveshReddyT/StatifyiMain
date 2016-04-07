@@ -4,6 +4,7 @@ import android.content.Context;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
+import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.utils.Utils;
@@ -45,7 +46,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                         floatingPopup.show();
                         floatingPopup.setPopupMenu(false);
                         floatingPopup.setTime("from " + contactName);
-                        floatingPopup.setStatusIcon(Utils.getDrawableResByName(mContext, customCall.getMessage()));
+                        floatingPopup.setStatusIcon(getCustomCallIcon(customCall.getMessage()));
                         floatingPopup.setMessage(customCall.getMessage());
                     }
                 }
@@ -64,4 +65,15 @@ public class CustomPhoneStateListener extends PhoneStateListener {
         lastState = state;
     }
 
+    private int getCustomCallIcon(String message) {
+        if (mContext.getString(R.string.emergency_call).equals(message)) {
+            return R.drawable.ic_call_emergency;
+        } else if (mContext.getString(R.string.business_call).equals(message)) {
+            return R.drawable.ic_call_business;
+        } else if (mContext.getString(R.string.casual_call).equals(message)) {
+            return R.drawable.ic_call_casual;
+        } else {
+            return R.drawable.ic_call_custom;
+        }
+    }
 }
