@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -54,6 +55,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
         final int position = i;
 
         customViewHolder.name.setText(timelyStatus.getName());
+        customViewHolder.icon.setImageResource(timelyStatus.getIcon());
         customViewHolder.start.setText(getFormattedTime(timelyStatus.getStartHour(), timelyStatus.getStartMin()));
         customViewHolder.end.setText(getFormattedTime(timelyStatus.getEndHour(), timelyStatus.getEndMin()));
         customViewHolder.enabled.setChecked(timelyStatus.isEnabled());
@@ -156,6 +158,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
 
             TimelyStatus status1 = new TimelyStatus();
             status1.setName("Sleeping");
+            status1.setIcon(R.drawable.sleeping);
             status1.setStartHour(-1);
             status1.setStartMin(-1);
             status1.setEndHour(-1);
@@ -164,6 +167,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
 
             TimelyStatus status2 = new TimelyStatus();
             status2.setName("At Office");
+            status2.setIcon(R.drawable.at_office);
             status2.setStartHour(-1);
             status2.setStartMin(-1);
             status2.setEndHour(-1);
@@ -172,6 +176,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
 
             TimelyStatus status3 = new TimelyStatus();
             status3.setName("In DND mode");
+            status3.setIcon(R.drawable.dnd);
             status3.setStartHour(-1);
             status3.setStartMin(-1);
             status3.setEndHour(-1);
@@ -198,6 +203,10 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
+
+        @InjectView(R.id.timely_status_item_icon)
+        ImageView icon;
+
         @InjectView(R.id.timely_status_item_name)
         TextView name;
 

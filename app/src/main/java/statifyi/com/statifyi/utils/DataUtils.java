@@ -11,8 +11,9 @@ public class DataUtils {
 
     public static final String KEY_MOBILE = "key_mobile";
     public static final String KEY_STATUS = "key_status";
-    public static final String KEY_AUTO_STATUS = "key_auto_statu";
+    public static final String KEY_AUTO_STATUS = "key_auto_status";
     public static final String KEY_ICON = "key_icon";
+    public static final String KEY_AUTO_STATUS_ICON = "key_auto_status_icon";
     public static final String KEY_ACTIVE = "key_active";
     private final SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -57,6 +58,15 @@ public class DataUtils {
 
     public int getStatusIcon() {
         return sharedPreferences.getInt(KEY_ICON, R.drawable.ic_launcher);
+    }
+
+    public void saveAutoStatusIcon(int icon) {
+        editor.putInt(KEY_AUTO_STATUS_ICON, icon);
+        editor.apply();
+    }
+
+    public int getAutoStatusIcon() {
+        return sharedPreferences.getInt(KEY_AUTO_STATUS_ICON, R.drawable.ic_launcher);
     }
 
     public void setActive(boolean active) {

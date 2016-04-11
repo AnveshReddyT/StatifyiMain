@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 public class TimelyStatus {
 
     private String name;
+    private int icon;
     private int startHour;
     private int startMin;
     private int endHour;
@@ -20,6 +21,14 @@ public class TimelyStatus {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public void setIcon(int icon) {
+        this.icon = icon;
     }
 
     public int getStartHour() {

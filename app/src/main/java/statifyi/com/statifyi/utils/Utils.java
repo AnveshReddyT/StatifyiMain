@@ -166,6 +166,34 @@ public class Utils {
         return contacts;
     }
 
+    public static List<String> get10DigitPhoneNumbersFromContacts(Context cntx) {
+        List<String> contacts = new ArrayList<>();
+        Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Integer contactsCount = cursor.getCount();
+        if (contactsCount > 0) {
+            while (cursor.moveToNext()) {
+                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+                    Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id}, null);
+                    if (pCursor.moveToNext()) {
+                        String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        if (!contacts.contains(phoneNo) && getLastTenDigits(phoneNo) != null) {
+                            phoneNo = getLastTenDigits(phoneNo);
+                            if (phoneNo != null) {
+                                contacts.add(phoneNo);
+                            }
+                        }
+                    }
+                    pCursor.close();
+                }
+            }
+            cursor.close();
+        }
+        return contacts;
+    }
+
     public static ArrayList<statifyi.com.statifyi.model.CallLog> getCallLogs(Activity mContext) {
         ArrayList<statifyi.com.statifyi.model.CallLog> callLogs = new ArrayList<>();
         String strOrder = CallLog.Calls.DATE + " DESC";

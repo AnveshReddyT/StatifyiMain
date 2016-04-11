@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,12 +21,11 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.fragment.HomeFragment;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
+import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
-import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity {
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
-    private UserAPIService userAPIService;
+    private DataUtils dataUtils;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -62,7 +62,7 @@ public class HomeActivity extends AppCompatActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         ButterKnife.inject(this);
-        userAPIService = NetworkUtils.provideUserAPIService(this);
+        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(this));
 
         if (toolbar != null) {
             toolbar.setTitle(null);

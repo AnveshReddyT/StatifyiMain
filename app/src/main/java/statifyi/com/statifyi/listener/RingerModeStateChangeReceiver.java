@@ -49,6 +49,7 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
                 if (auto_silent_status_enabled || auto_vibrate_status_enabled) {
                     if (dataUtils.getAutoStatus() != null) {
                         dataUtils.saveAutoStatus(null);
+                        dataUtils.saveAutoStatusIcon(0);
                         updateStatus(dataUtils.getStatus());
                     }
                 }
@@ -58,6 +59,7 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
                     status = "In Vibration Mode";
                     updateStatus(status);
                     dataUtils.saveAutoStatus(status);
+                    dataUtils.saveAutoStatusIcon(R.drawable.in_vibrating_mode);
                 }
                 break;
 
@@ -66,6 +68,7 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
                     status = "In Silent Mode";
                     updateStatus(status);
                     dataUtils.saveAutoStatus(status);
+                    dataUtils.saveAutoStatusIcon(R.drawable.in_silent_mode);
                 }
                 break;
         }

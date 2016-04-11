@@ -40,9 +40,13 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
         if (sharedPreferences.getBoolean(context.getResources().getString(R.string.key_low_battery), false)) {
             String action = intent.getAction();
             if (Intent.ACTION_BATTERY_LOW.equals(action)) {
-                updateStatus("On Low Battery");
+                String status = "On Low Battery";
+                updateStatus(status);
+                dataUtils.saveAutoStatus(status);
+                dataUtils.saveAutoStatusIcon(R.drawable.on_low_battery);
             } else if (Intent.ACTION_BATTERY_OKAY.equals(action)) {
                 dataUtils.saveAutoStatus(null);
+                dataUtils.saveAutoStatusIcon(0);
                 updateStatus(dataUtils.getStatus());
             }
         }

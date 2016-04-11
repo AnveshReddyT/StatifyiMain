@@ -8,25 +8,25 @@
         <item
             android:id="@+id/nav_home"
             android:checked="true"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_status"
             android:title="@string/app_name" />
 
         <item
             android:id="@+id/nav_auto_status"
             android:checked="false"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_menu_auto"
             android:title="@string/menu_auto_status" />
 
         <item
             android:id="@+id/nav_timely_status"
             android:checked="false"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_menu_timely"
             android:title="@string/menu_timely_status" />
 
         <item
             android:id="@+id/nav_privacy"
             android:checked="false"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_menu_privacy"
             android:title="@string/menu_privacy" />
 
     </group>
@@ -37,18 +37,18 @@
         <item
             android:id="@+id/nav_invite"
             android:checked="false"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_menu_share"
             android:title="@string/menu_invite" />
 
         <item
             android:id="@+id/nav_support"
             android:checked="false"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_menu_support"
             android:title="@string/menu_support" />
         <item
             android:id="@+id/nav_about"
             android:checked="false"
-            android:icon="@drawable/auto_on"
+            android:icon="@drawable/ic_menu_about"
             android:title="@string/menu_about" />
     </group>
 

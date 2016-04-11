@@ -3,25 +3,29 @@
 
     <CheckBoxPreference
         android:defaultValue="false"
+        android:icon="@drawable/on_low_battery"
         android:key="@string/key_low_battery"
-        android:summary="Allow the application mobile automatically update your status on low battery and revert the status when normal"
+        android:summary="Update your status automatically on low battery"
         android:title="Low Battery" />
 
     <CheckBoxPreference
         android:defaultValue="false"
+        android:icon="@drawable/in_silent_mode"
         android:key="@string/key_silent_mode"
-        android:summary="Allow the application mobile automatically update your status on silent mode and revert the status when normal"
+        android:summary="Update your status automatically on silent mode"
         android:title="Silent Mode" />
 
     <CheckBoxPreference
         android:defaultValue="false"
+        android:icon="@drawable/in_vibrating_mode"
         android:key="@string/key_vibrating_mode"
-        android:summary="Allow the application mobile automatically update your status on vibration mode and revert the status when normal"
+        android:summary="Update your status automatically on vibration mode"
         android:title="Vibration Mode" />
 
     <CheckBoxPreference
         android:defaultValue="false"
+        android:icon="@drawable/driving"
         android:key="@string/key_driving_mode"
-        android:summary="Allow the application mobile automatically update your status while driving and revert the status when normal"
+        android:summary="Update your status automatically while driving"
         android:title="Driving Mode" />
 </PreferenceScreen>

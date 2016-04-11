@@ -5,9 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.os.Handler;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import retrofit.Response;
 import rx.functions.Action1;
@@ -17,6 +22,7 @@ import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.listener.CustomPhoneStateListener;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
@@ -43,6 +49,31 @@ public class FloatingService extends Service {
         }
     };
     private CustomPhoneStateListener listener;
+    private int mContactCount;
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+
+            final int currentCount = getContactCount();
+            if (currentCount < mContactCount) {
+                // CONTACT DELETED.
+                Log.d("Contact Service Deleted", currentCount + "");
+                GCMUtils.deleteSubscriptions(FloatingService.this);
+            } else if (currentCount == mContactCount) {
+                // CONTACT UPDATED.
+                Log.d("Contact Service Updated", currentCount + "");
+                GCMRegisterIntentService.subscribeTopics(FloatingService.this, GCMUtils.getRegistrationId(FloatingService.this));
+            } else {
+                // NEW CONTACT.
+                Log.d("Contact Service Added", currentCount + "");
+//                GCMRegisterIntentService.subscribeTopics(FloatingService.this, GCMUtils.getRegistrationId(FloatingService.this));
+            }
+            mContactCount = currentCount;
+        }
+
+    };
 
     /**
      * @param intent
@@ -61,6 +92,9 @@ public class FloatingService extends Service {
         listener = new CustomPhoneStateListener(this, floatingPopup);
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
         registerReceiver(OutgoingCallReceiver, new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL));
+        mContactCount = getContactCount();
+        this.getContentResolver().registerContentObserver(
+                ContactsContract.Contacts.CONTENT_URI, true, mObserver);
     }
 
     @Override
@@ -73,6 +107,27 @@ public class FloatingService extends Service {
         super.onDestroy();
         unregisterReceiver(OutgoingCallReceiver);
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_NONE);
+        getContentResolver().unregisterContentObserver(mObserver);
+    }
+
+    private int getContactCount() {
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(
+                    ContactsContract.Contacts.CONTENT_URI, null, null, null,
+                    null);
+            if (cursor != null) {
+                return cursor.getCount();
+            } else {
+                return 0;
+            }
+        } catch (Exception ignore) {
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return 0;
     }
 
     private void fetchStatus(final String phoneNumber, final String contactName) {
