@@ -64,11 +64,10 @@ public class FloatingService extends Service {
             } else if (currentCount == mContactCount) {
                 // CONTACT UPDATED.
                 Log.d("Contact Service Updated", currentCount + "");
-                GCMRegisterIntentService.subscribeTopics(FloatingService.this, GCMUtils.getRegistrationId(FloatingService.this));
             } else {
                 // NEW CONTACT.
                 Log.d("Contact Service Added", currentCount + "");
-//                GCMRegisterIntentService.subscribeTopics(FloatingService.this, GCMUtils.getRegistrationId(FloatingService.this));
+                GCMUtils.makeSubscriptions(FloatingService.this);
             }
             mContactCount = currentCount;
         }

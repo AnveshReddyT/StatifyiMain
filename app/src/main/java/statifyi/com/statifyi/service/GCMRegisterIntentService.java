@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -56,7 +55,8 @@ public class GCMRegisterIntentService extends IntentService {
                 if (!topics.contains(topic)) {
                     if (topic != null) {
                         try {
-                            mBuilder.setProgress(contacts.size(), i, false);
+                            mBuilder.setContentText("Subscribing in progress ( " + (i * 100 / contacts.size()) + "% )")
+                                    .setProgress(contacts.size(), i, false);
                             mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
                             pubSub.subscribe(token, "/topics/" + topic, null);
                             topics.add(topic);
@@ -67,28 +67,10 @@ public class GCMRegisterIntentService extends IntentService {
                 }
             }
             GCMUtils.saveSubscriptions(mContext, topics);
-            mBuilder.setContentText("Subscription complete")
-                    .setProgress(0, 0, false);
-            mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
+            mNotifyManager.cancel(NOTIFICATION_ID);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void unsubscribeTopic(final Context mContext, final String topic) {
-        final GcmPubSub pubSub = GcmPubSub.getInstance(mContext);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    pubSub.unsubscribe(GCMUtils.getRegistrationId(mContext), "/topics/" + topic);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
     }
 
     @Override

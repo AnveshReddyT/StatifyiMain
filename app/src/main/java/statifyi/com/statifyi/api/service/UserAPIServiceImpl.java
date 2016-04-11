@@ -28,6 +28,7 @@ public class UserAPIServiceImpl implements UserAPIService {
     public Observable<Response<StatusResponse>> getUserStatus(final String mobile) {
         return remoteServerAPI.getUserStatus(mobile)
                 .subscribeOn(Schedulers.newThread())
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

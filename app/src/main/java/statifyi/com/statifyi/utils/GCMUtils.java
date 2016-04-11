@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import com.google.android.gms.gcm.GcmPubSub;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import statifyi.com.statifyi.service.GCMRegisterIntentService;
 
 /**
  * Created by KT on 02/04/16.
@@ -74,22 +77,69 @@ public class GCMUtils {
         editor.apply();
     }
 
-    public static void deleteSubscriptions(Context mContext) {
-        List<String> currentContacts = Utils.get10DigitPhoneNumbersFromContacts(mContext);
-        List<String> savedTopics = new ArrayList<>();
-        final SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
-        savedTopics.addAll(prefs.getStringSet(GCM_TOPICS, new HashSet<String>()));
-        for (String topic : savedTopics) {
-            if (!currentContacts.contains(topic)) {
-                savedTopics.remove(topic);
-                GCMRegisterIntentService.unsubscribeTopic(mContext, topic);
+    public static void deleteSubscriptions(final Context mContext) {
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                List<String> currentContacts = Utils.get10DigitPhoneNumbersFromContacts(mContext);
+                List<String> savedTopics = new ArrayList<>();
+                final SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
+                savedTopics.addAll(prefs.getStringSet(GCM_TOPICS, new HashSet<String>()));
+                final GcmPubSub pubSub = GcmPubSub.getInstance(mContext);
+                for (int i = 0; i < savedTopics.size(); i++) {
+                    final String topic = savedTopics.get(i);
+                    if (!currentContacts.contains(topic)) {
+                        savedTopics.remove(topic);
+                        try {
+                            pubSub.unsubscribe(getRegistrationId(mContext), "/topics/" + topic);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                Set<String> topics = new HashSet<>();
+                topics.addAll(savedTopics);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putStringSet(GCM_TOPICS, topics);
+                editor.apply();
+                return null;
             }
-        }
-        Set<String> topics = new HashSet<>();
-        topics.addAll(savedTopics);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet(GCM_TOPICS, topics);
-        editor.apply();
+        }.execute();
+
+    }
+
+    public static void makeSubscriptions(final Context mContext) {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                List<String> currentContacts = Utils.get10DigitPhoneNumbersFromContacts(mContext);
+                List<String> savedTopics = new ArrayList<>();
+                SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
+                savedTopics.addAll(prefs.getStringSet(GCM_TOPICS, new HashSet<String>()));
+                GcmPubSub pubSub = GcmPubSub.getInstance(mContext);
+                Log.d("STAT", currentContacts.size() + " --- " + savedTopics.size());
+                for (int i = 0; i < currentContacts.size(); i++) {
+                    String contact = currentContacts.get(i);
+                    if (!savedTopics.contains(contact)) {
+                        savedTopics.add(contact);
+                        try {
+                            pubSub.subscribe(getRegistrationId(mContext), "/topics/" + contact, null);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                Set<String> topics = new HashSet<>();
+                topics.addAll(savedTopics);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putStringSet(GCM_TOPICS, topics);
+                editor.apply();
+                return null;
+            }
+        }.execute();
     }
 
     public static Set<String> getSubscriptions(Context mContext) {

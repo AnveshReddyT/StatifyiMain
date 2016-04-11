@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
@@ -135,6 +136,9 @@ public class Utils {
     }
 
     public static String getLastTenDigits(String number) {
+        if (TextUtils.isEmpty(number)) {
+            return null;
+        }
         String replace = number.replaceAll("[^0-9]", "");
         int length = replace.length();
         replace = length > 10 ? replace.substring(length - 10, length) : replace;

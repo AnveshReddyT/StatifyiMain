@@ -20,12 +20,17 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Response;
+import rx.functions.Action1;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
+import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.model.User;
+import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.Contact;
+import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StringMatcher;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
@@ -35,6 +40,7 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, SectionIndexer {
 
+    private UserAPIService userAPIService;
     private DBHelper dbHelper;
     private Context mContext;
     private String mSections = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -45,6 +51,7 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
     public ContactsAdapter(Context mContext, List<Contact> contacts) {
         this.mContext = mContext;
+        userAPIService = NetworkUtils.provideUserAPIService(mContext);
         dbHelper = new DBHelper(mContext);
         setData(contacts);
     }
@@ -89,20 +96,18 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
         final Contact mContact = filteredData.get(position);
         holder.name.setText(mContact.getName());
-        holder.mobile.setText(mContact.getMobile());
+        final String mobile = mContact.getMobile();
+        String tenDigitNumber = Utils.getLastTenDigits(mobile);
+        holder.mobile.setText(mobile);
 
-        User mUser = findUser(mContact.getMobile());
-        if (mUser != null) {
-            holder.statusLayout.setVisibility(View.VISIBLE);
-            holder.time.setVisibility(View.VISIBLE);
-            holder.status.setText(mUser.getStatus());
-            holder.icon.setImageResource(Utils.getDrawableResByName(mContext, mUser.getIcon()));
-            holder.time.setText(Utils.timeAgo(mUser.getUpdated()));
-        } else {
-            holder.statusLayout.setVisibility(View.INVISIBLE);
-            holder.time.setVisibility(View.INVISIBLE);
-            holder.status.setText(null);
+        User mUser = null;
+        if (tenDigitNumber != null) {
+            mUser = findUser(tenDigitNumber);
+//            if(mUser == null) {
+//                fetchStatus(tenDigitNumber, holder);
+//            }
         }
+        setStatusData(holder, mUser);
 
         String photo = mContact.getPhoto();
         if (photo != null) {
@@ -132,10 +137,24 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
                 Intent intent = new Intent(mContext, SingleFragmentActivity.class);
                 intent.putExtra(SingleFragmentActivity.KEY_SINGLE_FRAGMENT, SingleFragmentActivity.FragmentName.DIALER);
                 intent.putExtra("title", "Dial");
-                intent.putExtra(DialerFragment.PARAM_MOBILE_NUM, mContact.getMobile());
+                intent.putExtra(DialerFragment.PARAM_MOBILE_NUM, mobile);
                 mContext.startActivity(intent);
             }
         });
+    }
+
+    private void setStatusData(ViewHolder holder, User mUser) {
+        if (mUser != null && mUser.getStatus() != null) {
+            holder.statusLayout.setVisibility(View.VISIBLE);
+            holder.time.setVisibility(View.VISIBLE);
+            holder.status.setText(mUser.getStatus());
+            holder.icon.setImageResource(Utils.getDrawableResByName(mContext, mUser.getIcon()));
+            holder.time.setText(Utils.timeAgo(mUser.getUpdated()));
+        } else {
+            holder.statusLayout.setVisibility(View.INVISIBLE);
+            holder.time.setVisibility(View.INVISIBLE);
+            holder.status.setText(null);
+        }
     }
 
     @Override
@@ -189,6 +208,30 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
         for (int i = 0; i < mSections.length(); i++)
             sections[i] = String.valueOf(mSections.charAt(i));
         return sections;
+    }
+
+    private void fetchStatus(final String phoneNumber, ViewHolder holder) {
+        userAPIService.getUserStatus(phoneNumber).subscribe(new Action1<Response<StatusResponse>>() {
+            @Override
+            public void call(Response<StatusResponse> response) {
+                if (response.code() == 200) {
+                    StatusResponse s = response.body();
+                    String status = s.getStatus().toUpperCase();
+                    String icon = s.getIcon();
+                    long time = s.getUpdatedTime().getTime();
+                    Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
+                } else {
+                    Utils.saveUserStatusToLocal(null, null, phoneNumber, 0, dbHelper);
+                }
+                notifyDataSetChanged();
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        });
+        setStatusData(holder, findUser(phoneNumber));
     }
 
     static class ViewHolder {
