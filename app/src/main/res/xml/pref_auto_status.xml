@@ -17,7 +17,7 @@
 
     <CheckBoxPreference
         android:defaultValue="false"
-        android:icon="@drawable/in_vibrating_mode"
+        android:icon="@drawable/in_vibration_mode"
         android:key="@string/key_vibrating_mode"
         android:summary="Update your status automatically on vibration mode"
         android:title="Vibration Mode" />

@@ -1,12 +1,11 @@
 package statifyi.com.statifyi.api;
 
-import retrofit.Response;
+import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Query;
-import rx.Observable;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.GCMRequest;
@@ -22,20 +21,20 @@ public interface RemoteServerAPI {
     String BASE_CONTEXT = "/Statifyi/src/users";
 
     @GET(BASE_CONTEXT + "/status")
-    Observable<Response<StatusResponse>> getUserStatus(@Query("mobile") String mobile);
+    Call<StatusResponse> getUserStatus(@Query("mobile") String mobile);
 
     @PUT(BASE_CONTEXT + "/status")
-    Observable<Response<Void>> setUserStatus(@Body StatusRequest request);
+    Call<Void> setUserStatus(@Body StatusRequest request);
 
     @POST(BASE_CONTEXT + "/register")
-    Observable<Response<Void>> registerUser(@Body RegisterUserRequest request);
+    Call<Void> registerUser(@Body RegisterUserRequest request);
 
     @POST(BASE_CONTEXT + "/activate")
-    Observable<Response<Void>> activateUser(@Body ActivateUserRequest request);
+    Call<Void> activateUser(@Body ActivateUserRequest request);
 
     @POST(BASE_CONTEXT + "/custom")
-    Observable<Response<Boolean>> customCall(@Body CustomCallRequest request);
+    Call<Boolean> customCall(@Body CustomCallRequest request);
 
     @POST(BASE_CONTEXT + "/gcmId")
-    Observable<Response<Void>> registerGCM(@Body GCMRequest request);
+    Call<Void> registerGCM(@Body GCMRequest request);
 }

@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
@@ -88,6 +87,9 @@ public class Utils {
     public static List<Contact> readPhoneContacts(Context cntx) {
         List<Contact> contacts = new ArrayList<>();
         Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        if (cursor == null) {
+            return contacts;
+        }
         Integer contactsCount = cursor.getCount();
         if (contactsCount > 0) {
             while (cursor.moveToNext()) {
@@ -99,6 +101,9 @@ public class Utils {
                     Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                             ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                             new String[]{id}, null);
+                    if (pCursor == null) {
+                        break;
+                    }
                     if (pCursor.moveToNext()) {
                         int phoneType = pCursor.getInt(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
                         String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -148,6 +153,9 @@ public class Utils {
     public static List<String> getPhoneNumbersFromContacts(Context cntx) {
         List<String> contacts = new ArrayList<>();
         Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        if (cursor == null) {
+            return contacts;
+        }
         Integer contactsCount = cursor.getCount();
         if (contactsCount > 0) {
             while (cursor.moveToNext()) {
@@ -156,6 +164,9 @@ public class Utils {
                     Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                             ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                             new String[]{id}, null);
+                    if (pCursor == null) {
+                        break;
+                    }
                     if (pCursor.moveToNext()) {
                         String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         if (!contacts.contains(phoneNo)) {
@@ -173,6 +184,9 @@ public class Utils {
     public static List<String> get10DigitPhoneNumbersFromContacts(Context cntx) {
         List<String> contacts = new ArrayList<>();
         Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        if (cursor == null) {
+            return contacts;
+        }
         Integer contactsCount = cursor.getCount();
         if (contactsCount > 0) {
             while (cursor.moveToNext()) {
@@ -181,6 +195,9 @@ public class Utils {
                     Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                             ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                             new String[]{id}, null);
+                    if (pCursor == null) {
+                        break;
+                    }
                     if (pCursor.moveToNext()) {
                         String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         if (!contacts.contains(phoneNo) && getLastTenDigits(phoneNo) != null) {
@@ -198,44 +215,49 @@ public class Utils {
         return contacts;
     }
 
-    public static ArrayList<statifyi.com.statifyi.model.CallLog> getCallLogs(Activity mContext) {
+    public static ArrayList<statifyi.com.statifyi.model.CallLog> getCallLogs(Context mContext) {
         ArrayList<statifyi.com.statifyi.model.CallLog> callLogs = new ArrayList<>();
         String strOrder = CallLog.Calls.DATE + " DESC";
-        Cursor managedCursor = mContext.managedQuery(CallLog.Calls.CONTENT_URI, null,
+        Cursor cursor = mContext.getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
                 null, null, strOrder);
-        int cached_name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
-        int phone = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-        int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-        int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+        if (cursor != null) {
+            int cached_name = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
+            int phone = cursor.getColumnIndex(CallLog.Calls.NUMBER);
+            int type = cursor.getColumnIndex(CallLog.Calls.TYPE);
+            int date = cursor.getColumnIndex(CallLog.Calls.DATE);
+            int duration = cursor.getColumnIndex(CallLog.Calls.DURATION);
 
-        while (managedCursor.moveToNext()) {
-            String phNum = managedCursor.getString(phone);
-            String callTypeCode = managedCursor.getString(type);
-            String strcallDate = managedCursor.getString(date);
-            String name = managedCursor.getString(cached_name);
-            long callDate = Long.valueOf(strcallDate);
-            String callDuration = managedCursor.getString(duration);
-            statifyi.com.statifyi.model.CallLog.CallType callType = null;
-            int callcode = Integer.parseInt(callTypeCode);
-            switch (callcode) {
-                case CallLog.Calls.OUTGOING_TYPE:
-                    callType = statifyi.com.statifyi.model.CallLog.CallType.OUTGOING;
-                    break;
-                case CallLog.Calls.INCOMING_TYPE:
-                    callType = statifyi.com.statifyi.model.CallLog.CallType.INCOMING;
-                    break;
-                case CallLog.Calls.MISSED_TYPE:
-                    callType = statifyi.com.statifyi.model.CallLog.CallType.MISSED;
-                    break;
+            while (cursor.moveToNext()) {
+                String phNum = cursor.getString(phone);
+                String callTypeCode = cursor.getString(type);
+                String strcallDate = cursor.getString(date);
+                String name = cursor.getString(cached_name);
+                long callDate = Long.valueOf(strcallDate);
+                String callDuration = cursor.getString(duration);
+                statifyi.com.statifyi.model.CallLog.CallType callType = null;
+                int callcode = Integer.parseInt(callTypeCode);
+                switch (callcode) {
+                    case CallLog.Calls.OUTGOING_TYPE:
+                        callType = statifyi.com.statifyi.model.CallLog.CallType.OUTGOING;
+                        break;
+                    case CallLog.Calls.INCOMING_TYPE:
+                        callType = statifyi.com.statifyi.model.CallLog.CallType.INCOMING;
+                        break;
+                    case CallLog.Calls.MISSED_TYPE:
+                        callType = statifyi.com.statifyi.model.CallLog.CallType.MISSED;
+                        break;
+                }
+                statifyi.com.statifyi.model.CallLog callLog = new statifyi.com.statifyi.model.CallLog();
+                callLog.setName(name);
+                callLog.setPhone(phNum);
+                callLog.setDate(callDate);
+                callLog.setDuration(callDuration);
+                callLog.setType(callType);
+                callLogs.add(callLog);
             }
-            statifyi.com.statifyi.model.CallLog callLog = new statifyi.com.statifyi.model.CallLog();
-            callLog.setName(name);
-            callLog.setPhone(phNum);
-            callLog.setDate(callDate);
-            callLog.setDuration(callDuration);
-            callLog.setType(callType);
-            callLogs.add(callLog);
+            if (!cursor.isClosed()) {
+                cursor.close();
+            }
         }
         return callLogs;
     }
@@ -245,7 +267,6 @@ public class Utils {
         sdf.setTimeZone(TimeZone.getTimeZone("IST"));
         try {
             Date date = sdf.parse(utcTime);
-            Log.d("STAT", date.toString());
             return timeAgo(date.getTime());
         } catch (ParseException e) {
             e.printStackTrace();

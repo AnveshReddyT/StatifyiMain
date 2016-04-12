@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,9 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.RegistrationActivity;
 import statifyi.com.statifyi.adapter.CountryCodesAdapter;
@@ -98,13 +98,12 @@ public class RegisterMobileFragment extends Fragment {
         request.setMobile(mobile);
 
         progressDialog.show();
-        userAPIService.registerUser(request).subscribe(new Action1<Response>() {
+        userAPIService.registerUser(request).enqueue(new Callback<Void>() {
             @Override
-            public void call(Response s) {
-                Log.d("STAT", "Register " + s.code());
-                dataUtils.saveMobile(mobile);
-                dataUtils.setActive(false);
-                if (s.code() == 200 || s.code() == 400) {
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    dataUtils.saveMobile(mobile);
+                    dataUtils.setActive(false);
                     registerBtn.setText(R.string.join_statifyi);
                     registerBtn.setEnabled(true);
                     ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));
@@ -113,10 +112,9 @@ public class RegisterMobileFragment extends Fragment {
                 }
                 progressDialog.dismiss();
             }
-        }, new Action1<Throwable>() {
+
             @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onFailure(Throwable t) {
                 progressDialog.dismiss();
             }
         });

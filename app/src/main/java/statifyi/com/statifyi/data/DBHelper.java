@@ -117,6 +117,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.delete(USERS_TABLE_NAME, USERS_COLUMN_MOBILE + " = ?", new String[]{mobile});
     }
 
+    public Integer deleteAllUsers() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(USERS_TABLE_NAME, null, null);
+    }
+
     public ArrayList<User> getAllUsers() {
         ArrayList<User> array_list = new ArrayList<User>();
 

@@ -16,8 +16,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.GCMRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -40,7 +41,7 @@ public class GCMRegisterIntentService extends IntentService {
         super("GCMRegisterIntentService");
     }
 
-    public static void subscribeTopics(Context mContext, final String token) {
+    public void subscribeTopics(Context mContext, final String token) {
         try {
             NotificationManager mNotifyManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
@@ -101,9 +102,16 @@ public class GCMRegisterIntentService extends IntentService {
         GCMRequest request = new GCMRequest();
         request.setGcmId(token);
         request.setMobile(dataUtils.getMobileNumber());
-        userAPIService.registerGCM(request).subscribe(new Action1<Response<Void>>() {
+
+        userAPIService.registerGCM(request).enqueue(new Callback<Void>() {
             @Override
-            public void call(Response<Void> voidResponse) {
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
             }
         });
         GCMUtils.sendGcmToServerStatus(this, true);

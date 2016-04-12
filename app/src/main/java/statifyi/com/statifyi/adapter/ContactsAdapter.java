@@ -1,8 +1,9 @@
 package statifyi.com.statifyi.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,12 @@ import android.widget.SectionIndexer;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import retrofit.Response;
-import rx.functions.Action1;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -42,14 +42,14 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
     private UserAPIService userAPIService;
     private DBHelper dbHelper;
-    private Context mContext;
+    private Activity mContext;
     private String mSections = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private List<Contact> originalData = null;
     private List<Contact> filteredData = null;
     private ItemFilter mFilter = new ItemFilter();
     private ArrayList<User> users;
 
-    public ContactsAdapter(Context mContext, List<Contact> contacts) {
+    public ContactsAdapter(Activity mContext, List<Contact> contacts) {
         this.mContext = mContext;
         userAPIService = NetworkUtils.provideUserAPIService(mContext);
         dbHelper = new DBHelper(mContext);
@@ -103,7 +103,7 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
         User mUser = null;
         if (tenDigitNumber != null) {
             mUser = findUser(tenDigitNumber);
-//            if(mUser == null) {
+//            if (mUser == null) {
 //                fetchStatus(tenDigitNumber, holder);
 //            }
         }
@@ -211,27 +211,7 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
     }
 
     private void fetchStatus(final String phoneNumber, ViewHolder holder) {
-        userAPIService.getUserStatus(phoneNumber).subscribe(new Action1<Response<StatusResponse>>() {
-            @Override
-            public void call(Response<StatusResponse> response) {
-                if (response.code() == 200) {
-                    StatusResponse s = response.body();
-                    String status = s.getStatus().toUpperCase();
-                    String icon = s.getIcon();
-                    long time = s.getUpdatedTime().getTime();
-                    Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
-                } else {
-                    Utils.saveUserStatusToLocal(null, null, phoneNumber, 0, dbHelper);
-                }
-                notifyDataSetChanged();
-            }
-        }, new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
-        setStatusData(holder, findUser(phoneNumber));
+        new FetchStatusTask(phoneNumber, holder).execute();
     }
 
     static class ViewHolder {
@@ -254,6 +234,42 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
+        }
+    }
+
+    class FetchStatusTask extends AsyncTask<Void, Void, StatusResponse> {
+
+        private String phone;
+
+        private ViewHolder holder;
+
+        public FetchStatusTask(String phone, ViewHolder holder) {
+            this.phone = phone;
+            this.holder = holder;
+        }
+
+        @Override
+        protected StatusResponse doInBackground(Void... params) {
+            try {
+                return userAPIService.getUserStatus(phone).execute().body();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(StatusResponse s) {
+            super.onPostExecute(s);
+            if (s != null) {
+                String status = s.getStatus().toUpperCase();
+                String icon = s.getIcon();
+                long time = s.getUpdatedTime().getTime();
+                Utils.saveUserStatusToLocal(status, icon, phone, time, dbHelper);
+                setStatusData(holder, findUser(phone));
+            } else {
+                Utils.saveUserStatusToLocal(null, null, phone, 0, dbHelper);
+            }
         }
     }
 

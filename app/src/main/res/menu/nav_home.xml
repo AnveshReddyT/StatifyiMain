@@ -7,24 +7,28 @@
 
         <item
             android:id="@+id/nav_home"
-            android:checked="true"
+            android:checkable="false"
+            android:checked="false"
             android:icon="@drawable/ic_status"
             android:title="@string/app_name" />
 
         <item
             android:id="@+id/nav_auto_status"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_menu_auto"
             android:title="@string/menu_auto_status" />
 
         <item
             android:id="@+id/nav_timely_status"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_menu_timely"
             android:title="@string/menu_timely_status" />
 
         <item
             android:id="@+id/nav_privacy"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_menu_privacy"
             android:title="@string/menu_privacy" />
@@ -36,17 +40,27 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_invite"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_menu_share"
             android:title="@string/menu_invite" />
 
         <item
+            android:id="@+id/nav_rate"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_menu_rateapp"
+            android:title="@string/menu_rate" />
+
+        <item
             android:id="@+id/nav_support"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_menu_support"
             android:title="@string/menu_support" />
         <item
             android:id="@+id/nav_about"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_menu_about"
             android:title="@string/menu_about" />

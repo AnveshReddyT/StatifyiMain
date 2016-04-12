@@ -5,10 +5,9 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,7 +27,6 @@ import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
-import statifyi.com.statifyi.utils.PermissionUtils;
 import statifyi.com.statifyi.utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
@@ -75,13 +73,6 @@ public class HomeActivity extends AppCompatActivity {
         setContent(HomeFragment.newInstance(null, null));
         Intent serviceIntent = new Intent(this, FloatingService.class);
         startService(serviceIntent);
-
-        if (Build.VERSION.SDK_INT > 23) {
-            PermissionUtils.getPermissionToReadCallLog(this);
-            PermissionUtils.getPermissionToReadUserContacts(this);
-            PermissionUtils.getPermissionToProcessOutgoingCalls(this);
-            PermissionUtils.getPermissionToSystemAlertWindow(this);
-        }
     }
 
     private void setContent(Fragment fragment) {
@@ -134,6 +125,9 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.nav_invite:
                         Utils.inviteFriends(HomeActivity.this);
                         return true;
+                    case R.id.nav_rate:
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.gazelle.anvesh.colortickler")));
+                        return true;
                     default:
                         Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
                         return true;
@@ -174,15 +168,5 @@ public class HomeActivity extends AppCompatActivity {
         } else {
 //            Toast.makeText(getApplicationContext(), "RegId already available. RegId: " + regId, Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        if (!PermissionUtils.onPermissionResult(requestCode, permissions, grantResults, this)) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-
     }
 }

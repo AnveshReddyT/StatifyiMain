@@ -13,8 +13,9 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.HomeActivity;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.RegistrationActivity;
@@ -65,31 +66,43 @@ public class OTPFragment extends Fragment {
 
     @OnClick(R.id.register_otp_btn)
     public void onClick(View v) {
-        ActivateUserRequest request = new ActivateUserRequest();
+        final ActivateUserRequest request = new ActivateUserRequest();
         request.setCode(otpText.getText().toString());
         request.setMobile(dataUtils.getMobileNumber());
 
         progressDialog.show();
-        userAPIService.activateUser(request).subscribe(new Action1<Response<StatusResponse>>() {
+        userAPIService.activateUser(request).enqueue(new Callback<Void>() {
             @Override
-            public void call(Response<StatusResponse> response) {
-                if (response.code() == 200) {
-                    StatusResponse s = response.body();
-                    dataUtils.setActive(true);
-                    dataUtils.saveStatus(s.getStatus());
-                    dataUtils.saveIcon(Utils.getDrawableResByName(getActivity(), s.getIcon()));
-                    startActivity(new Intent(getActivity(), HomeActivity.class));
-                    getActivity().finish();
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    userAPIService.getUserStatus(request.getMobile()).enqueue(new Callback<StatusResponse>() {
+                        @Override
+                        public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                            progressDialog.dismiss();
+                            if (response.isSuccess()) {
+                                StatusResponse s = response.body();
+                                dataUtils.setActive(true);
+                                dataUtils.saveStatus(s.getStatus());
+                                dataUtils.saveIcon(Utils.getDrawableResByName(getActivity(), s.getIcon()));
+                                startActivity(new Intent(getActivity(), HomeActivity.class));
+                                getActivity().finish();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            progressDialog.dismiss();
+                        }
+                    });
                 } else {
                     Utils.showToast(getActivity(), "Failed to activate");
                 }
-                progressDialog.dismiss();
             }
-        }, new Action1<Throwable>() {
+
             @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onFailure(Throwable t) {
                 progressDialog.dismiss();
+                Utils.showToast(getActivity(), "Failed to activate");
             }
         });
     }

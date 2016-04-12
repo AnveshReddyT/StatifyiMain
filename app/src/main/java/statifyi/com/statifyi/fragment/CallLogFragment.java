@@ -1,9 +1,15 @@
 package statifyi.com.statifyi.fragment;
 
 
+import android.app.Fragment;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,18 +25,14 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.CallLogAdapter;
 import statifyi.com.statifyi.model.CallLog;
+import statifyi.com.statifyi.service.GCMIntentService;
 import statifyi.com.statifyi.utils.Utils;
 
 
-public class CallLogFragment extends BaseFragment implements SearchView.OnQueryTextListener {
+public class CallLogFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     @InjectView(R.id.calllogList)
     ListView calllogListview;
@@ -39,7 +41,19 @@ public class CallLogFragment extends BaseFragment implements SearchView.OnQueryT
     ProgressBar pBar;
 
     private List<statifyi.com.statifyi.model.CallLog> callLogs;
+
     private CallLogAdapter callLogAdapter;
+
+    private boolean isLoaded;
+    private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (getUserVisibleHint()) {
+                showContent();
+            }
+        }
+    };
 
     public CallLogFragment() {
     }
@@ -90,6 +104,12 @@ public class CallLogFragment extends BaseFragment implements SearchView.OnQueryT
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        showProgress();
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
@@ -100,6 +120,28 @@ public class CallLogFragment extends BaseFragment implements SearchView.OnQueryT
         return true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadContent();
+        IntentFilter filter = new IntentFilter(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onStatusChangeReceiver);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isLoaded) {
+            showContent();
+        }
+    }
+
     private void showContent() {
         callLogAdapter.setData(callLogs);
         callLogAdapter.notifyDataSetChanged();
@@ -107,49 +149,32 @@ public class CallLogFragment extends BaseFragment implements SearchView.OnQueryT
         calllogListview.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void showProgress() {
         pBar.setVisibility(View.VISIBLE);
         calllogListview.setVisibility(View.GONE);
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            showContent();
-        }
-    }
-
-    private Subscriber<List<CallLog>> contentObserver() {
-        return new Subscriber<List<CallLog>>() {
+    public void loadContent() {
+        new AsyncTask<Context, Void, List<CallLog>>() {
 
             @Override
-            public void onCompleted() {
-                showContent();
+            protected void onPreExecute() {
+                showProgress();
+                super.onPreExecute();
             }
 
             @Override
-            public void onError(Throwable e) {
+            protected List<CallLog> doInBackground(Context... params) {
+                return Utils.getCallLogs(params[0]);
             }
 
             @Override
-            public void onNext(List<CallLog> logs) {
+            protected void onPostExecute(List<CallLog> logs) {
                 callLogs = logs;
+                isLoaded = true;
+                showContent();
+                super.onPostExecute(logs);
             }
-        };
-    }
-
-    @Override
-    public Subscription subscribeContent() {
-        return Observable.create(new Observable.OnSubscribe<List<CallLog>>() {
-            @Override
-            public void call(Subscriber<? super List<CallLog>> subscriber) {
-                subscriber.onNext(Utils.getCallLogs(getActivity()));
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(contentObserver());
+        }.execute(getActivity());
     }
 }

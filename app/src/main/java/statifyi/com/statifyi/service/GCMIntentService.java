@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.JsonSyntaxException;
@@ -26,8 +28,8 @@ import statifyi.com.statifyi.utils.Utils;
 public class GCMIntentService extends GcmListenerService {
 
     public static final int NOTIFICATION_ID = 1;
+    public static final String BROADCAST_ACTION_STATUS_CHANGE = "statifyi.broadcast.status_change";
     private static final String TOPICS = "/topics/";
-
     DBHelper dbHelper;
 
     @Override
@@ -45,6 +47,8 @@ public class GCMIntentService extends GcmListenerService {
                 if (!status.isEmpty()) {
                     String phoneNumber = from.replace(TOPICS, "");
                     Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
+                    Intent intent = new Intent(BROADCAST_ACTION_STATUS_CHANGE);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                     if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
                         sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status");
                         StatusUtils.removeNotifyStatus(this, phoneNumber);
@@ -60,6 +64,7 @@ public class GCMIntentService extends GcmListenerService {
                 call.setMobile(jsonObject.getString("from"));
                 call.setMessage(jsonObject.getString("message"));
                 call.setTime(System.currentTimeMillis());
+                Log.d("STAT", call.toString());
                 dbHelper.insertOrUpdateCustomCall(call);
             } catch (JSONException e) {
                 e.printStackTrace();

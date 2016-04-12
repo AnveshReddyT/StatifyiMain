@@ -14,8 +14,9 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.model.User;
@@ -130,9 +131,9 @@ public class FloatingService extends Service {
     }
 
     private void fetchStatus(final String phoneNumber, final String contactName) {
-        userAPIService.getUserStatus(phoneNumber).subscribe(new Action1<Response<StatusResponse>>() {
+        userAPIService.getUserStatus(phoneNumber).enqueue(new Callback<StatusResponse>() {
             @Override
-            public void call(Response<StatusResponse> response) {
+            public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
                 if (floatingPopup != null && floatingPopup.isShowing()) {
                     String statusMessage;
                     if (response.code() == 200) {
@@ -159,10 +160,9 @@ public class FloatingService extends Service {
                     floatingPopup.setMessage(statusMessage);
                 }
             }
-        }, new Action1<Throwable>() {
+
             @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onFailure(Throwable t) {
                 String statusMessage;
                 User user = dbHelper.getUser(phoneNumber);
                 if (user != null) {

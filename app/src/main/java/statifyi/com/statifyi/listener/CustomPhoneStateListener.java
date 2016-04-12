@@ -1,12 +1,20 @@
 package statifyi.com.statifyi.listener;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCall;
+import statifyi.com.statifyi.api.model.StatusRequest;
+import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
+import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
 
@@ -23,10 +31,16 @@ public class CustomPhoneStateListener extends PhoneStateListener {
 
     private DBHelper dbHelper;
 
+    private DataUtils dataUtils;
+
+    private UserAPIService userAPIService;
+
     public CustomPhoneStateListener(Context mContext, FloatingPopup floatingPopup) {
         this.mContext = mContext;
         this.floatingPopup = floatingPopup;
         dbHelper = new DBHelper(mContext);
+        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(mContext));
+        userAPIService = NetworkUtils.provideUserAPIService(mContext);
     }
 
     @Override
@@ -75,5 +89,27 @@ public class CustomPhoneStateListener extends PhoneStateListener {
         } else {
             return R.drawable.ic_call_custom;
         }
+    }
+
+    private void updateStatus(final String status) {
+        StatusRequest request = new StatusRequest();
+        request.setMobile(dataUtils.getMobileNumber());
+        request.setStatus(status);
+        request.setIcon(status);
+        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    dataUtils.saveStatus(status);
+                    int ico = Utils.getDrawableResByName(mContext, status);
+                    dataUtils.saveIcon(ico);
+                } else {
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+            }
+        });
     }
 }

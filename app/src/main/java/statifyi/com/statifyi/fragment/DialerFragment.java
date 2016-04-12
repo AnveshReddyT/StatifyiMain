@@ -20,8 +20,9 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -248,17 +249,23 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         request.setMobile(Utils.getLastTenDigits(dialerText.getText().toString()));
         request.setMessage(message);
         progressDialog.show();
-        userAPIService.customCall(request).subscribe(new Action1<Response<Boolean>>() {
+        userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
             @Override
-            public void call(Response<Boolean> response) {
+            public void onResponse(Response<Boolean> response, Retrofit retrofit) {
                 progressDialog.dismiss();
-                if (response.code() == 200) {
+                if (response.isSuccess()) {
                     if (response.body()) {
                         Intent intent = new Intent(Intent.ACTION_CALL);
                         intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
                         startActivity(intent);
                     }
                 }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                progressDialog.dismiss();
+                Utils.showToast(getActivity(), "Failed! Please try again.");
             }
         });
     }

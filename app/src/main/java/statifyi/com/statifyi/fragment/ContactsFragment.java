@@ -1,9 +1,15 @@
 package statifyi.com.statifyi.fragment;
 
 
+import android.app.Fragment;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,19 +24,15 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.ContactsAdapter;
 import statifyi.com.statifyi.model.Contact;
+import statifyi.com.statifyi.service.GCMIntentService;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.IndexableListView;
 
 
-public class ContactsFragment extends BaseFragment implements SearchView.OnQueryTextListener {
+public class ContactsFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     @InjectView(R.id.contactsList)
     IndexableListView contactsListview;
@@ -39,7 +41,19 @@ public class ContactsFragment extends BaseFragment implements SearchView.OnQuery
     ProgressBar pBar;
 
     private List<Contact> contacts;
+
     private ContactsAdapter contactsAdapter;
+
+    private boolean isLoaded;
+    private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (getUserVisibleHint()) {
+                showContent();
+            }
+        }
+    };
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -92,6 +106,12 @@ public class ContactsFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        showProgress();
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
@@ -103,6 +123,27 @@ public class ContactsFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        loadContent();
+        IntentFilter filter = new IntentFilter(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onStatusChangeReceiver);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isLoaded) {
+            showContent();
+        }
+    }
+
     public void showProgress() {
         pBar.setVisibility(View.VISIBLE);
         contactsListview.setVisibility(View.GONE);
@@ -115,44 +156,28 @@ public class ContactsFragment extends BaseFragment implements SearchView.OnQuery
         contactsListview.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            showContent();
-        }
-    }
+    public void loadContent() {
+        new AsyncTask<Context, Void, List<Contact>>() {
 
-    private Subscriber<List<Contact>> contentObserver() {
-
-        return new Subscriber<List<Contact>>() {
             @Override
-            public void onCompleted() {
+            protected void onPreExecute() {
+                showProgress();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected List<Contact> doInBackground(Context... params) {
+                return Utils.readPhoneContacts(params[0]);
+            }
+
+            @Override
+            protected void onPostExecute(List<Contact> contactList) {
+                contacts = contactList;
+                isLoaded = true;
                 showContent();
+                super.onPostExecute(contactList);
             }
-
-            @Override
-            public void onError(Throwable e) {
-            }
-
-            @Override
-            public void onNext(List<Contact> list) {
-                contacts = list;
-            }
-        };
-    }
-
-    @Override
-    public Subscription subscribeContent() {
-        return Observable.create(new Observable.OnSubscribe<List<Contact>>() {
-            @Override
-            public void call(Subscriber<? super List<Contact>> subscriber) {
-                subscriber.onNext(Utils.readPhoneContacts(getActivity()));
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(contentObserver());
+        }.execute(getActivity());
     }
 
 }

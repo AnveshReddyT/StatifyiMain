@@ -185,6 +185,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private void resetPopup() {
         setMessage(getResources().getString(R.string.please_wait));
         setStatusIcon(0);
+        setTime(null);
     }
 
     public void setPopupMenu(final boolean newUser) {

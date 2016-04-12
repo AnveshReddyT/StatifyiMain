@@ -6,8 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -57,19 +58,15 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
         request.setMobile(dataUtils.getMobileNumber());
         request.setStatus(status);
         request.setIcon(status);
-        userAPIService.setUserStatus(request).subscribe(new Action1<Response>() {
+        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
-            public void call(Response s) {
-                if (s.code() == 200) {
-//                        dataUtils.saveStatus(status);
-//                        int ico = Utils.getDrawableResByName(context, status);
-//                        dataUtils.saveIcon(ico);
-                }
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+
             }
-        }, new Action1<Throwable>() {
+
             @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onFailure(Throwable t) {
+
             }
         });
     }

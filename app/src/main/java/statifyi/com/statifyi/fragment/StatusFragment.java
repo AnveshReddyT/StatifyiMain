@@ -31,8 +31,9 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Callback;
 import retrofit.Response;
-import rx.functions.Action1;
+import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.StatusAdapter;
 import statifyi.com.statifyi.api.model.StatusRequest;
@@ -217,10 +218,10 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         request.setStatus(status);
         request.setIcon(status);
         progressDialog.show();
-        userAPIService.setUserStatus(request).subscribe(new Action1<Response>() {
+        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
-            public void call(Response s) {
-                if (s.code() == 200) {
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
                     dataUtils.saveStatus(status);
                     int ico = Utils.getDrawableResByName(getActivity(), status);
                     dataUtils.saveIcon(ico);
@@ -231,10 +232,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                 }
                 progressDialog.dismiss();
             }
-        }, new Action1<Throwable>() {
+
             @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onFailure(Throwable t) {
                 progressDialog.dismiss();
                 Utils.showToast(getActivity(), "Failed to change status");
             }
@@ -265,10 +265,10 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         request.setMobile(dataUtils.getMobileNumber());
         request.setStatus(status);
         request.setIcon(icon);
-        userAPIService.setUserStatus(request).subscribe(new Action1<Response>() {
+        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
-            public void call(Response s) {
-                if (s.code() == 200) {
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
                     dataUtils.saveStatus(status);
                     int ico = Utils.getDrawableResByName(getActivity(), icon);
                     dataUtils.saveIcon(ico == 0 ? R.drawable.ic_launcher : ico);
@@ -279,10 +279,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                 }
                 progressDialog.dismiss();
             }
-        }, new Action1<Throwable>() {
+
             @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onFailure(Throwable t) {
                 progressDialog.dismiss();
                 Utils.showToast(getActivity(), "Failed to change status");
             }

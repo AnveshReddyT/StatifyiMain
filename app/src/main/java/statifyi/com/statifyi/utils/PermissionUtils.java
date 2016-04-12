@@ -1,11 +1,11 @@
 package statifyi.com.statifyi.utils;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
@@ -22,55 +22,59 @@ public class PermissionUtils {
 
     private static final int SYSTEM_ALERT_WINDOW_PERMISSIONS_REQUEST = 104;
 
-    @TargetApi(Build.VERSION_CODES.M)
     public static void getPermissionToReadUserContacts(Activity mContext) {
-        if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (mContext.shouldShowRequestPermissionRationale(android.Manifest.permission.READ_CONTACTS)) {
-                // Show our own UI to explain to the user why we need to read the contacts
-                // before actually requesting the permission and showing the default UI
-            }
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, android.Manifest.permission.READ_CONTACTS)) {
+                    // Show our own UI to explain to the user why we need to read the contacts
+                    // before actually requesting the permission and showing the default UI
+                }
 
-            mContext.requestPermissions(new String[]{android.Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
+                ActivityCompat.requestPermissions(mContext, new String[]{android.Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSIONS_REQUEST);
+            }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     public static void getPermissionToReadCallLog(Activity mContext) {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (mContext.shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                // Show our own UI to explain to the user why we need to read the contacts
-                // before actually requesting the permission and showing the default UI
-            }
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CALL_LOG)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.READ_CALL_LOG)) {
+                    // Show our own UI to explain to the user why we need to read the contacts
+                    // before actually requesting the permission and showing the default UI
+                }
 
-            mContext.requestPermissions(new String[]{Manifest.permission.READ_CALL_LOG}, READ_CALL_LOG_PERMISSIONS_REQUEST);
+                ActivityCompat.requestPermissions(mContext, new String[]{Manifest.permission.READ_CALL_LOG}, READ_CALL_LOG_PERMISSIONS_REQUEST);
+            }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     public static void getPermissionToProcessOutgoingCalls(Activity mContext) {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.PROCESS_OUTGOING_CALLS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (mContext.shouldShowRequestPermissionRationale(Manifest.permission.PROCESS_OUTGOING_CALLS)) {
-                // Show our own UI to explain to the user why we need to read the contacts
-                // before actually requesting the permission and showing the default UI
-            }
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.PROCESS_OUTGOING_CALLS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.PROCESS_OUTGOING_CALLS)) {
+                    // Show our own UI to explain to the user why we need to read the contacts
+                    // before actually requesting the permission and showing the default UI
+                }
 
-            mContext.requestPermissions(new String[]{Manifest.permission.PROCESS_OUTGOING_CALLS}, PROCESS_OUTGOING_CALLS_PERMISSIONS_REQUEST);
+                ActivityCompat.requestPermissions(mContext, new String[]{Manifest.permission.PROCESS_OUTGOING_CALLS}, PROCESS_OUTGOING_CALLS_PERMISSIONS_REQUEST);
+            }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     public static void getPermissionToSystemAlertWindow(Activity mContext) {
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.SYSTEM_ALERT_WINDOW)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (mContext.shouldShowRequestPermissionRationale(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
-                // Show our own UI to explain to the user why we need to read the contacts
-                // before actually requesting the permission and showing the default UI
-            }
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.SYSTEM_ALERT_WINDOW)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.SYSTEM_ALERT_WINDOW)) {
+                    // Show our own UI to explain to the user why we need to read the contacts
+                    // before actually requesting the permission and showing the default UI
+                }
 
-            mContext.requestPermissions(new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, SYSTEM_ALERT_WINDOW_PERMISSIONS_REQUEST);
+                ActivityCompat.requestPermissions(mContext, new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, SYSTEM_ALERT_WINDOW_PERMISSIONS_REQUEST);
+            }
         }
     }
 
