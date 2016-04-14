@@ -85,7 +85,6 @@
             android:name=".listener.AlarmReceiver"
             android:enabled="true"
             android:process=":remote" />
-
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -101,7 +100,9 @@
         <service
             android:name=".service.GCMRegisterIntentService"
             android:exported="false" />
-
+        <service
+            android:name=".service.SyncAllStatusService"
+            android:exported="false" />
         <service
             android:name=".service.GCMIntentService"
             android:exported="false">
@@ -109,7 +110,6 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.GCMInstanceIDListenerService"
             android:exported="false">
@@ -117,7 +117,9 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
-
+        <service
+            android:name=".service.GCMSubscribeService"
+            android:exported="false" />
     </application>
 
 </manifest>

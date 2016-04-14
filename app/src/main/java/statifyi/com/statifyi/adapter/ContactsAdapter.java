@@ -52,14 +52,18 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
     public ContactsAdapter(Activity mContext, List<Contact> contacts) {
         this.mContext = mContext;
         userAPIService = NetworkUtils.provideUserAPIService(mContext);
-        dbHelper = new DBHelper(mContext);
+        dbHelper = DBHelper.getInstance(mContext);
         setData(contacts);
     }
 
     public void setData(List<Contact> contacts) {
         this.filteredData = contacts;
         this.originalData = contacts;
-        users = dbHelper.getAllUsers();
+        users = loadUsers();
+    }
+
+    public ArrayList<User> loadUsers() {
+        return dbHelper.getAllUsers();
     }
 
     @Override

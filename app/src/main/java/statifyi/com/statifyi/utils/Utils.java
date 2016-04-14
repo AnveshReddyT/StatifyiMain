@@ -1,13 +1,16 @@
 package statifyi.com.statifyi.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
@@ -46,6 +49,14 @@ public class Utils {
         Point size = new Point();
         display.getSize(size);
         return size.y;
+    }
+
+    public static Drawable changeColor(Context mContext, int drawable, int color) {
+        final Drawable upArrow = mContext.getResources().getDrawable(drawable);
+        if (upArrow != null) {
+            upArrow.setColorFilter(mContext.getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+        }
+        return upArrow;
     }
 
     public static Typeface selectTypeface(Context context, String fontName, int textStyle) {
@@ -152,6 +163,9 @@ public class Utils {
 
     public static List<String> getPhoneNumbersFromContacts(Context cntx) {
         List<String> contacts = new ArrayList<>();
+        if (cntx == null) {
+            return contacts;
+        }
         Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if (cursor == null) {
             return contacts;
@@ -183,6 +197,9 @@ public class Utils {
 
     public static List<String> get10DigitPhoneNumbersFromContacts(Context cntx) {
         List<String> contacts = new ArrayList<>();
+        if (cntx == null) {
+            return contacts;
+        }
         Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if (cursor == null) {
             return contacts;
@@ -217,6 +234,9 @@ public class Utils {
 
     public static ArrayList<statifyi.com.statifyi.model.CallLog> getCallLogs(Context mContext) {
         ArrayList<statifyi.com.statifyi.model.CallLog> callLogs = new ArrayList<>();
+        if (mContext == null) {
+            return callLogs;
+        }
         String strOrder = CallLog.Calls.DATE + " DESC";
         Cursor cursor = mContext.getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
                 null, null, strOrder);
@@ -310,6 +330,16 @@ public class Utils {
             e.printStackTrace();
         }
         return name == null ? telNum : name;
+    }
+
+    public static boolean isMyServiceRunning(Context mContext, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) mContext.getSystemService(Activity.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void saveUserStatusToLocal(String status, String icon, String phoneNumber, long time, DBHelper dbHelper) {

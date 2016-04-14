@@ -7,8 +7,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,9 +27,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -51,7 +55,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     RelativeLayout addStatusLayout;
 
     @InjectView(R.id.status_current_text_layout)
-    RelativeLayout currentStatusLayout;
+    LinearLayout currentStatusLayout;
 
     @InjectView(R.id.status_auto_text_layout)
     RelativeLayout autoStatusLayout;
@@ -168,18 +172,17 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_contacts, menu);
 
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        final SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         final MenuItem searchMenuItem = menu.findItem(R.id.search);
-        final SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
         final SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
 
         String[] statusMessages = getResources().getStringArray(R.array.default_status_list);
         ArrayList<String> itemArrayList = new ArrayList<String>();
-        for (String msg : statusMessages) {
-            itemArrayList.add(msg);
-        }
+        Collections.addAll(itemArrayList, statusMessages);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, itemArrayList);
         searchAutoComplete.setAdapter(adapter);
+        searchAutoComplete.setDropDownHeight(Utils.getScreenHeight(getActivity()) * 4 / 10);
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -187,8 +190,13 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                 executeUpdateStatus(status);
                 searchAutoComplete.setText(null);
                 searchMenuItem.collapseActionView();
+                searchView.clearFocus();
             }
         });
+
+        int searchImgId = android.support.v7.appcompat.R.id.search_button; // I used the explicit layout ID of searchview's ImageView
+        ImageView v = (ImageView) searchView.findViewById(searchImgId);
+        v.getDrawable().setColorFilter(getResources().getColor(R.color.accentColor), PorterDuff.Mode.SRC_ATOP);
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(true);

@@ -25,6 +25,7 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.fragment.HomeFragment;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
+import statifyi.com.statifyi.service.GCMSubscribeService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -166,6 +167,9 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(this, GCMRegisterIntentService.class);
             startService(intent);
         } else {
+            if (!Utils.isMyServiceRunning(this, GCMSubscribeService.class)) {
+                startService(new Intent(this, GCMSubscribeService.class));
+            }
 //            Toast.makeText(getApplicationContext(), "RegId already available. RegId: " + regId, Toast.LENGTH_LONG).show();
         }
     }

@@ -23,7 +23,6 @@ import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.listener.CustomPhoneStateListener;
-import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
@@ -44,7 +43,6 @@ public class FloatingService extends Service {
             String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
             int length = phoneNumber.length();
             phoneNumber = length > 10 ? phoneNumber.substring(length - 10, length) : phoneNumber;
-            floatingPopup.show();
             final String contactName = Utils.getContactName(FloatingService.this, phoneNumber);
             fetchStatus(phoneNumber, contactName);
         }
@@ -61,14 +59,15 @@ public class FloatingService extends Service {
             if (currentCount < mContactCount) {
                 // CONTACT DELETED.
                 Log.d("Contact Service Deleted", currentCount + "");
-                GCMUtils.deleteSubscriptions(FloatingService.this);
+                startService(new Intent(FloatingService.this, GCMSubscribeService.class));
             } else if (currentCount == mContactCount) {
                 // CONTACT UPDATED.
                 Log.d("Contact Service Updated", currentCount + "");
+//                startService(new Intent(FloatingService.this, GCMSubscribeService.class));
             } else {
                 // NEW CONTACT.
                 Log.d("Contact Service Added", currentCount + "");
-                GCMUtils.makeSubscriptions(FloatingService.this);
+                startService(new Intent(FloatingService.this, GCMSubscribeService.class));
             }
             mContactCount = currentCount;
         }
@@ -86,7 +85,7 @@ public class FloatingService extends Service {
     public void onCreate() {
         super.onCreate();
         userAPIService = NetworkUtils.provideUserAPIService(this);
-        dbHelper = new DBHelper(this);
+        dbHelper = DBHelper.getInstance(this);
         floatingPopup = new FloatingPopup(this);
         TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         listener = new CustomPhoneStateListener(this, floatingPopup);
@@ -130,7 +129,19 @@ public class FloatingService extends Service {
         return 0;
     }
 
+    private void setExistingStatus(String mobile, String contactName) {
+        User mUser = dbHelper.getUser(mobile);
+        if (mUser != null) {
+            floatingPopup.setMobile(contactName);
+            floatingPopup.setMessage(mUser.getStatus());
+            floatingPopup.setTime(Utils.timeAgo(mUser.getUpdated()));
+            floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
+        }
+    }
+
     private void fetchStatus(final String phoneNumber, final String contactName) {
+        setExistingStatus(phoneNumber, contactName);
+        floatingPopup.show();
         userAPIService.getUserStatus(phoneNumber).enqueue(new Callback<StatusResponse>() {
             @Override
             public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {

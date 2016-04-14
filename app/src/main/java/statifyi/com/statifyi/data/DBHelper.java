@@ -47,9 +47,20 @@ public class DBHelper extends SQLiteOpenHelper {
             CUSTOM_CALLS_COLUMN_MESSAGE + " text," +
             CUSTOM_CALLS_COLUMN_TIME + " integer)";
 
-    public DBHelper(Context context) {
+    private static DBHelper mInstance = null;
+
+    private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
+
+    public static DBHelper getInstance(Context ctx) {
+
+        if (mInstance == null) {
+            mInstance = new DBHelper(ctx.getApplicationContext());
+        }
+        return mInstance;
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -90,10 +101,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public User getUser(String mobile) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from " + USERS_TABLE_NAME + " where " + USERS_COLUMN_MOBILE + "=" + mobile, null);
+        User mUser = null;
         if (cursor != null && cursor.moveToFirst()) {
-            return getUserFromCursor(cursor);
+            mUser = getUserFromCursor(cursor);
         }
-        return null;
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        return mUser;
     }
 
     @NonNull
@@ -133,6 +148,9 @@ public class DBHelper extends SQLiteOpenHelper {
             array_list.add(getUserFromCursor(cursor));
             cursor.moveToNext();
         }
+        if (!cursor.isClosed()) {
+            cursor.close();
+        }
         return array_list;
     }
 
@@ -146,6 +164,9 @@ public class DBHelper extends SQLiteOpenHelper {
         while (!cursor.isAfterLast()) {
             array_list.put(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_MOBILE)), getUserFromCursor(cursor));
             cursor.moveToNext();
+        }
+        if (!cursor.isClosed()) {
+            cursor.close();
         }
         return array_list;
     }
@@ -173,12 +194,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public CustomCall getCustomCall(String mobile) {
         Log.d("STAT", "Deleted calls:  " + deleteExpiredCustomCalls());
+        CustomCall customCallFromCursor = null;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from " + CUSTOM_CALLS_TABLE_NAME + " where " + CUSTOM_CALLS_COLUMN_MOBILE + "=" + mobile, null);
         if (cursor != null && cursor.moveToFirst()) {
-            return getCustomCallFromCursor(cursor);
+            customCallFromCursor = getCustomCallFromCursor(cursor);
         }
-        return null;
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        return customCallFromCursor;
     }
 
     @NonNull
@@ -194,5 +219,11 @@ public class DBHelper extends SQLiteOpenHelper {
         long expiryTime = System.currentTimeMillis() - 2 * 60 * 1000;
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(CUSTOM_CALLS_TABLE_NAME, CUSTOM_CALLS_COLUMN_TIME + " < ?", new String[]{String.valueOf(expiryTime)});
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        this.close();
+        super.finalize();
     }
 }

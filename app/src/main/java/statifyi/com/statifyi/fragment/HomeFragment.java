@@ -80,7 +80,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SingleFragmentActivity.class);
                 intent.putExtra(SingleFragmentActivity.KEY_SINGLE_FRAGMENT, SingleFragmentActivity.FragmentName.DIALER);
-                intent.putExtra("title", "Dial");
+                intent.putExtra("title", "DIAL");
                 startActivity(intent);
             }
         });

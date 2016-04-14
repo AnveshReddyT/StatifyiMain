@@ -42,14 +42,18 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
 
     public CallLogAdapter(Context mContext, List<CallLog> callLogs) {
         this.mContext = mContext;
-        dbHelper = new DBHelper(mContext);
+        dbHelper = DBHelper.getInstance(mContext);
         setData(callLogs);
     }
 
     public void setData(List<CallLog> callLogs) {
         this.filteredData = callLogs;
         this.originalData = callLogs;
-        users = dbHelper.getAllUsers();
+        users = loadUsers();
+    }
+
+    public ArrayList<User> loadUsers() {
+        return dbHelper.getAllUsers();
     }
 
     public int getCount() {

@@ -7,16 +7,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
@@ -40,18 +47,41 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
     @InjectView(R.id.contacts_list_progress)
     ProgressBar pBar;
 
+    @InjectView(R.id.contacts_list_loading)
+    LinearLayout statusLoader;
+
     private List<Contact> contacts;
 
     private ContactsAdapter contactsAdapter;
 
     private boolean isLoaded;
+
+    private boolean isContactsUpdated;
+
     private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (contacts != null && !contacts.isEmpty()) {
+                isLoaded = true;
+            }
             if (getUserVisibleHint()) {
                 showContent();
             }
+        }
+    };
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            isContactsUpdated = true;
+            Log.d("STAT", "Contacts updated");
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
         }
     };
 
@@ -72,6 +102,8 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
         if (getArguments() != null) {
         }
         setHasOptionsMenu(true);
+        isContactsUpdated = true;
+        getActivity().getContentResolver().registerContentObserver(ContactsContract.Contacts.CONTENT_URI, true, mObserver);
     }
 
     @Override
@@ -96,19 +128,13 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) searchMenuItem.getActionView();
 
-//        int searchImgId = android.support.v7.appcompat.R.id.search_button;
-//        ImageView v = (ImageView) searchView.findViewById(searchImgId);
-//        v.setImageResource(R.drawable.search);
+        int searchImgId = android.support.v7.appcompat.R.id.search_button; // I used the explicit layout ID of searchview's ImageView
+        ImageView v = (ImageView) searchView.findViewById(searchImgId);
+        v.getDrawable().setColorFilter(getResources().getColor(R.color.accentColor), PorterDuff.Mode.SRC_ATOP);
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(ContactsFragment.this);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        showProgress();
     }
 
     @Override
@@ -125,7 +151,9 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public void onResume() {
         super.onResume();
-        loadContent();
+        if (isContactsUpdated) {
+            loadContent();
+        }
         IntentFilter filter = new IntentFilter(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
     }
@@ -133,7 +161,14 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public void onPause() {
         super.onPause();
+        isLoaded = false;
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onStatusChangeReceiver);
+    }
+
+    @Override
+    public void onDestroy() {
+        getActivity().getContentResolver().unregisterContentObserver(mObserver);
+        super.onDestroy();
     }
 
     @Override
@@ -147,12 +182,20 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
     public void showProgress() {
         pBar.setVisibility(View.VISIBLE);
         contactsListview.setVisibility(View.GONE);
+        statusLoader.setVisibility(View.GONE);
+    }
+
+    public void showStatusLoading() {
+        pBar.setVisibility(View.GONE);
+        contactsListview.setVisibility(View.GONE);
+        statusLoader.setVisibility(View.VISIBLE);
     }
 
     private void showContent() {
         contactsAdapter.setData(contacts);
         contactsAdapter.notifyDataSetChanged();
         pBar.setVisibility(View.GONE);
+        statusLoader.setVisibility(View.GONE);
         contactsListview.setVisibility(View.VISIBLE);
     }
 
@@ -161,7 +204,11 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
 
             @Override
             protected void onPreExecute() {
-                showProgress();
+                if (contactsAdapter != null && !contactsAdapter.loadUsers().isEmpty()) {
+                    showProgress();
+                } else {
+                    showStatusLoading();
+                }
                 super.onPreExecute();
             }
 
@@ -173,8 +220,13 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
             @Override
             protected void onPostExecute(List<Contact> contactList) {
                 contacts = contactList;
-                isLoaded = true;
-                showContent();
+                if (contactsAdapter != null && !contactsAdapter.loadUsers().isEmpty()) {
+                    isLoaded = true;
+                    isContactsUpdated = false;
+                    showContent();
+                } else {
+                    showStatusLoading();
+                }
                 super.onPostExecute(contactList);
             }
         }.execute(getActivity());

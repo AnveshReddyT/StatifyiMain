@@ -3,28 +3,23 @@ package statifyi.com.statifyi.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
-import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
+import statifyi.com.statifyi.api.GCMServerAPI;
 import statifyi.com.statifyi.api.RemoteServerAPI;
+import statifyi.com.statifyi.api.service.GCMAPIService;
+import statifyi.com.statifyi.api.service.GCMAPIServiceImpl;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.api.service.UserAPIServiceImpl;
 
@@ -35,6 +30,7 @@ public class NetworkUtils {
 
     public static final String SERVER_IP = "54.201.38.232";
     private static final String BASE_URL = "http://" + SERVER_IP + ":8080";
+    private static final String GCM_URL = "https://iid.googleapis.com";
 
     public static boolean isConnectingToInternet(Context _context) {
         ConnectivityManager connectivity = (ConnectivityManager) _context
@@ -69,57 +65,39 @@ public class NetworkUtils {
         return logging;
     }
 
-    public static OkHttpClient provideOkHttpClient(Context mContext) {
+    public static OkHttpClient provideOkHttpClient(Context mContext, boolean enableLogging) {
         OkHttpClient client = new OkHttpClient();
         client.setCache(provideOkHttpCache(mContext));
-        client.interceptors().add(provideOkHttpClientLogging());
+        client.setConnectTimeout(5, TimeUnit.MINUTES);
+        client.setReadTimeout(5, TimeUnit.MINUTES);
+        if (enableLogging) {
+            client.interceptors().add(provideOkHttpClientLogging());
+        }
         return client;
     }
 
-    public static Retrofit provideRetrofit(Context mContext) {
+    public static Retrofit provideRetrofit(Context mContext, String baseUrl, boolean enableLogging) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(provideGson()))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(BASE_URL)
-                .client(provideOkHttpClient(mContext))
+                .baseUrl(baseUrl)
+                .client(provideOkHttpClient(mContext, enableLogging))
                 .build();
     }
 
+    public static GCMServerAPI provideGCMServerAPI(Context mContext) {
+        return provideRetrofit(mContext, GCM_URL, false).create(GCMServerAPI.class);
+    }
+
     public static RemoteServerAPI provideServerAPI(Context mContext) {
-        return provideRetrofit(mContext).create(RemoteServerAPI.class);
+        return provideRetrofit(mContext, BASE_URL, true).create(RemoteServerAPI.class);
     }
 
     public static UserAPIService provideUserAPIService(Context mContext) {
         return new UserAPIServiceImpl(provideServerAPI(mContext));
     }
-}
 
-class GsonDateDeSerializer implements JsonDeserializer<Date> {
-
-    private SimpleDateFormat format1 = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-    private SimpleDateFormat format2 = new SimpleDateFormat("HH:mm:ss");
-
-    @Override
-    public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        try {
-            String j = json.getAsJsonPrimitive().getAsString();
-            Log.d("STAT", j + " ==== ");
-            return parseDate(j);
-        } catch (ParseException e) {
-            throw new JsonParseException(e.getMessage(), e);
-        }
+    public static GCMAPIService provideGCMAPIService(Context mContext) {
+        return new GCMAPIServiceImpl(provideGCMServerAPI(mContext));
     }
-
-    private Date parseDate(String dateString) throws ParseException {
-        if (dateString != null && dateString.trim().length() > 0) {
-            try {
-                return format1.parse(dateString);
-            } catch (ParseException pe) {
-                return format2.parse(dateString);
-            }
-        } else {
-            return null;
-        }
-    }
-
 }

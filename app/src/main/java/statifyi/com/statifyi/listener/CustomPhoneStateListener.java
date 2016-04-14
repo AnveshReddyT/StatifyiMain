@@ -38,7 +38,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
     public CustomPhoneStateListener(Context mContext, FloatingPopup floatingPopup) {
         this.mContext = mContext;
         this.floatingPopup = floatingPopup;
-        dbHelper = new DBHelper(mContext);
+        dbHelper = DBHelper.getInstance(mContext);
         dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(mContext));
         userAPIService = NetworkUtils.provideUserAPIService(mContext);
     }
@@ -57,11 +57,11 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     CustomCall customCall = dbHelper.getCustomCall(Utils.getLastTenDigits(incomingNumber));
                     if (customCall != null) {
                         final String contactName = Utils.getContactName(mContext, incomingNumber);
-                        floatingPopup.show();
                         floatingPopup.setPopupMenu(false);
                         floatingPopup.setTime("from " + contactName);
                         floatingPopup.setStatusIcon(getCustomCallIcon(customCall.getMessage()));
                         floatingPopup.setMessage(customCall.getMessage());
+                        floatingPopup.show();
                     }
                 }
                 break;

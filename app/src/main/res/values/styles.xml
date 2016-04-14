@@ -20,7 +20,7 @@
 
     <style name="ToolBarStyle.Base" parent="">
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
         <item name="windowActionBarOverlay">true</item>
         <item name="titleTextAppearance">@style/TextAppearance.Widget.Event.Toolbar.Title</item>
     </style>

@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.JsonSyntaxException;
@@ -35,7 +34,7 @@ public class GCMIntentService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         if (dbHelper == null) {
-            dbHelper = new DBHelper(this);
+            dbHelper = DBHelper.getInstance(this);
         }
         String message = data.getString("message");
         if (from.startsWith(TOPICS)) {
@@ -47,8 +46,7 @@ public class GCMIntentService extends GcmListenerService {
                 if (!status.isEmpty()) {
                     String phoneNumber = from.replace(TOPICS, "");
                     Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
-                    Intent intent = new Intent(BROADCAST_ACTION_STATUS_CHANGE);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
                     if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
                         sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status");
                         StatusUtils.removeNotifyStatus(this, phoneNumber);
@@ -64,7 +62,6 @@ public class GCMIntentService extends GcmListenerService {
                 call.setMobile(jsonObject.getString("from"));
                 call.setMessage(jsonObject.getString("message"));
                 call.setTime(System.currentTimeMillis());
-                Log.d("STAT", call.toString());
                 dbHelper.insertOrUpdateCustomCall(call);
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -7,16 +7,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -40,18 +46,40 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
     @InjectView(R.id.calllog_list_progress)
     ProgressBar pBar;
 
+    @InjectView(R.id.calllog_list_loading)
+    LinearLayout statusLoader;
+
     private List<statifyi.com.statifyi.model.CallLog> callLogs;
 
     private CallLogAdapter callLogAdapter;
 
     private boolean isLoaded;
+
+    private boolean isCallLogUpdated;
     private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (callLogs != null && !callLogs.isEmpty()) {
+                isLoaded = true;
+            }
             if (getUserVisibleHint()) {
                 showContent();
             }
+        }
+    };
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            isCallLogUpdated = true;
+            Log.d("STAT", "Call Log updated");
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
         }
     };
 
@@ -71,6 +99,8 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         if (getArguments() != null) {
         }
         setHasOptionsMenu(true);
+        isCallLogUpdated = true;
+        getActivity().getContentResolver().registerContentObserver(android.provider.CallLog.Calls.CONTENT_URI, true, mObserver);
     }
 
     @Override
@@ -94,19 +124,13 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) searchMenuItem.getActionView();
 
-//        int searchImgId = android.support.v7.appcompat.R.id.search_button;
-//        ImageView v = (ImageView) searchView.findViewById(searchImgId);
-//        v.setImageResource(R.drawable.search);
+        int searchImgId = android.support.v7.appcompat.R.id.search_button; // I used the explicit layout ID of searchview's ImageView
+        ImageView v = (ImageView) searchView.findViewById(searchImgId);
+        v.getDrawable().setColorFilter(getResources().getColor(R.color.accentColor), PorterDuff.Mode.SRC_ATOP);
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(CallLogFragment.this);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        showProgress();
     }
 
     @Override
@@ -123,7 +147,9 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
     @Override
     public void onResume() {
         super.onResume();
-        loadContent();
+        if (isCallLogUpdated) {
+            loadContent();
+        }
         IntentFilter filter = new IntentFilter(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
     }
@@ -132,6 +158,13 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
     public void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onStatusChangeReceiver);
+        isLoaded = false;
+    }
+
+    @Override
+    public void onDestroy() {
+        getActivity().getContentResolver().unregisterContentObserver(mObserver);
+        super.onDestroy();
     }
 
     @Override
@@ -146,12 +179,21 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         callLogAdapter.setData(callLogs);
         callLogAdapter.notifyDataSetChanged();
         pBar.setVisibility(View.GONE);
+        statusLoader.setVisibility(View.GONE);
         calllogListview.setVisibility(View.VISIBLE);
+
     }
 
     public void showProgress() {
         pBar.setVisibility(View.VISIBLE);
         calllogListview.setVisibility(View.GONE);
+        statusLoader.setVisibility(View.GONE);
+    }
+
+    public void showStatusLoading() {
+        pBar.setVisibility(View.GONE);
+        calllogListview.setVisibility(View.GONE);
+        statusLoader.setVisibility(View.VISIBLE);
     }
 
     public void loadContent() {
@@ -160,6 +202,11 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
             @Override
             protected void onPreExecute() {
                 showProgress();
+                if (callLogAdapter != null && !callLogAdapter.loadUsers().isEmpty()) {
+                    showProgress();
+                } else {
+                    showStatusLoading();
+                }
                 super.onPreExecute();
             }
 
@@ -171,8 +218,13 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
             @Override
             protected void onPostExecute(List<CallLog> logs) {
                 callLogs = logs;
-                isLoaded = true;
-                showContent();
+                if (callLogAdapter != null && !callLogAdapter.loadUsers().isEmpty()) {
+                    isLoaded = true;
+                    isCallLogUpdated = false;
+                    showContent();
+                } else {
+                    showStatusLoading();
+                }
                 super.onPostExecute(logs);
             }
         }.execute(getActivity());

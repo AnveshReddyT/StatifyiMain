@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,16 @@ public class RegisterMobileFragment extends Fragment {
         String CountryID = manager.getSimCountryIso().toUpperCase();
         countruCodesSpinner.setAdapter(new CountryCodesAdapter(getActivity(), R.layout.country_code_row, countryCodes.getCountries()));
         countruCodesSpinner.setSelection(indexOf(countryCodes, CountryID));
+        mobileText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    doRegister();
+                    return true;
+                }
+                return false;
+            }
+        });
         return root;
     }
 
@@ -93,6 +104,10 @@ public class RegisterMobileFragment extends Fragment {
 
     @OnClick(R.id.register_mobile_btn)
     public void onClick(View v) {
+        doRegister();
+    }
+
+    private void doRegister() {
         RegisterUserRequest request = new RegisterUserRequest();
         final String mobile = mobileText.getText().toString();
         request.setMobile(mobile);

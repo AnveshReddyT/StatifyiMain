@@ -1,10 +1,13 @@
 package statifyi.com.statifyi.api.service;
 
+import java.util.List;
+
 import retrofit.Call;
 import statifyi.com.statifyi.api.RemoteServerAPI;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.GCMRequest;
+import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -28,6 +31,11 @@ public class UserAPIServiceImpl implements UserAPIService {
     @Override
     public Call<Void> setUserStatus(StatusRequest request) {
         return remoteServerAPI.setUserStatus(request);
+    }
+
+    @Override
+    public Call<List<MultiStatusResponse>> getAllStatus(List<String> mobiles) {
+        return remoteServerAPI.getAllStatus(mobiles);
     }
 
     @Override

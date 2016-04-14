@@ -7,7 +7,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
-        android:background="@color/primaryColorDark" />
+        android:background="@color/gray" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -17,7 +17,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_1_layout"
@@ -47,7 +47,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_2_layout"
@@ -77,7 +77,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_3_layout"
@@ -107,14 +107,14 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
-        android:background="@color/primaryColorDark" />
+        android:background="@color/gray" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -124,7 +124,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_4_layout"
@@ -154,7 +154,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_5_layout"
@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/dialpad_5"
                 android:layout_centerHorizontal="true"
-                android:text="IJK"
+                android:text="JKL"
                 android:textColor="@color/primaryColorDark"
                 android:textSize="12sp" />
 
@@ -184,7 +184,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_6_layout"
@@ -214,14 +214,14 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
-        android:background="@color/primaryColorDark" />
+        android:background="@color/gray" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -231,7 +231,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_7_layout"
@@ -261,7 +261,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_8_layout"
@@ -291,7 +291,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_9_layout"
@@ -321,14 +321,14 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
-        android:background="@color/primaryColorDark" />
+        android:background="@color/gray" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -338,7 +338,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_hash_layout"
@@ -359,7 +359,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_0_layout"
@@ -380,7 +380,7 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
         <RelativeLayout
             android:id="@+id/dialpad_star_layout"
@@ -401,14 +401,14 @@
         <View
             android:layout_width="0.8dp"
             android:layout_height="match_parent"
-            android:background="@color/primaryColorDark" />
+            android:background="@color/gray" />
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
-        android:background="@color/primaryColorDark" />
+        android:background="@color/gray" />
 
     <LinearLayout
         android:layout_width="match_parent"

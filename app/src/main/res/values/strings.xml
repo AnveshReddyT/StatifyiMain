@@ -19,6 +19,7 @@
 
     <string name="hint_mobile">Enter your Phone Number</string>
     <string name="hint_otp">OTP</string>
+    <string name="hint_dial_number">Dial the number</string>
     <string name="otp_message">Did you get OTP via SMS mobile your Phone Number?\n Enter it here</string>
     <string name="hint_country">Choose your Country</string>
     <string name="hello_world">Hello world!</string>
@@ -34,6 +35,7 @@
     <string name="status_user_not_found">\u0020 is not on StatiFYI</string>
     <string name="status_no_network">Please be connected mobile get status</string>
     <string name="status_not_set">\u0020 did not set his/her status</string>
+    <string name="sync_status_message">Syncing status messages of your contacts\nSit back and relax</string>
 
     <string-array name="letter_tile_colors">
         <item>#f16364</item>
@@ -80,7 +82,7 @@
     <string name="business_call">Business Call</string>
     <string name="casual_call">Casual Call</string>
 
-    <string name="invalid_number">Invalid number!</string>
+    <string name="invalid_number">Please dial a valid number!</string>
 
     <string name="key_auto_status">autoStatus</string>
     <string name="key_low_battery">lowBattery</string>

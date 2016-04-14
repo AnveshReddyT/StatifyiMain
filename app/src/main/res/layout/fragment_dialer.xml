@@ -15,7 +15,9 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:gravity="center"
+        android:hint="@string/hint_dial_number"
         android:textColor="@color/accentColor"
+        android:textColorHint="@color/gray"
         android:textSize="18sp" />
 
     <ImageView

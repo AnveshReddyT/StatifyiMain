@@ -1,5 +1,7 @@
 package statifyi.com.statifyi.api;
 
+import java.util.List;
+
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -9,6 +11,7 @@ import retrofit.http.Query;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.GCMRequest;
+import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -25,6 +28,9 @@ public interface RemoteServerAPI {
 
     @PUT(BASE_CONTEXT + "/status")
     Call<Void> setUserStatus(@Body StatusRequest request);
+
+    @POST(BASE_CONTEXT + "/multiStatus")
+    Call<List<MultiStatusResponse>> getAllStatus(@Body List<String> mobiles);
 
     @POST(BASE_CONTEXT + "/register")
     Call<Void> registerUser(@Body RegisterUserRequest request);

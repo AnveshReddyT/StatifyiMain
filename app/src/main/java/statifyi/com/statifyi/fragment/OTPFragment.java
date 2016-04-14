@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import statifyi.com.statifyi.RegistrationActivity;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.service.SyncAllStatusService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -61,11 +63,25 @@ public class OTPFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_otp, container, false);
         ButterKnife.inject(this, root);
+        otpText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    doActivateUser();
+                    return true;
+                }
+                return false;
+            }
+        });
         return root;
     }
 
     @OnClick(R.id.register_otp_btn)
     public void onClick(View v) {
+        doActivateUser();
+    }
+
+    private void doActivateUser() {
         final ActivateUserRequest request = new ActivateUserRequest();
         request.setCode(otpText.getText().toString());
         request.setMobile(dataUtils.getMobileNumber());
@@ -75,6 +91,7 @@ public class OTPFragment extends Fragment {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
+                    getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
                     userAPIService.getUserStatus(request.getMobile()).enqueue(new Callback<StatusResponse>() {
                         @Override
                         public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
