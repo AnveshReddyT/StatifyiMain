@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,7 +45,6 @@ public class RegisterMobileFragment extends Fragment {
     EditText mobileText;
     @InjectView(R.id.register_mobile_btn)
     Button registerBtn;
-    private DataUtils dataUtils;
     private UserAPIService userAPIService;
     private ProgressDialog progressDialog;
 
@@ -61,7 +59,6 @@ public class RegisterMobileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(getActivity()));
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getResources().getString(R.string.please_wait));
@@ -117,8 +114,8 @@ public class RegisterMobileFragment extends Fragment {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    dataUtils.saveMobile(mobile);
-                    dataUtils.setActive(false);
+                    DataUtils.saveMobile(getActivity(), mobile);
+                    DataUtils.setActive(getActivity(), false);
                     registerBtn.setText(R.string.join_statifyi);
                     registerBtn.setEnabled(true);
                     ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));

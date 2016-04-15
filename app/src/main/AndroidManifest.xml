@@ -83,8 +83,7 @@
 
         <receiver
             android:name=".listener.AlarmReceiver"
-            android:enabled="true"
-            android:process=":remote" />
+            android:enabled="true" />
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"

@@ -3,7 +3,6 @@ package statifyi.com.statifyi.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -15,7 +14,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.service.UserAPIService;
-import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.EditText;
@@ -34,8 +32,6 @@ public class CustomStatusDialog extends Dialog {
 
     @InjectView(R.id.custom_status_icon)
     ImageView statusIcon;
-
-    private DataUtils dataUtils;
 
     private UserAPIService userAPIService;
 
@@ -72,8 +68,7 @@ public class CustomStatusDialog extends Dialog {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         ButterKnife.inject(this);
-        if (dataUtils == null || userAPIService == null) {
-            dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(mContext));
+        if (userAPIService == null) {
             userAPIService = NetworkUtils.provideUserAPIService(mContext);
         }
 

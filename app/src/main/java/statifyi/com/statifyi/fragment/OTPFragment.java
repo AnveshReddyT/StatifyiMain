@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +35,6 @@ public class OTPFragment extends Fragment {
     EditText otpText;
     @InjectView(R.id.register_otp_btn)
     Button otpVerifyBtn;
-    private DataUtils dataUtils;
     private UserAPIService userAPIService;
     private ProgressDialog progressDialog;
 
@@ -51,7 +49,6 @@ public class OTPFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(getActivity()));
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getResources().getString(R.string.please_wait));
@@ -84,7 +81,7 @@ public class OTPFragment extends Fragment {
     private void doActivateUser() {
         final ActivateUserRequest request = new ActivateUserRequest();
         request.setCode(otpText.getText().toString());
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(getActivity()));
 
         progressDialog.show();
         userAPIService.activateUser(request).enqueue(new Callback<Void>() {
@@ -98,9 +95,9 @@ public class OTPFragment extends Fragment {
                             progressDialog.dismiss();
                             if (response.isSuccess()) {
                                 StatusResponse s = response.body();
-                                dataUtils.setActive(true);
-                                dataUtils.saveStatus(s.getStatus());
-                                dataUtils.saveIcon(Utils.getDrawableResByName(getActivity(), s.getIcon()));
+                                DataUtils.setActive(getActivity(), true);
+                                DataUtils.saveStatus(getActivity(), s.getStatus());
+                                DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
                                 startActivity(new Intent(getActivity(), HomeActivity.class));
                                 getActivity().finish();
                             }

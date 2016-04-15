@@ -1,7 +1,6 @@
 package statifyi.com.statifyi.listener;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
@@ -31,15 +30,12 @@ public class CustomPhoneStateListener extends PhoneStateListener {
 
     private DBHelper dbHelper;
 
-    private DataUtils dataUtils;
-
     private UserAPIService userAPIService;
 
     public CustomPhoneStateListener(Context mContext, FloatingPopup floatingPopup) {
         this.mContext = mContext;
         this.floatingPopup = floatingPopup;
         dbHelper = DBHelper.getInstance(mContext);
-        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(mContext));
         userAPIService = NetworkUtils.provideUserAPIService(mContext);
     }
 
@@ -57,11 +53,11 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     CustomCall customCall = dbHelper.getCustomCall(Utils.getLastTenDigits(incomingNumber));
                     if (customCall != null) {
                         final String contactName = Utils.getContactName(mContext, incomingNumber);
+                        floatingPopup.show();
                         floatingPopup.setPopupMenu(false);
                         floatingPopup.setTime("from " + contactName);
                         floatingPopup.setStatusIcon(getCustomCallIcon(customCall.getMessage()));
                         floatingPopup.setMessage(customCall.getMessage());
-                        floatingPopup.show();
                     }
                 }
                 break;
@@ -91,18 +87,18 @@ public class CustomPhoneStateListener extends PhoneStateListener {
         }
     }
 
-    private void updateStatus(final String status) {
+    private void updateStatus(final Context context, final String status) {
         StatusRequest request = new StatusRequest();
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(context));
         request.setStatus(status);
         request.setIcon(status);
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    dataUtils.saveStatus(status);
+                    DataUtils.saveStatus(context, status);
                     int ico = Utils.getDrawableResByName(mContext, status);
-                    dataUtils.saveIcon(ico);
+                    DataUtils.saveIcon(context, ico);
                 } else {
                 }
             }

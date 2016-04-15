@@ -140,8 +140,8 @@ public class FloatingService extends Service {
     }
 
     private void fetchStatus(final String phoneNumber, final String contactName) {
-        setExistingStatus(phoneNumber, contactName);
         floatingPopup.show();
+        setExistingStatus(phoneNumber, contactName);
         userAPIService.getUserStatus(phoneNumber).enqueue(new Callback<StatusResponse>() {
             @Override
             public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {

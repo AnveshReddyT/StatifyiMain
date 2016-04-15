@@ -2,7 +2,6 @@ package statifyi.com.statifyi.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -26,7 +25,6 @@ import statifyi.com.statifyi.utils.Utils;
 public class GCMRegisterIntentService extends IntentService {
 
     private UserAPIService userAPIService;
-    private DataUtils dataUtils;
 
     public GCMRegisterIntentService() {
         super("GCMRegisterIntentService");
@@ -53,12 +51,9 @@ public class GCMRegisterIntentService extends IntentService {
     }
 
     private void sendRegistrationToServer(String token) {
-        if (dataUtils == null) {
-            dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(this));
-        }
         GCMRequest request = new GCMRequest();
         request.setGcmId(token);
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(this));
 
         userAPIService.registerGCM(request).enqueue(new Callback<Void>() {
             @Override

@@ -123,13 +123,15 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
 
     public void setTimelyAlarm(Context mContext, String status, int requestCode, int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         Intent intent = new Intent(mContext, AlarmReceiver.class);
         intent.putExtra("alarm_id", requestCode);
         intent.putExtra("timely_status", status);
-        PendingIntent pi = PendingIntent.getBroadcast(mContext, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(mContext, requestCode, intent, 0);
         AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        am.cancel(pi);
         am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
     }
 

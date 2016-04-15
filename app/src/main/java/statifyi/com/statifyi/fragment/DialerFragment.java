@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -76,7 +75,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     @InjectView(R.id.dialer_button_custom)
     Button customBtn;
     private UserAPIService userAPIService;
-    private DataUtils dataUtils;
     private ProgressDialog progressDialog;
 
     public DialerFragment() {
@@ -104,7 +102,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         View root = inflater.inflate(R.layout.fragment_dialer, container, false);
         ButterKnife.inject(this, root);
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
-        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(getActivity()));
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getResources().getString(R.string.please_wait));
         progressDialog.setCancelable(false);
@@ -245,7 +242,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     private void makeCustomCallRequest(String message) {
         CustomCallRequest request = new CustomCallRequest();
-        request.setFromMobile(dataUtils.getMobileNumber());
+        request.setFromMobile(DataUtils.getMobileNumber(getActivity()));
         request.setMobile(Utils.getLastTenDigits(dialerText.getText().toString()));
         request.setMessage(message);
         progressDialog.show();

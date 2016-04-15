@@ -18,8 +18,8 @@ import statifyi.com.statifyi.utils.NetworkUtils;
 
 public class RingerModeStateChangeReceiver extends BroadcastReceiver {
 
-    private DataUtils dataUtils;
-
+    private static final String IN_VIBRATION_MODE = "In Vibration Mode";
+    private static final String IN_SILENT_MODE = "In Silent Mode";
     private UserAPIService userAPIService;
 
     private SharedPreferences sharedPreferences;
@@ -30,12 +30,8 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (dataUtils == null || userAPIService == null || sharedPreferences == null) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-            dataUtils = new DataUtils(sharedPreferences);
-            userAPIService = NetworkUtils.provideUserAPIService(context);
-
-        }
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        userAPIService = NetworkUtils.provideUserAPIService(context);
 
         if (!sharedPreferences.getBoolean(context.getString(R.string.key_auto_status), false)) {
             return;
@@ -48,36 +44,37 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
         switch (audio.getRingerMode()) {
             case AudioManager.RINGER_MODE_NORMAL:
                 if (auto_silent_status_enabled || auto_vibrate_status_enabled) {
-                    if (dataUtils.getAutoStatus() != null) {
-                        dataUtils.saveAutoStatus(null);
-                        dataUtils.saveAutoStatusIcon(0);
-                        updateStatus(dataUtils.getStatus());
+                    String autoStatus = DataUtils.getAutoStatus(context);
+                    if (autoStatus != null && (IN_SILENT_MODE.equals(autoStatus) || IN_VIBRATION_MODE.equals(autoStatus))) {
+                        DataUtils.saveAutoStatus(context, null);
+                        DataUtils.saveAutoStatusIcon(context, 0);
+                        updateStatus(DataUtils.getStatus(context), context);
                     }
                 }
                 break;
             case AudioManager.RINGER_MODE_VIBRATE:
                 if (auto_vibrate_status_enabled) {
-                    status = "In Vibration Mode";
-                    updateStatus(status);
-                    dataUtils.saveAutoStatus(status);
-                    dataUtils.saveAutoStatusIcon(R.drawable.in_vibration_mode);
+                    status = IN_VIBRATION_MODE;
+                    updateStatus(status, context);
+                    DataUtils.saveAutoStatus(context, status);
+                    DataUtils.saveAutoStatusIcon(context, R.drawable.in_vibration_mode);
                 }
                 break;
 
             case AudioManager.RINGER_MODE_SILENT:
                 if (auto_silent_status_enabled) {
-                    status = "In Silent Mode";
-                    updateStatus(status);
-                    dataUtils.saveAutoStatus(status);
-                    dataUtils.saveAutoStatusIcon(R.drawable.in_silent_mode);
+                    status = IN_SILENT_MODE;
+                    updateStatus(status, context);
+                    DataUtils.saveAutoStatus(context, status);
+                    DataUtils.saveAutoStatusIcon(context, R.drawable.in_silent_mode);
                 }
                 break;
         }
     }
 
-    private void updateStatus(String status) {
+    private void updateStatus(String status, Context context) {
         StatusRequest request = new StatusRequest();
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(context));
         request.setStatus(status);
         request.setIcon(status);
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {

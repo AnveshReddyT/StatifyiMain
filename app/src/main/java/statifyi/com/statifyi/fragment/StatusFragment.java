@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,8 +81,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private UserAPIService userAPIService;
 
-    private DataUtils dataUtils;
-
     private ProgressDialog progressDialog;
 
     public StatusFragment() {
@@ -98,7 +97,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataUtils = new DataUtils(PreferenceManager.getDefaultSharedPreferences(getActivity()));
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         setHasOptionsMenu(true);
         progressDialog = new ProgressDialog(getActivity());
@@ -159,9 +157,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     }
 
     private void updateStatus() {
-        String status = dataUtils.getAutoStatus() == null ? dataUtils.getStatus() : dataUtils.getAutoStatus();
+        String autoStatus = DataUtils.getAutoStatus(getActivity().getApplicationContext());
+        Log.d("STAT", "Status fragment auto status : " + autoStatus);
+        String status = autoStatus == null ? DataUtils.getStatus(getActivity()) : autoStatus;
         currentStatusText.setText(status == null || status.isEmpty() ? "status not set" : status);
-        currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.ic_launcher : dataUtils.getAutoStatus() == null ? dataUtils.getStatusIcon() : dataUtils.getAutoStatusIcon());
+        currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.ic_launcher : autoStatus == null ? DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity()));
         Animation scaleAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.scale);
         currentStatusIcon.startAnimation(scaleAnim);
     }
@@ -222,7 +222,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private void executeUpdateStatus(final String status) {
         StatusRequest request = new StatusRequest();
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(getActivity()));
         request.setStatus(status);
         request.setIcon(status);
         progressDialog.show();
@@ -230,9 +230,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    dataUtils.saveStatus(status);
+                    DataUtils.saveStatus(getActivity(), status);
                     int ico = Utils.getDrawableResByName(getActivity(), status);
-                    dataUtils.saveIcon(ico);
+                    DataUtils.saveIcon(getActivity(), ico);
 
                     updateStatus();
                 } else {
@@ -270,16 +270,16 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     private void updateCustomStatus(final String status, final String icon) {
         progressDialog.show();
         StatusRequest request = new StatusRequest();
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(getActivity()));
         request.setStatus(status);
         request.setIcon(icon);
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    dataUtils.saveStatus(status);
+                    DataUtils.saveStatus(getActivity(), status);
                     int ico = Utils.getDrawableResByName(getActivity(), icon);
-                    dataUtils.saveIcon(ico == 0 ? R.drawable.ic_launcher : ico);
+                    DataUtils.saveIcon(getActivity(), ico == 0 ? R.drawable.ic_launcher : ico);
 
                     updateStatus();
                 } else {

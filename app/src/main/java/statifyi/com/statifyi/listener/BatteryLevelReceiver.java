@@ -14,11 +14,11 @@ import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
+import statifyi.com.statifyi.utils.Utils;
 
 public class BatteryLevelReceiver extends BroadcastReceiver {
 
-    private DataUtils dataUtils;
-
+    private static final String ON_LOW_BATTERY = "On Low Battery";
     private UserAPIService userAPIService;
 
     private SharedPreferences sharedPreferences;
@@ -29,11 +29,8 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
 
-        if (dataUtils == null || userAPIService == null || sharedPreferences == null) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-            dataUtils = new DataUtils(sharedPreferences);
-            userAPIService = NetworkUtils.provideUserAPIService(context);
-        }
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        userAPIService = NetworkUtils.provideUserAPIService(context);
 
         if (!sharedPreferences.getBoolean(context.getString(R.string.key_auto_status), false)) {
             return;
@@ -41,21 +38,24 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
         if (sharedPreferences.getBoolean(context.getResources().getString(R.string.key_low_battery), false)) {
             String action = intent.getAction();
             if (Intent.ACTION_BATTERY_LOW.equals(action)) {
-                String status = "On Low Battery";
-                updateStatus(status);
-                dataUtils.saveAutoStatus(status);
-                dataUtils.saveAutoStatusIcon(R.drawable.on_low_battery);
+                String status = ON_LOW_BATTERY;
+                DataUtils.saveAutoStatus(context, status);
+                DataUtils.saveAutoStatusIcon(context, Utils.getDrawableResByName(context, status));
+                updateStatus(context, status);
             } else if (Intent.ACTION_BATTERY_OKAY.equals(action)) {
-                dataUtils.saveAutoStatus(null);
-                dataUtils.saveAutoStatusIcon(0);
-                updateStatus(dataUtils.getStatus());
+                String autoStatus = DataUtils.getAutoStatus(context);
+                if (autoStatus != null && ON_LOW_BATTERY.equals(autoStatus)) {
+                    DataUtils.saveAutoStatus(context, null);
+                    DataUtils.saveAutoStatusIcon(context, 0);
+                    updateStatus(context, DataUtils.getStatus(context));
+                }
             }
         }
     }
 
-    private void updateStatus(String status) {
+    private void updateStatus(Context context, String status) {
         StatusRequest request = new StatusRequest();
-        request.setMobile(dataUtils.getMobileNumber());
+        request.setMobile(DataUtils.getMobileNumber(context));
         request.setStatus(status);
         request.setIcon(status);
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
