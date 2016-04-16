@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import com.google.gson.Gson;
@@ -36,6 +37,7 @@ import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
 import statifyi.com.statifyi.widget.EditText;
+import statifyi.com.statifyi.widget.TextView;
 
 public class RegisterMobileFragment extends Fragment {
 
@@ -43,6 +45,8 @@ public class RegisterMobileFragment extends Fragment {
     Spinner countruCodesSpinner;
     @InjectView(R.id.register_mobile_text)
     EditText mobileText;
+    @InjectView(R.id.register_mobile_country_code)
+    TextView countryCodeText;
     @InjectView(R.id.register_mobile_btn)
     Button registerBtn;
     private UserAPIService userAPIService;
@@ -70,11 +74,22 @@ public class RegisterMobileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_register_mobile, container, false);
         ButterKnife.inject(this, root);
-        CountryCodes countryCodes = new Gson().fromJson(assetJSONFile("country_codes.json"), CountryCodes.class);
+        final CountryCodes countryCodes = new Gson().fromJson(assetJSONFile("country_codes.json"), CountryCodes.class);
         TelephonyManager manager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        String CountryID = manager.getSimCountryIso().toUpperCase();
+        final String CountryID = manager.getSimCountryIso().toUpperCase();
         countruCodesSpinner.setAdapter(new CountryCodesAdapter(getActivity(), R.layout.country_code_row, countryCodes.getCountries()));
         countruCodesSpinner.setSelection(indexOf(countryCodes, CountryID));
+        countruCodesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                countryCodeText.setText(countryCodes.getCountries().get(position).getCode());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         mobileText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
@@ -85,6 +100,7 @@ public class RegisterMobileFragment extends Fragment {
                 return false;
             }
         });
+        countryCodeText.setText(mcc(countryCodes, CountryID));
         return root;
     }
 
@@ -97,6 +113,17 @@ public class RegisterMobileFragment extends Fragment {
             }
         }
         return 0;
+    }
+
+    private String mcc(CountryCodes countryCodes, String code) {
+        ArrayList<CountryCode> countries = countryCodes.getCountries();
+        for (int i = 0; i < countries.size(); i++) {
+            CountryCode countryCode = countries.get(i);
+            if (code.equalsIgnoreCase(countryCode.getIso())) {
+                return countryCode.getCode();
+            }
+        }
+        return null;
     }
 
     @OnClick(R.id.register_mobile_btn)

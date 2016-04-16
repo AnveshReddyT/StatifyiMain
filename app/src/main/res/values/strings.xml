@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">StatiFYI</string>
-    <string name="app_welcome">Welcome mobile StatiFYI</string>
+    <string name="app_welcome">Welcome to StatiFYI</string>
     <string name="google_api_key">AIzaSyAsL02Jd_f_Yduy3M6qKbJUZdEmGANVJaI</string>
     <string name="google_project_id">733817804371</string>
 
     <string name="welcome_message1">Know the status of your call recipient as you dial</string>
     <string name="welcome_message2">Know the status of your contacts</string>
     <string name="welcome_message3">Your Phone number is your ID</string>
-    <string name="register_message">We will send you a One Time Password via SMS mobile verify your Phone number. Ensure that you have a working SMS plan. Carrier charges may apply</string>
+    <string name="register_message">We will send you a One Time Password via SMS to verify your Phone number. Ensure that you have a working SMS plan. Carrier charges may apply</string>
 
     <string name="menu_auto_status">Auto status</string>
     <string name="menu_timely_status">Timely status</string>
@@ -20,7 +20,7 @@
     <string name="hint_mobile">Enter your Phone Number</string>
     <string name="hint_otp">OTP</string>
     <string name="hint_dial_number">Dial the number</string>
-    <string name="otp_message">Did you get OTP via SMS mobile your Phone Number?\n Enter it here</string>
+    <string name="otp_message">Did you get OTP via SMS to your Phone Number?\n Enter it here</string>
     <string name="hint_country">Choose your Country</string>
     <string name="hello_world">Hello world!</string>
     <string name="home">HOME</string>
@@ -33,7 +33,7 @@
     <string name="change_mobile">Entered a wrong number? Tap here</string>
     <string name="_continue">CONTINUE</string>
     <string name="status_user_not_found">\u0020 is not on StatiFYI</string>
-    <string name="status_no_network">Please be connected mobile get status</string>
+    <string name="status_no_network">Please be connected to get status</string>
     <string name="status_not_set">\u0020 did not set his/her status</string>
     <string name="sync_status_message">Syncing status messages of your contacts\nSit back and relax</string>
 
