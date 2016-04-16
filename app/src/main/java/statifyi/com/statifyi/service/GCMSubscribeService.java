@@ -91,7 +91,7 @@ public class GCMSubscribeService extends IntentService {
         Log.d("STAT", "Subscribed to : " + gcmTopicSet.size());
         Log.d("STAT", "Available : " + contactList.size());
         Log.d("STAT", "Remaining: " + subscribeList.size());
-        subscribe(subscribeList);
+        subscribe(subscribeList, contactList.size());
 
         gcmTopicSet.addAll(subscribeList);
         Log.d("STAT", "Subscribed to : " + gcmTopicSet.size());
@@ -101,14 +101,13 @@ public class GCMSubscribeService extends IntentService {
         unSubscribe(contactList);
     }
 
-    private void subscribe(Set<String> subscribeList) {
+    private void subscribe(Set<String> subscribeList, int totalCount) {
         NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle(getResources().getString(R.string.app_name))
                 .setSmallIcon(R.drawable.ic_status);
         GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        int totalCount = subscribeList.size();
-        int count = 0;
+        int count = totalCount - subscribeList.size();
         for (String topic : subscribeList) {
             try {
                 mBuilder.setContentText("Subscription in progress ( " + (count * 100 / totalCount) + "% )")

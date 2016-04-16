@@ -24,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String USERS_TABLE_NAME = "users";
     public static final String CUSTOM_CALLS_TABLE_NAME = "custom_calls";
+    public static final String CALL_LOGS_TABLE_NAME = "call_logs";
 
     public static final String USERS_COLUMN_MOBILE = "mobile";
     public static final String USERS_COLUMN_STATUS = "status";
@@ -34,6 +35,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CUSTOM_CALLS_COLUMN_MOBILE = "mobile";
     public static final String CUSTOM_CALLS_COLUMN_MESSAGE = "message";
     public static final String CUSTOM_CALLS_COLUMN_TIME = "time";
+
+    public static final String CALL_LOGS_COLUMN_DATE = "date";
+    public static final String CALL_LOGS_COLUMN_MESSAGE = "message";
 
     private static final String CREATE_TABLE_USERS = "create table " + USERS_TABLE_NAME + " (" +
             USERS_COLUMN_MOBILE + " text," +
@@ -46,6 +50,10 @@ public class DBHelper extends SQLiteOpenHelper {
             CUSTOM_CALLS_COLUMN_MOBILE + " text," +
             CUSTOM_CALLS_COLUMN_MESSAGE + " text," +
             CUSTOM_CALLS_COLUMN_TIME + " integer)";
+
+    private static final String CREATE_TABLE_CALL_LOGS = "create table " + CALL_LOGS_TABLE_NAME + " (" +
+            CALL_LOGS_COLUMN_DATE + " integer," +
+            CALL_LOGS_COLUMN_MESSAGE + " text)";
 
     private static DBHelper mInstance = null;
 
@@ -66,12 +74,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_CUSTOM_CALLS);
+        db.execSQL(CREATE_TABLE_CALL_LOGS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + CUSTOM_CALLS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CALL_LOGS_TABLE_NAME);
         onCreate(db);
     }
 
@@ -219,6 +229,34 @@ public class DBHelper extends SQLiteOpenHelper {
         long expiryTime = System.currentTimeMillis() - 2 * 60 * 1000;
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(CUSTOM_CALLS_TABLE_NAME, CUSTOM_CALLS_COLUMN_TIME + " < ?", new String[]{String.valueOf(expiryTime)});
+    }
+
+    public boolean insertOrUpdateCallLog(long date, String message) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = getCustomCallLogContentValues(date, message);
+        db.insert(CALL_LOGS_TABLE_NAME, null, contentValues);
+        return true;
+    }
+
+    @NonNull
+    private ContentValues getCustomCallLogContentValues(long date, String message) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CALL_LOGS_COLUMN_DATE, date);
+        contentValues.put(CALL_LOGS_COLUMN_MESSAGE, message);
+        return contentValues;
+    }
+
+    public String getCustomCallLog(long date) {
+        String customCallLogFromCursor = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + CALL_LOGS_TABLE_NAME + " where " + CALL_LOGS_COLUMN_DATE + "=" + date, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            customCallLogFromCursor = cursor.getString(cursor.getColumnIndex(CALL_LOGS_COLUMN_MESSAGE));
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        return customCallLogFromCursor;
     }
 
     @Override

@@ -92,8 +92,7 @@ public class FloatingService extends Service {
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
         registerReceiver(OutgoingCallReceiver, new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL));
         mContactCount = getContactCount();
-        this.getContentResolver().registerContentObserver(
-                ContactsContract.Contacts.CONTENT_URI, true, mObserver);
+        this.getContentResolver().registerContentObserver(ContactsContract.Contacts.CONTENT_URI, true, mObserver);
     }
 
     @Override
@@ -105,6 +104,7 @@ public class FloatingService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(OutgoingCallReceiver);
+        listener.unregisterObserver();
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_NONE);
         getContentResolver().unregisterContentObserver(mObserver);
     }
@@ -133,7 +133,7 @@ public class FloatingService extends Service {
         User mUser = dbHelper.getUser(mobile);
         if (mUser != null) {
             floatingPopup.setMobile(contactName);
-            floatingPopup.setMessage(mUser.getStatus());
+            floatingPopup.setMessage(contactName + " is " + mUser.getStatus());
             floatingPopup.setTime(Utils.timeAgo(mUser.getUpdated()));
             floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
         }

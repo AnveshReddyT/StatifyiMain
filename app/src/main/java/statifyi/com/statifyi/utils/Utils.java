@@ -237,6 +237,7 @@ public class Utils {
         if (mContext == null) {
             return callLogs;
         }
+        DBHelper dbHelper = DBHelper.getInstance(mContext);
         String strOrder = CallLog.Calls.DATE + " DESC";
         Cursor cursor = mContext.getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
                 null, null, strOrder);
@@ -273,6 +274,7 @@ public class Utils {
                 callLog.setDate(callDate);
                 callLog.setDuration(callDuration);
                 callLog.setType(callType);
+                callLog.setMessage(dbHelper.getCustomCallLog(callDate));
                 callLogs.add(callLog);
             }
             if (!cursor.isClosed()) {

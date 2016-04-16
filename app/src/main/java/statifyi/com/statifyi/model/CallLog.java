@@ -13,6 +13,7 @@ public class CallLog {
     private CallType type;
     private String duration;
     private long date;
+    private String message;
 
     public CallLog() {
     }
@@ -63,6 +64,14 @@ public class CallLog {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override

@@ -1,19 +1,23 @@
 package statifyi.com.statifyi.listener;
 
 import android.content.Context;
+import android.database.ContentObserver;
+import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
+import statifyi.com.statifyi.model.CallLog;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
+import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
 
@@ -32,11 +36,37 @@ public class CustomPhoneStateListener extends PhoneStateListener {
 
     private UserAPIService userAPIService;
 
+    private String customMessage;
+
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            CallLog mCallLog = Utils.getCallLogs(mContext).get(0);
+            if (customMessage != null) {
+                dbHelper.insertOrUpdateCallLog(mCallLog.getDate(), customMessage);
+                customMessage = null;
+                Log.d("STAT", dbHelper.getCustomCallLog(mCallLog.getDate()));
+            }
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+    };
+
     public CustomPhoneStateListener(Context mContext, FloatingPopup floatingPopup) {
         this.mContext = mContext;
         this.floatingPopup = floatingPopup;
         dbHelper = DBHelper.getInstance(mContext);
         userAPIService = NetworkUtils.provideUserAPIService(mContext);
+        mContext.getContentResolver().registerContentObserver(android.provider.CallLog.Calls.CONTENT_URI, true, mObserver);
+    }
+
+    public void unregisterObserver() {
+        mContext.getContentResolver().unregisterContentObserver(mObserver);
     }
 
     @Override
@@ -52,12 +82,14 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     // Incolimg call
                     CustomCall customCall = dbHelper.getCustomCall(Utils.getLastTenDigits(incomingNumber));
                     if (customCall != null) {
+                        customMessage = customCall.getMessage();
                         final String contactName = Utils.getContactName(mContext, incomingNumber);
                         floatingPopup.show();
                         floatingPopup.setPopupMenu(false);
                         floatingPopup.setTime("from " + contactName);
-                        floatingPopup.setStatusIcon(getCustomCallIcon(customCall.getMessage()));
+                        floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(customCall.getMessage(), mContext));
                         floatingPopup.setMessage(customCall.getMessage());
+
                     }
                 }
                 break;
@@ -70,22 +102,15 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 if (floatingPopup != null) {
                     floatingPopup.destroy();
                 }
+                if (lastState == TelephonyManager.CALL_STATE_RINGING) {
+                    // Incoming Call ended
+                    Log.d("STAT", Utils.getCallLogs(mContext).get(0).toString());
+                }
                 break;
         }
         lastState = state;
     }
 
-    private int getCustomCallIcon(String message) {
-        if (mContext.getString(R.string.emergency_call).equals(message)) {
-            return R.drawable.ic_call_emergency;
-        } else if (mContext.getString(R.string.business_call).equals(message)) {
-            return R.drawable.ic_call_business;
-        } else if (mContext.getString(R.string.casual_call).equals(message)) {
-            return R.drawable.ic_call_casual;
-        } else {
-            return R.drawable.ic_call_custom;
-        }
-    }
 
     private void updateStatus(final Context context, final String status) {
         StatusRequest request = new StatusRequest();

@@ -45,4 +45,16 @@ public class StatusUtils {
             editor.apply();
         }
     }
+
+    public static int getCustomCallIcon(String message, Context mContext) {
+        if (mContext.getString(R.string.emergency_call).equals(message)) {
+            return R.drawable.ic_call_emergency;
+        } else if (mContext.getString(R.string.business_call).equals(message)) {
+            return R.drawable.ic_call_business;
+        } else if (mContext.getString(R.string.casual_call).equals(message)) {
+            return R.drawable.ic_call_casual;
+        } else {
+            return R.drawable.ic_call_custom;
+        }
+    }
 }

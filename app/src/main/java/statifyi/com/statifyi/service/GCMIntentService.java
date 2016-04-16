@@ -48,7 +48,7 @@ public class GCMIntentService extends GcmListenerService {
                     Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
                     if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
-                        sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status");
+                        sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status to " + status);
                         StatusUtils.removeNotifyStatus(this, phoneNumber);
                     }
                 }

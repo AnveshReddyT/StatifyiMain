@@ -25,6 +25,7 @@ import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.CallLog;
+import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
 
@@ -114,13 +115,13 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
             calltypeDrawable = R.drawable.ic_call_missed;
         }
 
-        User mUser = findUser(callLog.getPhone());
-        if (mUser != null) {
+//        User mUser = findUser(callLog.getPhone());
+        if (callLog.getMessage() != null) {
             holder.statusLayout.setVisibility(View.VISIBLE);
-            holder.time.setVisibility(View.VISIBLE);
-            holder.status.setText(mUser.getStatus());
-            holder.icon.setImageResource(Utils.getDrawableResByName(mContext, mUser.getIcon()));
-            holder.time.setText(Utils.timeAgo(mUser.getUpdated()));
+            holder.time.setVisibility(View.INVISIBLE);
+            holder.status.setText(callLog.getMessage());
+            holder.icon.setImageResource(StatusUtils.getCustomCallIcon(callLog.getMessage(), mContext));
+//            holder.time.setText(Utils.timeAgo(mUser.getUpdated()));
         } else {
             holder.statusLayout.setVisibility(View.INVISIBLE);
             holder.time.setVisibility(View.INVISIBLE);
