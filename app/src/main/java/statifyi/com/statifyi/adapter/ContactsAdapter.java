@@ -3,7 +3,6 @@ package statifyi.com.statifyi.adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.SectionIndexer;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
-import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
@@ -123,6 +120,11 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
             holder.alphabet.setText(mContact.getName().substring(0, 1));
             holder.alphabet.setVisibility(View.VISIBLE);
             holder.avatar.setVisibility(View.GONE);
+//            NetworkUtils.providePicasso(mContext).load(NetworkUtils.provideAvatarUrl(tenDigitNumber))
+//                    .placeholder(R.drawable.avatar)
+//                    .error(R.drawable.avatar)
+//                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                    .into(holder.avatar);
         }
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
         convertView.findViewById(R.id.contact_list_item_call).setOnClickListener(new View.OnClickListener() {
@@ -214,10 +216,6 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
         return sections;
     }
 
-    private void fetchStatus(final String phoneNumber, ViewHolder holder) {
-        new FetchStatusTask(phoneNumber, holder).execute();
-    }
-
     static class ViewHolder {
         @InjectView(R.id.conatct_list_item_name)
         TextView name;
@@ -238,42 +236,6 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
-        }
-    }
-
-    class FetchStatusTask extends AsyncTask<Void, Void, StatusResponse> {
-
-        private String phone;
-
-        private ViewHolder holder;
-
-        public FetchStatusTask(String phone, ViewHolder holder) {
-            this.phone = phone;
-            this.holder = holder;
-        }
-
-        @Override
-        protected StatusResponse doInBackground(Void... params) {
-            try {
-                return userAPIService.getUserStatus(phone).execute().body();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(StatusResponse s) {
-            super.onPostExecute(s);
-            if (s != null) {
-                String status = s.getStatus().toUpperCase();
-                String icon = s.getIcon();
-                long time = s.getUpdatedTime().getTime();
-                Utils.saveUserStatusToLocal(status, icon, phone, time, dbHelper);
-                setStatusData(holder, findUser(phone));
-            } else {
-                Utils.saveUserStatusToLocal(null, null, phone, 0, dbHelper);
-            }
         }
     }
 

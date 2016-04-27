@@ -8,42 +8,42 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.mikhaellopez.circularimageview.CircularImageView;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.EditText;
-import statifyi.com.statifyi.widget.TextView;
 
 /**
  * Created by KT on 19/02/16.
  */
-public class CustomCallDialog extends Dialog {
+public class ProfileDialog extends Dialog {
 
-    @InjectView(R.id.custom_call_btn)
-    TextView setBtn;
+    @InjectView(R.id.profile_avatar)
+    CircularImageView avatar;
 
-    @InjectView(R.id.custom_call_message)
-    EditText statusMessage;
+    @InjectView(R.id.profile_name)
+    EditText nameText;
 
-    private String message;
-
-    private String icon;
+    private String name;
 
     private Context mContext;
 
-    public CustomCallDialog(Context context) {
+    public ProfileDialog(Context context) {
         super(context);
         this.mContext = context;
     }
 
-    public CustomCallDialog(Context context, int themeResId) {
+    public ProfileDialog(Context context, int themeResId) {
         super(context, themeResId);
         this.mContext = context;
     }
 
-    protected CustomCallDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
+    protected ProfileDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
         this.mContext = context;
     }
@@ -52,7 +52,7 @@ public class CustomCallDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.dialog_custom_call);
+        setContentView(R.layout.dialog_profile);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         ButterKnife.inject(this);
@@ -62,33 +62,31 @@ public class CustomCallDialog extends Dialog {
         int height = Utils.getScreenHeight(mContext);
         int width = Utils.getScreenWidth(mContext);
         lp.width = (int) (width * 0.85);
-        lp.height = (int) (height * 0.6);
+        lp.height = (int) (height * 0.85);
         getWindow().setAttributes(lp);
 
+        String name = DataUtils.getName(mContext);
+        if (name != null) {
+            nameText.setText(name);
+        }
+        DataUtils.setUserImage(mContext, avatar);
+
     }
 
-    public String getMessage() {
-        return message;
+    public String getName() {
+        return name;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    @OnClick(R.id.custom_call_btn)
-    public void setCustomStatus(View view) {
-        if (TextUtils.isEmpty(statusMessage.getText())) {
-            statusMessage.setError("Cannot be blank!");
+    @OnClick(R.id.profile_update_btn)
+    public void updateProfile(View view) {
+        if (TextUtils.isEmpty(nameText.getText())) {
+            nameText.setError("Cannot be blank!");
         } else {
-            setMessage(statusMessage.getText().toString());
+            setName(nameText.getText().toString());
             dismiss();
         }
     }

@@ -1,5 +1,10 @@
 package statifyi.com.statifyi.api.service;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.RequestBody;
+
+import java.io.File;
 import java.util.List;
 
 import retrofit.Call;
@@ -11,6 +16,7 @@ import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
+import statifyi.com.statifyi.api.model.UserNameRequest;
 
 /**
  * Created by KT on 23/12/15.
@@ -31,6 +37,21 @@ public class UserAPIServiceImpl implements UserAPIService {
     @Override
     public Call<Void> setUserStatus(StatusRequest request) {
         return remoteServerAPI.setUserStatus(request);
+    }
+
+    @Override
+    public Call<Void> setUserName(String mobile, UserNameRequest request) {
+        return remoteServerAPI.setUserName(mobile, request);
+    }
+
+    @Override
+    public Call<Void> uploadImage(String mobile, File file) {
+        RequestBody photo = RequestBody.create(MediaType.parse("image/*"), file);
+        RequestBody body = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("file", file.getName(), photo)
+                .build();
+        return remoteServerAPI.uploadImage(mobile, photo);
     }
 
     @Override

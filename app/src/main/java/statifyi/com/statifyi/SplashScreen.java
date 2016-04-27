@@ -4,13 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import statifyi.com.statifyi.utils.DataUtils;
 
 public class SplashScreen extends AppCompatActivity {
 
     // Splash screen timer
-    private static int SPLASH_TIME_OUT = 2000;
+    private static int SPLASH_TIME_OUT = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +22,16 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void run() {
-                if (DataUtils.getMobileNumber(SplashScreen.this) != null) {
+                if (!TextUtils.isEmpty(DataUtils.getMobileNumber(SplashScreen.this))) {
                     if (DataUtils.isActivated(SplashScreen.this)) {
-                        Intent i = new Intent(SplashScreen.this, HomeActivity.class);
-                        startActivity(i);
+                        if (!TextUtils.isEmpty(DataUtils.getName(SplashScreen.this))) {
+                            Intent i = new Intent(SplashScreen.this, HomeActivity.class);
+                            startActivity(i);
+                        } else {
+                            Intent i = new Intent(SplashScreen.this, RegistrationActivity.class);
+                            i.putExtra("complete", false);
+                            startActivity(i);
+                        }
                     } else {
                         Intent i = new Intent(SplashScreen.this, RegistrationActivity.class);
                         i.putExtra("active", false);

@@ -52,7 +52,12 @@ public class Utils {
     }
 
     public static Drawable changeColor(Context mContext, int drawable, int color) {
-        final Drawable upArrow = mContext.getResources().getDrawable(drawable);
+        Drawable upArrow = null;
+        try {
+            upArrow = mContext.getResources().getDrawable(drawable);
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
         if (upArrow != null) {
             upArrow.setColorFilter(mContext.getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
         }
@@ -321,7 +326,7 @@ public class Utils {
             Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(telNum));
             Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
             if (cursor == null)
-                return null;
+                return telNum;
             if (cursor.moveToFirst()) {
                 name = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
             }
@@ -331,7 +336,13 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return name == null ? telNum : name;
+        if (name != null) {
+            return name;
+        } else {
+            DBHelper dbHelper = DBHelper.getInstance(context);
+            String statifyName = dbHelper.getName(getLastTenDigits(telNum));
+            return statifyName == null ? telNum : statifyName;
+        }
     }
 
     public static boolean isMyServiceRunning(Context mContext, Class<?> serviceClass) {
@@ -344,9 +355,10 @@ public class Utils {
         return false;
     }
 
-    public static void saveUserStatusToLocal(String status, String icon, String phoneNumber, long time, DBHelper dbHelper) {
+    public static void saveUserStatusToLocal(String status, String name, String icon, String phoneNumber, long time, DBHelper dbHelper) {
         User user = new User();
         user.setMobile(phoneNumber);
+        user.setName(name);
         user.setStatus(status);
         user.setIcon(icon);
         user.setUpdated(time);

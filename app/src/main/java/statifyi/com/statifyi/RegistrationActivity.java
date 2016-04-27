@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import statifyi.com.statifyi.fragment.OTPFragment;
+import statifyi.com.statifyi.fragment.ProfileFragment;
 import statifyi.com.statifyi.fragment.WelcomeFragment;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -20,6 +21,8 @@ public class RegistrationActivity extends AppCompatActivity {
         fragmentManager = getFragmentManager();
         if (getIntent().hasExtra("active")) {
             replaceFragment(OTPFragment.newInstance(null, null));
+        } else if (getIntent().hasExtra("complete")) {
+            replaceFragment(ProfileFragment.newInstance(null, null));
         } else {
             replaceFragment(WelcomeFragment.newInstance(null, null));
         }

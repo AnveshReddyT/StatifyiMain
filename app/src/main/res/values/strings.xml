@@ -9,6 +9,7 @@
     <string name="welcome_message3">Your Phone number is your ID</string>
     <string name="register_message">We will send you a One Time Password via SMS to verify your Phone number. Ensure that you have a working SMS plan. Carrier charges may apply</string>
 
+    <string name="menu_profile">Profile</string>
     <string name="menu_auto_status">Auto status</string>
     <string name="menu_timely_status">Timely status</string>
     <string name="menu_privacy">Privacy</string>
@@ -18,10 +19,12 @@
     <string name="menu_about">About</string>
 
     <string name="hint_mobile">Enter your Phone Number</string>
+    <string name="hint_name">Enter your Full Name</string>
     <string name="hint_otp">OTP</string>
-    <string name="hint_dial_number">Dial the number</string>
+    <string name="hint_dial_number">DIAL THE NUMBER</string>
     <string name="otp_message">Did you get OTP via SMS to your Phone Number?\n Enter it here</string>
     <string name="hint_country">Choose your Country</string>
+    <string name="hint_avatar">Click to change avatar</string>
     <string name="hello_world">Hello world!</string>
     <string name="home">HOME</string>
     <string name="action_settings">Settings</string>
@@ -30,6 +33,7 @@
     <string name="please_wait">Please wait…</string>
     <string name="join_statifyi">JOIN STATIFYI</string>
     <string name="verify_mobile">VERIFY MOBILE</string>
+    <string name="update_profile">UPDATE PROFILE</string>
     <string name="change_mobile">Entered a wrong number? Tap here</string>
     <string name="_continue">CONTINUE</string>
     <string name="status_user_not_found">\u0020 is not on StatiFYI</string>
@@ -90,5 +94,8 @@
     <string name="key_vibrating_mode">vibratingMode</string>
     <string name="key_driving_mode">drivingMode</string>
     <string name="key_notify_when_status_changed">notifyStatusChanged</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

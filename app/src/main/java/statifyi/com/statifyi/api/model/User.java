@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 public class User {
 
     private String mobile;
+    private String name;
     private String status;
     private boolean active;
     private String icon;
@@ -19,6 +20,14 @@ public class User {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getStatus() {

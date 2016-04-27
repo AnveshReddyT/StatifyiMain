@@ -51,6 +51,11 @@
         <activity
             android:name=".RegistrationActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".SplashScreen"
             android:screenOrientation="portrait">
@@ -77,6 +82,9 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name="com.android.camera.CropImage"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SingleFragmentActivity"
             android:screenOrientation="portrait" />
@@ -119,6 +127,8 @@
         <service
             android:name=".service.GCMSubscribeService"
             android:exported="false" />
+
+        <activity android:name=".DashboardActivity"></activity>
     </application>
 
 </manifest>

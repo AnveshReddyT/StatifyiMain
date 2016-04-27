@@ -2,6 +2,10 @@ package statifyi.com.statifyi.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.widget.ImageView;
+
+import java.io.File;
 
 import statifyi.com.statifyi.R;
 
@@ -11,11 +15,13 @@ import statifyi.com.statifyi.R;
 public class DataUtils {
 
     public static final String KEY_MOBILE = "key_mobile";
+    public static final String KEY_NAME = "key_name";
     public static final String KEY_STATUS = "key_status";
     public static final String KEY_AUTO_STATUS = "key_auto_status";
     public static final String KEY_ICON = "key_icon";
     public static final String KEY_AUTO_STATUS_ICON = "key_auto_status_icon";
     public static final String KEY_ACTIVE = "key_active";
+    public static final String KEY_AVATAR_CHANGED = "key_avatar_changed";
     private static final String USER_PREF = "user_pref";
 
     public static void saveMobile(Context mContext, String mobile) {
@@ -28,6 +34,18 @@ public class DataUtils {
     public static String getMobileNumber(Context mContext) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_MOBILE, null);
+    }
+
+    public static void saveName(Context mContext, String name) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_NAME, name);
+        editor.apply();
+    }
+
+    public static String getName(Context mContext) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(KEY_NAME, null);
     }
 
     public static void saveStatus(Context mContext, String status) {
@@ -89,5 +107,43 @@ public class DataUtils {
     public static boolean isActivated(Context mContext) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(KEY_ACTIVE, false);
+    }
+
+    public static void setAvatarChanged(Context mContext, boolean active) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_AVATAR_CHANGED, active);
+        editor.apply();
+    }
+
+    public static boolean isAvatarChanged(Context mContext) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean(KEY_AVATAR_CHANGED, false);
+    }
+
+    public static void setUserImage(Context mContext, ImageView imageView) {
+        File croppedImageFile = new File(mContext.getFilesDir(), "user.jpg");
+        if (croppedImageFile.exists() && croppedImageFile.length() > 0) {
+            imageView.setImageBitmap(null);
+            imageView.setImageURI(Uri.fromFile(croppedImageFile));
+        } else {
+            imageView.setImageResource(R.drawable.avatar);
+        }
+    }
+
+    public static boolean copyCroppedImage(Context mContext) {
+        File croppedImageFile = new File(mContext.getFilesDir(), "cropped.jpg");
+        File userImageFile = new File(mContext.getFilesDir(), "user.jpg");
+        userImageFile.delete();
+        boolean renamed = croppedImageFile.renameTo(userImageFile);
+        if (renamed) {
+            setAvatarChanged(mContext, true);
+        }
+        return renamed;
+    }
+
+    public static boolean userImageExists(Context mContext) {
+        File userImageFile = new File(mContext.getFilesDir(), "user.jpg");
+        return userImageFile.exists();
     }
 }

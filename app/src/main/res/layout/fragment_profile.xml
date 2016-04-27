@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_registration"
+    android:padding="@dimen/activity_horizontal_margin"
+    tools:context="statifyi.com.statifyi.fragment.ProfileFragment">
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/profile_avatar"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_above="@+id/profile_avatar_label"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/avatar"
+        app:border_width="1dp"
+        app:shadow="false" />
+
+    <statifyi.com.statifyi.widget.TextView
+        android:id="@+id/profile_avatar_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/profile_name_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="@string/hint_avatar"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:id="@+id/profile_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical">
+
+        <!--<statifyi.com.statifyi.widget.TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:text="@string/hint_name"-->
+        <!--android:textColor="@color/accentColor"-->
+        <!--android:textSize="12sp" />-->
+
+        <statifyi.com.statifyi.widget.EditText
+            android:id="@+id/profile_full_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/white"
+            android:hint="@string/hint_name"
+            android:inputType="textPersonName"
+            android:padding="10dp"
+            android:textColor="@color/accentColor"
+            android:textColorHint="@color/accentColor" />
+
+    </LinearLayout>
+
+    <statifyi.com.statifyi.widget.Button
+        android:id="@+id/profile_set_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_name_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:background="@color/white"
+        android:paddingLeft="48dp"
+        android:paddingRight="48dp"
+        android:text="@string/update_profile"
+        android:textColor="@color/accentColor" />
+
+</RelativeLayout>

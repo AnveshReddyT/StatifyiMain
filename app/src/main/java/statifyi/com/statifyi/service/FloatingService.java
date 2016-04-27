@@ -5,14 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
-import android.database.Cursor;
-import android.os.Handler;
 import android.os.IBinder;
-import android.provider.ContactsContract;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -41,38 +36,10 @@ public class FloatingService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String phoneNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-            int length = phoneNumber.length();
-            phoneNumber = length > 10 ? phoneNumber.substring(length - 10, length) : phoneNumber;
-            final String contactName = Utils.getContactName(FloatingService.this, phoneNumber);
-            fetchStatus(phoneNumber, contactName);
+            fetchStatus(phoneNumber);
         }
     };
     private CustomPhoneStateListener listener;
-    private int mContactCount;
-    private ContentObserver mObserver = new ContentObserver(new Handler()) {
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-
-            final int currentCount = getContactCount();
-            if (currentCount < mContactCount) {
-                // CONTACT DELETED.
-                Log.d("Contact Service Deleted", currentCount + "");
-                startService(new Intent(FloatingService.this, GCMSubscribeService.class));
-            } else if (currentCount == mContactCount) {
-                // CONTACT UPDATED.
-                Log.d("Contact Service Updated", currentCount + "");
-//                startService(new Intent(FloatingService.this, GCMSubscribeService.class));
-            } else {
-                // NEW CONTACT.
-                Log.d("Contact Service Added", currentCount + "");
-                startService(new Intent(FloatingService.this, GCMSubscribeService.class));
-            }
-            mContactCount = currentCount;
-        }
-
-    };
 
     /**
      * @param intent
@@ -91,8 +58,6 @@ public class FloatingService extends Service {
         listener = new CustomPhoneStateListener(this, floatingPopup);
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
         registerReceiver(OutgoingCallReceiver, new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL));
-        mContactCount = getContactCount();
-        this.getContentResolver().registerContentObserver(ContactsContract.Contacts.CONTENT_URI, true, mObserver);
     }
 
     @Override
@@ -106,43 +71,31 @@ public class FloatingService extends Service {
         unregisterReceiver(OutgoingCallReceiver);
         listener.unregisterObserver();
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_NONE);
-        getContentResolver().unregisterContentObserver(mObserver);
     }
 
-    private int getContactCount() {
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(
-                    ContactsContract.Contacts.CONTENT_URI, null, null, null,
-                    null);
-            if (cursor != null) {
-                return cursor.getCount();
-            } else {
-                return 0;
-            }
-        } catch (Exception ignore) {
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return 0;
-    }
-
-    private void setExistingStatus(String mobile, String contactName) {
-        User mUser = dbHelper.getUser(mobile);
+    private void setExistingStatus(String mobile, String contactName, User mUser) {
         if (mUser != null) {
-            floatingPopup.setMobile(contactName);
-            floatingPopup.setMessage(contactName + " is " + mUser.getStatus());
+            floatingPopup.setMessage(contactName + " is " + mUser.getStatus().toUpperCase());
+            floatingPopup.setMobile(Utils.getLastTenDigits(mobile));
             floatingPopup.setTime(Utils.timeAgo(mUser.getUpdated()));
             floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
         }
     }
 
-    private void fetchStatus(final String phoneNumber, final String contactName) {
+    private void fetchStatus(final String phoneNumber) {
+        final String tenDigitNumber = Utils.getLastTenDigits(phoneNumber);
+        final String mContactName = Utils.getContactName(FloatingService.this, tenDigitNumber);
         floatingPopup.show();
-        setExistingStatus(phoneNumber, contactName);
-        userAPIService.getUserStatus(phoneNumber).enqueue(new Callback<StatusResponse>() {
+        User mUser = dbHelper.getUser(tenDigitNumber);
+        if (mUser != null) {
+            setExistingStatus(phoneNumber, mContactName, mUser);
+        } else {
+            floatingPopup.resetPopup();
+        }
+        userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+
+            String contactName = mContactName == null ? phoneNumber : mContactName;
+
             @Override
             public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
                 if (floatingPopup != null && floatingPopup.isShowing()) {
@@ -151,22 +104,24 @@ public class FloatingService extends Service {
                         StatusResponse s = response.body();
                         String status = s.getStatus().toUpperCase();
                         String icon = s.getIcon();
-                        long time = s.getUpdatedTime().getTime();
-                        floatingPopup.setMobile(phoneNumber);
+                        String name = s.getName();
+                        long time = s.getUpdatedTime();
+                        floatingPopup.setMobile(tenDigitNumber);
+                        contactName = contactName.equals(phoneNumber) ? name : contactName;
                         if (status.isEmpty()) {
                             statusMessage = contactName + getResources().getString(R.string.status_not_set);
                         } else {
-                            Utils.saveUserStatusToLocal(status, icon, phoneNumber, time, dbHelper);
+                            Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
                             statusMessage = contactName + " is " + status;
                         }
                         floatingPopup.setPopupMenu(false);
-                        floatingPopup.setTime(Utils.timeAgo(s.getUpdatedTime().getTime()));
+                        floatingPopup.setTime(Utils.timeAgo(s.getUpdatedTime()));
                         floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
                     } else {
                         floatingPopup.setPopupMenu(true);
                         floatingPopup.setTime(null);
                         statusMessage = contactName + getResources().getString(R.string.status_user_not_found);
-                        floatingPopup.setStatusIcon(R.drawable.ic_launcher);
+                        floatingPopup.setStatusIcon(R.drawable.ic_status);
                     }
                     floatingPopup.setMessage(statusMessage);
                 }
@@ -175,7 +130,7 @@ public class FloatingService extends Service {
             @Override
             public void onFailure(Throwable t) {
                 String statusMessage;
-                User user = dbHelper.getUser(phoneNumber);
+                User user = dbHelper.getUser(tenDigitNumber);
                 if (user != null) {
                     String status = user.getStatus().toUpperCase();
                     String icon = user.getIcon();
@@ -184,16 +139,16 @@ public class FloatingService extends Service {
                     } else {
                         statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
                     }
-                    floatingPopup.setMobile(phoneNumber);
+                    floatingPopup.setMobile(tenDigitNumber);
                     floatingPopup.setPopupMenu(false);
-                    floatingPopup.setTime(user.getUpdated() + "");
+                    floatingPopup.setTime(Utils.timeAgo(user.getUpdated()));
                     floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
                 } else {
                     floatingPopup.setTime(null);
                     statusMessage = getResources().getString(R.string.status_no_network);
+                    floatingPopup.setStatusIcon(R.drawable.ic_status);
                 }
                 floatingPopup.setMessage(statusMessage);
-                floatingPopup.setStatusIcon(R.drawable.ic_launcher);
             }
         });
     }

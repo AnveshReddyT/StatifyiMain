@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,13 +45,18 @@ public class RegisterMobileFragment extends Fragment {
 
     @InjectView(R.id.register_mobile_code)
     Spinner countruCodesSpinner;
+
     @InjectView(R.id.register_mobile_text)
     EditText mobileText;
+
     @InjectView(R.id.register_mobile_country_code)
     TextView countryCodeText;
+
     @InjectView(R.id.register_mobile_btn)
     Button registerBtn;
+
     private UserAPIService userAPIService;
+
     private ProgressDialog progressDialog;
 
     public RegisterMobileFragment() {
@@ -132,31 +139,33 @@ public class RegisterMobileFragment extends Fragment {
     }
 
     private void doRegister() {
-        RegisterUserRequest request = new RegisterUserRequest();
-        final String mobile = mobileText.getText().toString();
-        request.setMobile(mobile);
+        if (isMobileNumberValid()) {
+            RegisterUserRequest request = new RegisterUserRequest();
+            final String mobile = mobileText.getText().toString();
+            request.setMobile(mobile);
 
-        progressDialog.show();
-        userAPIService.registerUser(request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    DataUtils.saveMobile(getActivity(), mobile);
-                    DataUtils.setActive(getActivity(), false);
-                    registerBtn.setText(R.string.join_statifyi);
-                    registerBtn.setEnabled(true);
-                    ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));
-                } else {
-                    Utils.showToast(getActivity(), "Failed to register");
+            progressDialog.show();
+            userAPIService.registerUser(request).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Response<Void> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        DataUtils.saveMobile(getActivity(), mobile);
+                        DataUtils.setActive(getActivity(), false);
+                        registerBtn.setText(R.string.join_statifyi);
+                        registerBtn.setEnabled(true);
+                        ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));
+                    } else {
+                        Utils.showToast(getActivity(), "Failed to register");
+                    }
+                    progressDialog.dismiss();
                 }
-                progressDialog.dismiss();
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
-                progressDialog.dismiss();
-            }
-        });
+                @Override
+                public void onFailure(Throwable t) {
+                    progressDialog.dismiss();
+                }
+            });
+        }
     }
 
     public String assetJSONFile(String filename) {
@@ -173,5 +182,16 @@ public class RegisterMobileFragment extends Fragment {
             return null;
         }
         return json;
+    }
+
+    private boolean isMobileNumberValid() {
+        Editable mobile = mobileText.getText();
+        if (mobile != null) {
+            String mobileString = mobile.toString();
+            if (!TextUtils.isEmpty(mobileString)) {
+                return mobileString.length() == 10;
+            }
+        }
+        return false;
     }
 }

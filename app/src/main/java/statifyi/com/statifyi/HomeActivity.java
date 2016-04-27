@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -17,7 +18,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.io.File;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -25,6 +33,8 @@ import statifyi.com.statifyi.fragment.HomeFragment;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.service.GCMSubscribeService;
+import statifyi.com.statifyi.utils.BlurBuilder;
+import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.Utils;
 
@@ -42,6 +52,14 @@ public class HomeActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
 
     private HomeFragment homeFragment;
+
+    private TextView userName;
+
+    private TextView userMobile;
+
+    private CircularImageView avatar;
+
+    private ImageView headerBg;
 
     public static HomeActivity get(Context context) {
         try {
@@ -98,7 +116,19 @@ public class HomeActivity extends AppCompatActivity {
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
-
+        RelativeLayout headerView = (RelativeLayout) navigationView.getHeaderView(0);
+        userName = (TextView) headerView.findViewById(R.id.home_drawer_header_name);
+        userMobile = (TextView) headerView.findViewById(R.id.home_drawer_header_mobile);
+        avatar = (CircularImageView) headerView.findViewById(R.id.home_drawer_header_avatar);
+        headerBg = (ImageView) headerView.findViewById(R.id.home_drawer_header_background);
+        setHeaderData();
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.closeDrawers();
+                startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+            }
+        });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             @Override
@@ -131,6 +161,25 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setHeaderData();
+    }
+
+    private void setHeaderData() {
+        DataUtils.setUserImage(this, avatar);
+        userName.setText(DataUtils.getName(this));
+        String mobileNumber = DataUtils.getMobileNumber(this);
+        userMobile.setText(mobileNumber);
+        File file = new File(getFilesDir(), "user.jpg");
+        if (file.exists()) {
+            headerBg.setImageBitmap(BlurBuilder.blur(this, BitmapFactory.decodeFile(file.getAbsolutePath())));
+        } else {
+            headerBg.setBackgroundResource(R.color.accentColor);
+        }
     }
 
     @Override

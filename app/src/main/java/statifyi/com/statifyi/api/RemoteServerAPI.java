@@ -1,12 +1,17 @@
 package statifyi.com.statifyi.api;
 
+import com.squareup.okhttp.RequestBody;
+
 import java.util.List;
 
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.PUT;
+import retrofit.http.Part;
+import retrofit.http.Path;
 import retrofit.http.Query;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
@@ -15,6 +20,7 @@ import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
+import statifyi.com.statifyi.api.model.UserNameRequest;
 
 /**
  * Created by KT on 23/12/15.
@@ -28,6 +34,13 @@ public interface RemoteServerAPI {
 
     @PUT(BASE_CONTEXT + "/status")
     Call<Void> setUserStatus(@Body StatusRequest request);
+
+    @PUT(BASE_CONTEXT + "/name/{mobile}")
+    Call<Void> setUserName(@Path("mobile") String mobile, @Body UserNameRequest request);
+
+    @Multipart
+    @POST(BASE_CONTEXT + "/image/{mobile}")
+    Call<Void> uploadImage(@Path("mobile") String mobile, @Part("file") RequestBody request);
 
     @POST(BASE_CONTEXT + "/multiStatus")
     Call<List<MultiStatusResponse>> getAllStatus(@Body List<String> mobiles);

@@ -9,10 +9,12 @@
 
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/conatct_list_item_avatar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:visibility="gone"
-        app:border="false"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:visibility="visible"
+        app:border="true"
+        app:border_color="#77AFAFAF"
+        app:border_width="1dp"
         app:shadow="false" />
 
     <statifyi.com.statifyi.widget.TextView
@@ -24,7 +26,8 @@
         android:text="K"
         android:textColor="#ffffff"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"

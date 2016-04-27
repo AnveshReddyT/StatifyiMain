@@ -85,6 +85,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                         customMessage = customCall.getMessage();
                         final String contactName = Utils.getContactName(mContext, incomingNumber);
                         floatingPopup.show();
+                        floatingPopup.resetPopup();
                         floatingPopup.setPopupMenu(false);
                         floatingPopup.setTime("from " + contactName);
                         floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(customCall.getMessage(), mContext));

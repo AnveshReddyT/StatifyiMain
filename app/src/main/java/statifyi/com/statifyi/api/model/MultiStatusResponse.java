@@ -24,7 +24,7 @@ public class MultiStatusResponse extends StatusResponse {
         user.setMobile(this.getMobile());
         user.setStatus(this.getStatus());
         user.setIcon(this.getIcon());
-        user.setUpdated(this.getUpdatedTime().getTime());
+        user.setUpdated(this.getUpdatedTime());
         return user;
     }
 

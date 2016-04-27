@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -158,7 +157,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private void updateStatus() {
         String autoStatus = DataUtils.getAutoStatus(getActivity().getApplicationContext());
-        Log.d("STAT", "Status fragment auto status : " + autoStatus);
         String status = autoStatus == null ? DataUtils.getStatus(getActivity()) : autoStatus;
         currentStatusText.setText(status == null || status.isEmpty() ? "status not set" : status);
         currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.ic_launcher : autoStatus == null ? DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity()));

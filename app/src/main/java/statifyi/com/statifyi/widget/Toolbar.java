@@ -28,6 +28,11 @@ public class Toolbar extends android.support.v7.widget.Toolbar {
         titleText.setText(title);
     }
 
+    public void setTitleColor(int color) {
+        TextView titleText = (TextView) findViewById(R.id.toolbar_title);
+        titleText.setTextColor(getResources().getColor(color));
+    }
+
     @Override
     public void setLogo(int resId) {
 //        ImageView icon = (ImageView) findViewById(R.id.toolbar_icon);

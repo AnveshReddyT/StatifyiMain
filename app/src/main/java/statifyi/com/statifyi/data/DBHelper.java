@@ -27,6 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CALL_LOGS_TABLE_NAME = "call_logs";
 
     public static final String USERS_COLUMN_MOBILE = "mobile";
+    public static final String USERS_COLUMN_NAME = "name";
     public static final String USERS_COLUMN_STATUS = "status";
     public static final String USERS_COLUMN_ACTIVE = "active";
     public static final String USERS_COLUMN_ICON = "icon";
@@ -41,6 +42,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_USERS = "create table " + USERS_TABLE_NAME + " (" +
             USERS_COLUMN_MOBILE + " text," +
+            USERS_COLUMN_NAME + " text," +
             USERS_COLUMN_STATUS + " text," +
             USERS_COLUMN_ACTIVE + " integer," +
             USERS_COLUMN_ICON + " text," +
@@ -101,6 +103,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private ContentValues getUserContentValues(User user) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(USERS_COLUMN_MOBILE, user.getMobile());
+        contentValues.put(USERS_COLUMN_NAME, user.getName());
         contentValues.put(USERS_COLUMN_STATUS, user.getStatus());
         contentValues.put(USERS_COLUMN_ACTIVE, user.isActive() ? 1 : 0);
         contentValues.put(USERS_COLUMN_ICON, user.getIcon());
@@ -121,10 +124,24 @@ public class DBHelper extends SQLiteOpenHelper {
         return mUser;
     }
 
+    public String getName(String mobile) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select name from " + USERS_TABLE_NAME + " where " + USERS_COLUMN_MOBILE + "=" + mobile, null);
+        String name = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            name = cursor.getString(cursor.getColumnIndex(USERS_COLUMN_NAME));
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        return name;
+    }
+
     @NonNull
     private User getUserFromCursor(Cursor cursor) {
         User user = new User();
         user.setMobile(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_MOBILE)));
+        user.setName(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_NAME)));
         user.setStatus(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_STATUS)));
         user.setActive(cursor.getInt(cursor.getColumnIndex(USERS_COLUMN_ACTIVE)) == 1);
         user.setIcon(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_ICON)));

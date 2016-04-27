@@ -13,12 +13,14 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.fragment.AutoStatusSettingsFragment;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.fragment.PrivacySettingsFragment;
+import statifyi.com.statifyi.fragment.ProfileFragment;
 import statifyi.com.statifyi.fragment.TimelyStatusSettingsFragment;
 import statifyi.com.statifyi.widget.Toolbar;
 
 public class SingleFragmentActivity extends AppCompatActivity {
 
     public static final String KEY_SINGLE_FRAGMENT = "fragment";
+
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -60,6 +62,8 @@ public class SingleFragmentActivity extends AppCompatActivity {
                 return PrivacySettingsFragment.newInstance(null, null);
             case TIMELY_STATUS:
                 return TimelyStatusSettingsFragment.newInstance(null, null);
+            case PROFILE:
+                return ProfileFragment.newInstance(null, null);
             default:
                 return null;
         }
@@ -69,6 +73,7 @@ public class SingleFragmentActivity extends AppCompatActivity {
         DIALER,
         AUTO_STATUS,
         PRIVACY,
-        TIMELY_STATUS
+        TIMELY_STATUS,
+        PROFILE
     }
 }

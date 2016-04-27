@@ -4,11 +4,20 @@ package statifyi.com.statifyi.fragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -16,7 +25,6 @@ import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import statifyi.com.statifyi.HomeActivity;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.RegistrationActivity;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
@@ -37,6 +45,47 @@ public class OTPFragment extends Fragment {
     Button otpVerifyBtn;
     private UserAPIService userAPIService;
     private ProgressDialog progressDialog;
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    File file = new File(getActivity().getFilesDir(), "user.jpg");
+                    try {
+                        file.createNewFile();
+                        FileOutputStream ostream = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                        ostream.close();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
+                                launchHomeScreen();
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                    launchHomeScreen();
+                }
+            });
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+    };
 
     public OTPFragment() {
         // Required empty public constructor
@@ -81,7 +130,8 @@ public class OTPFragment extends Fragment {
     private void doActivateUser() {
         final ActivateUserRequest request = new ActivateUserRequest();
         request.setCode(otpText.getText().toString());
-        request.setMobile(DataUtils.getMobileNumber(getActivity()));
+        final String mobileNumber = DataUtils.getMobileNumber(getActivity());
+        request.setMobile(mobileNumber);
 
         progressDialog.show();
         userAPIService.activateUser(request).enqueue(new Callback<Void>() {
@@ -92,23 +142,29 @@ public class OTPFragment extends Fragment {
                     userAPIService.getUserStatus(request.getMobile()).enqueue(new Callback<StatusResponse>() {
                         @Override
                         public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
-                            progressDialog.dismiss();
                             if (response.isSuccess()) {
                                 StatusResponse s = response.body();
                                 DataUtils.setActive(getActivity(), true);
+                                DataUtils.saveName(getActivity(), s.getName());
                                 DataUtils.saveStatus(getActivity(), s.getStatus());
                                 DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
-                                startActivity(new Intent(getActivity(), HomeActivity.class));
-                                getActivity().finish();
+                                if (!TextUtils.isEmpty(s.getName())) {
+                                    NetworkUtils.providePicasso(getActivity()).load(NetworkUtils.provideAvatarUrl(mobileNumber)).into(target);
+                                } else {
+                                    progressDialog.dismiss();
+                                    launchHomeScreen();
+                                }
                             }
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
                             progressDialog.dismiss();
+                            t.printStackTrace();
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Utils.showToast(getActivity(), "Failed to activate");
                 }
             }
@@ -124,6 +180,11 @@ public class OTPFragment extends Fragment {
     @OnClick(R.id.register_otp_change_number)
     public void onClickChangeNumber(View v) {
         ((RegistrationActivity) getActivity()).replaceFragment(RegisterMobileFragment.newInstance(null, null));
+    }
+
+    private void launchHomeScreen() {
+        getActivity().getIntent().putExtra("complete", true);
+        ((RegistrationActivity) getActivity()).replaceFragment(ProfileFragment.newInstance(null, null));
     }
 
 }

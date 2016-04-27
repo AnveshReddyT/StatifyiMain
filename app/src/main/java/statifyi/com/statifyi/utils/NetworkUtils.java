@@ -10,12 +10,14 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
+import com.squareup.picasso.Picasso;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
+import statifyi.com.statifyi.BuildConfig;
 import statifyi.com.statifyi.api.GCMServerAPI;
 import statifyi.com.statifyi.api.RemoteServerAPI;
 import statifyi.com.statifyi.api.service.GCMAPIService;
@@ -31,6 +33,7 @@ public class NetworkUtils {
     public static final String SERVER_IP = "54.201.38.232";
     private static final String BASE_URL = "http://" + SERVER_IP + ":8080";
     private static final String GCM_URL = "https://iid.googleapis.com";
+    private static final String BASE_CONTEXT = "/Statifyi/src/users";
 
     public static boolean isConnectingToInternet(Context _context) {
         ConnectivityManager connectivity = (ConnectivityManager) _context
@@ -55,7 +58,7 @@ public class NetworkUtils {
     public static Gson provideGson() {
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .setDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+                .setDateFormat("EEE MMM dd HH:mm:ss 'Z' yyyy");
         return gsonBuilder.create();
     }
 
@@ -79,9 +82,16 @@ public class NetworkUtils {
     public static Retrofit provideRetrofit(Context mContext, String baseUrl, boolean enableLogging) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(provideGson()))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(baseUrl)
                 .client(provideOkHttpClient(mContext, enableLogging))
+                .build();
+    }
+
+    public static Picasso providePicasso(Context mContext) {
+        return new Picasso.Builder(mContext)
+                .loggingEnabled(BuildConfig.DEBUG)
+                .indicatorsEnabled(BuildConfig.DEBUG)
+                .executor(Executors.newFixedThreadPool(10))
                 .build();
     }
 
@@ -99,5 +109,9 @@ public class NetworkUtils {
 
     public static GCMAPIService provideGCMAPIService(Context mContext) {
         return new GCMAPIServiceImpl(provideGCMServerAPI(mContext));
+    }
+
+    public static String provideAvatarUrl(String mobile) {
+        return BASE_URL + BASE_CONTEXT + "/image/" + mobile;
     }
 }

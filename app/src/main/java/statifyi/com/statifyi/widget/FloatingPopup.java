@@ -6,6 +6,8 @@ package statifyi.com.statifyi.widget;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -22,7 +24,10 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.mikhaellopez.circularimageview.CircularImageView;
+
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 
@@ -44,6 +49,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private TextView statusMessage;
     private TextView statusTime;
     private ImageView statusIcon;
+    private CircularImageView avatar;
     private ImageView statusMenu;
     private String mobile;
     private boolean isShowing;
@@ -90,6 +96,8 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         statusIcon = (ImageView) findViewById(R.id.popup_status_icon);
         statusMenu = (ImageView) findViewById(R.id.popup_status_menu);
         statusTime = (TextView) findViewById(R.id.popup_status_time);
+        avatar = (CircularImageView) findViewById(R.id.popup_status_avatar);
+        statusMenu.getDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
     /**
@@ -111,7 +119,6 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
 
     public void show() {
         if (!isShowing()) {
-            resetPopup();
             windowManager.addView(this, params); // adding the imageView & the  params to the WindowsManger.
             setIsShowing(true);
         }
@@ -126,7 +133,8 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     }
 
     public void setStatusIcon(int icon) {
-        this.statusIcon.setImageResource(icon);
+        Drawable d = Utils.changeColor(ctx, icon, R.color.white);
+        this.statusIcon.setImageDrawable(d);
     }
 
     /**
@@ -182,9 +190,9 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         }
     }
 
-    private void resetPopup() {
+    public void resetPopup() {
         setMessage(getResources().getString(R.string.please_wait));
-        setStatusIcon(0);
+        setStatusIcon(R.drawable.ic_status);
         setTime(null);
     }
 
@@ -230,6 +238,10 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+        NetworkUtils.providePicasso(ctx).load(NetworkUtils.provideAvatarUrl(Utils.getLastTenDigits(mobile)))
+                .placeholder(R.drawable.avatar)
+                .error(R.drawable.avatar)
+                .into(avatar);
     }
 
     public boolean isShowing() {

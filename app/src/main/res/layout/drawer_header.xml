@@ -1,18 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/home_drawer_header_layout"
     android:layout_width="match_parent"
     android:layout_height="192dp"
-    android:background="@drawable/banner"
-    android:gravity="bottom"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <TextView
-        android:id="@+id/home_drawer_header_text"
+    <ImageView
+        android:id="@+id/home_drawer_header_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right"
-        android:text="+91-9676316323"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/home_drawer_header_avatar"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/avatar"
+            app:border_width="1dp"
+            app:shadow="false" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/home_drawer_header_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="Krishna Teja Reddy T"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/white" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/home_drawer_header_mobile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="+91-9676316323"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
