@@ -14,6 +14,8 @@ import android.widget.SectionIndexer;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,18 +115,13 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
         String photo = mContact.getPhoto();
         if (photo != null) {
             holder.avatar.setImageURI(Uri.parse(photo));
-            holder.avatar.setVisibility(View.VISIBLE);
-            holder.alphabet.setVisibility(View.GONE);
         } else {
-            holder.avatar.setImageDrawable(null);
-            holder.alphabet.setText(mContact.getName().substring(0, 1));
-            holder.alphabet.setVisibility(View.VISIBLE);
-            holder.avatar.setVisibility(View.GONE);
-//            NetworkUtils.providePicasso(mContext).load(NetworkUtils.provideAvatarUrl(tenDigitNumber))
-//                    .placeholder(R.drawable.avatar)
-//                    .error(R.drawable.avatar)
-//                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-//                    .into(holder.avatar);
+            Picasso picasso = NetworkUtils.providePicasso(mContext);
+            picasso.load(NetworkUtils.provideAvatarUrl(tenDigitNumber))
+                    .placeholder(R.drawable.avatar)
+                    .error(R.drawable.avatar)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(holder.avatar);
         }
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
         convertView.findViewById(R.id.contact_list_item_call).setOnClickListener(new View.OnClickListener() {

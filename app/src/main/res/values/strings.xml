@@ -33,7 +33,8 @@
     <string name="please_wait">Please wait…</string>
     <string name="join_statifyi">JOIN STATIFYI</string>
     <string name="verify_mobile">VERIFY MOBILE</string>
-    <string name="update_profile">UPDATE PROFILE</string>
+    <string name="update_profile">UPDATE</string>
+    <string name="finish">FINISH</string>
     <string name="change_mobile">Entered a wrong number? Tap here</string>
     <string name="_continue">CONTINUE</string>
     <string name="status_user_not_found">\u0020 is not on StatiFYI</string>
@@ -53,13 +54,11 @@
     </string-array>
 
     <string-array name="default_status_list">
-        <item>In Aeroplane Mode</item>
         <item>At Cinemas</item>
         <item>At Home</item>
         <item>At Hospital</item>
         <item>At Office</item>
         <item>At Restaurant</item>
-        <item>Bathing</item>
         <item>DND</item>
         <item>Doing Yoga</item>
         <item>Driving</item>
@@ -67,7 +66,6 @@
         <item>In Meeting</item>
         <item>On Low Battery</item>
         <item>In Morning Walk</item>
-        <item>At Office</item>
         <item>On Call</item>
         <item>On Holiday</item>
         <item>Partying</item>

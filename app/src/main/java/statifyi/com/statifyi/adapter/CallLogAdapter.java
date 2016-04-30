@@ -13,6 +13,8 @@ import android.widget.RelativeLayout;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.CallLog;
+import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
@@ -103,7 +106,9 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
 
         final statifyi.com.statifyi.model.CallLog callLog = filteredData.get(position);
         String callLogName = callLog.getName();
-        callLogName = callLogName == null ? callLog.getPhone() : callLogName;
+        String tenDigitNumber = Utils.getLastTenDigits(callLog.getPhone());
+        callLogName = callLogName == null ?
+                (dbHelper.getName(tenDigitNumber) == null ? callLog.getPhone() : dbHelper.getName(tenDigitNumber)) : callLogName;
         holder.name.setText(callLogName);
         holder.mobile.setText(Utils.timeAgo(callLog.getDate()));
         int calltypeDrawable = 0;
@@ -132,13 +137,13 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
         String photo = callLog.getPhoto();
         if (photo != null) {
             holder.avatar.setImageURI(Uri.parse(photo));
-            holder.avatar.setVisibility(View.VISIBLE);
-            holder.alphabet.setVisibility(View.GONE);
         } else {
-            holder.avatar.setImageDrawable(null);
-            holder.alphabet.setText(callLogName.substring(0, 1));
-            holder.alphabet.setVisibility(View.VISIBLE);
-            holder.avatar.setVisibility(View.GONE);
+            Picasso picasso = NetworkUtils.providePicasso(mContext);
+            picasso.load(NetworkUtils.provideAvatarUrl(tenDigitNumber))
+                    .placeholder(R.drawable.avatar)
+                    .error(R.drawable.avatar)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(holder.avatar);
         }
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
         convertView.findViewById(R.id.calllog_list_item_call).setOnClickListener(new View.OnClickListener() {

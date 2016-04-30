@@ -2,7 +2,6 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,6 +25,7 @@ import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.CustomCallDialog;
+import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -103,7 +103,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         ButterKnife.inject(this, root);
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(getResources().getString(R.string.please_wait));
         progressDialog.setCancelable(false);
 
         if (getActivity().getIntent().hasExtra(PARAM_MOBILE_NUM)) {

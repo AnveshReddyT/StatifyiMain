@@ -6,5 +6,7 @@
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
     <color name="gray">#77AFAFAF</color>
+    <color name="home_tab_selected">#EFEFEF</color>
+    <color name="list_divider">#44AFAFAF</color>
 
 </resources>

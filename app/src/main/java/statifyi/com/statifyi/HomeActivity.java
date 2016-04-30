@@ -121,7 +121,6 @@ public class HomeActivity extends AppCompatActivity {
         userMobile = (TextView) headerView.findViewById(R.id.home_drawer_header_mobile);
         avatar = (CircularImageView) headerView.findViewById(R.id.home_drawer_header_avatar);
         headerBg = (ImageView) headerView.findViewById(R.id.home_drawer_header_background);
-        setHeaderData();
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

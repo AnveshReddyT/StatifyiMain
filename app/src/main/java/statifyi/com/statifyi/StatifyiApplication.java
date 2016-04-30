@@ -2,9 +2,13 @@ package statifyi.com.statifyi;
 
 import android.app.Application;
 
+import com.squareup.picasso.Picasso;
+
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
+
+import statifyi.com.statifyi.utils.NetworkUtils;
 
 /**
  * Created by KT on 23/12/15.
@@ -23,5 +27,10 @@ public class StatifyiApplication extends Application {
     public void onCreate() {
         super.onCreate();
         ACRA.init(this);
+        Picasso picasso = new Picasso.Builder(this)
+                .loggingEnabled(BuildConfig.DEBUG)
+                .indicatorsEnabled(BuildConfig.DEBUG)
+                .downloader(NetworkUtils.createBigCacheDownloader(this)).build();
+        Picasso.setSingletonInstance(picasso);
     }
 }

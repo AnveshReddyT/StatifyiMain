@@ -2,7 +2,6 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -32,6 +31,7 @@ import statifyi.com.statifyi.RegistrationActivity;
 import statifyi.com.statifyi.adapter.CountryCodesAdapter;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.CountryCode;
 import statifyi.com.statifyi.model.CountryCodes;
 import statifyi.com.statifyi.utils.DataUtils;
@@ -72,7 +72,6 @@ public class RegisterMobileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(getResources().getString(R.string.please_wait));
         progressDialog.setCancelable(false);
     }
 

@@ -3,7 +3,6 @@ package statifyi.com.statifyi.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,9 +28,11 @@ import statifyi.com.statifyi.HomeActivity;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.UserNameRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
+import statifyi.com.statifyi.widget.Button;
 import statifyi.com.statifyi.widget.EditText;
 
 public class ProfileFragment extends Fragment {
@@ -46,6 +47,8 @@ public class ProfileFragment extends Fragment {
     @InjectView(R.id.profile_full_name)
     EditText fullName;
 
+    @InjectView(R.id.profile_set_btn)
+    Button setBtn;
 
     private UserAPIService userAPIService;
 
@@ -66,7 +69,6 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(getResources().getString(R.string.please_wait));
         progressDialog.setCancelable(false);
     }
 
@@ -90,6 +92,11 @@ public class ProfileFragment extends Fragment {
             fullName.setText(name);
         }
         isFirstTime = getActivity().getIntent().hasExtra("complete");
+        if (isFirstTime) {
+            setBtn.setText(R.string.finish);
+        } else {
+            setBtn.setText(R.string.update_profile);
+        }
         DataUtils.setUserImage(getActivity(), avatar);
         return root;
     }

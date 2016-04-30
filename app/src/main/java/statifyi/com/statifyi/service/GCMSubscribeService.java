@@ -112,14 +112,14 @@ public class GCMSubscribeService extends IntentService {
             try {
                 mBuilder.setContentText("Subscription in progress ( " + (count * 100 / totalCount) + "% )")
                         .setProgress(totalCount, count, false);
-                mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
+//                mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
                 pubSub.subscribe(GCMUtils.getRegistrationId(this), "/topics/" + topic, null);
                 count++;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        mNotifyManager.cancel(NOTIFICATION_ID);
+//        mNotifyManager.cancel(NOTIFICATION_ID);
     }
 
     private void unSubscribe(Set<String> unSubscribeList) {

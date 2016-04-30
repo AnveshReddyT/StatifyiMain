@@ -34,7 +34,7 @@ import statifyi.com.statifyi.utils.Utils;
 
 public class FloatingPopup extends LinearLayout implements OnTouchListener {
     public static final int X_MARGIN = 64;
-    public static final int Y_MARGIN = 100;
+    public static final int Y_MARGIN = 200;
     private int screenWidth;
     private int screenHeight;
     private WindowManager windowManager; // to hold our image on screen
@@ -48,6 +48,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private float initialTouchY;
     private TextView statusMessage;
     private TextView statusTime;
+    private android.widget.TextView closePopup;
     private ImageView statusIcon;
     private CircularImageView avatar;
     private ImageView statusMenu;
@@ -97,7 +98,14 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         statusMenu = (ImageView) findViewById(R.id.popup_status_menu);
         statusTime = (TextView) findViewById(R.id.popup_status_time);
         avatar = (CircularImageView) findViewById(R.id.popup_status_avatar);
+        closePopup = (android.widget.TextView) findViewById(R.id.popup_status_close);
         statusMenu.getDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        closePopup.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                destroy();
+            }
+        });
     }
 
     /**
@@ -193,6 +201,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     public void resetPopup() {
         setMessage(getResources().getString(R.string.please_wait));
         setStatusIcon(R.drawable.ic_status);
+        avatar.setImageResource(R.drawable.avatar);
         setTime(null);
     }
 

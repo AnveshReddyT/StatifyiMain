@@ -101,48 +101,31 @@ public class Utils {
     }
 
     public static List<Contact> readPhoneContacts(Context cntx) {
+        final String[] PROJECTION = new String[]{
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_URI
+        };
+        List<String> temp = new ArrayList<>();
         List<Contact> contacts = new ArrayList<>();
-        Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Cursor cursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
         if (cursor == null) {
             return contacts;
         }
         Integer contactsCount = cursor.getCount();
         if (contactsCount > 0) {
             while (cursor.moveToNext()) {
-                Contact mContact = new Contact();
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 String imageUri = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
-                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    if (pCursor == null) {
-                        break;
-                    }
-                    if (pCursor.moveToNext()) {
-                        int phoneType = pCursor.getInt(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                        String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        mContact.setMobile(phoneNo);
-                        switch (phoneType) {
-                            case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                                break;
-                            case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                                break;
-                            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                                break;
-                            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK_MOBILE:
-                                break;
-                            case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+                String phoneNo = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phoneNo = phoneNo.replaceAll(" ", "");
+                if (!temp.contains(phoneNo)) {
+                    Contact mContact = new Contact();
+                    mContact.setMobile(phoneNo);
                     mContact.setName(contactName);
                     mContact.setPhoto(imageUri);
                     contacts.add(mContact);
-                    pCursor.close();
+                    temp.add(phoneNo);
                 }
             }
             cursor.close();
@@ -167,32 +150,23 @@ public class Utils {
     }
 
     public static List<String> getPhoneNumbersFromContacts(Context cntx) {
+        final String[] PROJECTION = new String[]{
+                ContactsContract.CommonDataKinds.Phone.NUMBER
+        };
         List<String> contacts = new ArrayList<>();
         if (cntx == null) {
             return contacts;
         }
-        Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Cursor cursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
         if (cursor == null) {
             return contacts;
         }
         Integer contactsCount = cursor.getCount();
         if (contactsCount > 0) {
             while (cursor.moveToNext()) {
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    if (pCursor == null) {
-                        break;
-                    }
-                    if (pCursor.moveToNext()) {
-                        String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        if (!contacts.contains(phoneNo)) {
-                            contacts.add(phoneNo);
-                        }
-                    }
-                    pCursor.close();
+                String phoneNo = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                if (!contacts.contains(phoneNo)) {
+                    contacts.add(phoneNo);
                 }
             }
             cursor.close();
@@ -201,35 +175,24 @@ public class Utils {
     }
 
     public static List<String> get10DigitPhoneNumbersFromContacts(Context cntx) {
+        final String[] PROJECTION = new String[]{
+                ContactsContract.CommonDataKinds.Phone.NUMBER
+        };
         List<String> contacts = new ArrayList<>();
         if (cntx == null) {
             return contacts;
         }
-        Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Cursor cursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
         if (cursor == null) {
             return contacts;
         }
         Integer contactsCount = cursor.getCount();
         if (contactsCount > 0) {
             while (cursor.moveToNext()) {
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    Cursor pCursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    if (pCursor == null) {
-                        break;
-                    }
-                    if (pCursor.moveToNext()) {
-                        String phoneNo = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        if (!contacts.contains(phoneNo) && getLastTenDigits(phoneNo) != null) {
-                            phoneNo = getLastTenDigits(phoneNo);
-                            if (phoneNo != null) {
-                                contacts.add(phoneNo);
-                            }
-                        }
-                    }
-                    pCursor.close();
+                String phoneNo = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phoneNo = getLastTenDigits(phoneNo);
+                if (phoneNo != null && !contacts.contains(phoneNo)) {
+                    contacts.add(phoneNo);
                 }
             }
             cursor.close();
@@ -239,12 +202,16 @@ public class Utils {
 
     public static ArrayList<statifyi.com.statifyi.model.CallLog> getCallLogs(Context mContext) {
         ArrayList<statifyi.com.statifyi.model.CallLog> callLogs = new ArrayList<>();
+        String PROJECTION[] = {
+                CallLog.Calls.CACHED_NAME, CallLog.Calls.NUMBER,
+                CallLog.Calls.TYPE, CallLog.Calls.DATE, CallLog.Calls.DURATION
+        };
         if (mContext == null) {
             return callLogs;
         }
         DBHelper dbHelper = DBHelper.getInstance(mContext);
         String strOrder = CallLog.Calls.DATE + " DESC";
-        Cursor cursor = mContext.getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
+        Cursor cursor = mContext.getContentResolver().query(CallLog.Calls.CONTENT_URI, PROJECTION,
                 null, null, strOrder);
         if (cursor != null) {
             int cached_name = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);

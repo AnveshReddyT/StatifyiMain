@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -45,9 +44,6 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
 
     @InjectView(R.id.calllog_list_progress)
     ProgressBar pBar;
-
-    @InjectView(R.id.calllog_list_loading)
-    LinearLayout statusLoader;
 
     private List<statifyi.com.statifyi.model.CallLog> callLogs;
 
@@ -179,7 +175,6 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         callLogAdapter.setData(callLogs);
         callLogAdapter.notifyDataSetChanged();
         pBar.setVisibility(View.GONE);
-        statusLoader.setVisibility(View.GONE);
         calllogListview.setVisibility(View.VISIBLE);
 
     }
@@ -187,13 +182,6 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
     public void showProgress() {
         pBar.setVisibility(View.VISIBLE);
         calllogListview.setVisibility(View.GONE);
-        statusLoader.setVisibility(View.GONE);
-    }
-
-    public void showStatusLoading() {
-        pBar.setVisibility(View.GONE);
-        calllogListview.setVisibility(View.GONE);
-        statusLoader.setVisibility(View.VISIBLE);
     }
 
     public void loadContent() {
@@ -202,11 +190,6 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
             @Override
             protected void onPreExecute() {
                 showProgress();
-                if (callLogAdapter != null && !callLogAdapter.loadUsers().isEmpty()) {
-                    showProgress();
-                } else {
-                    showStatusLoading();
-                }
                 super.onPreExecute();
             }
 
@@ -218,13 +201,9 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
             @Override
             protected void onPostExecute(List<CallLog> logs) {
                 callLogs = logs;
-                if (callLogAdapter != null && !callLogAdapter.loadUsers().isEmpty()) {
-                    isLoaded = true;
-                    isCallLogUpdated = false;
-                    showContent();
-                } else {
-                    showStatusLoading();
-                }
+                isLoaded = true;
+                isCallLogUpdated = false;
+                showContent();
                 super.onPostExecute(logs);
             }
         }.execute(getActivity());

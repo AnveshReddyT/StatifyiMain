@@ -11,11 +11,10 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.api.model.CustomCall;
-import statifyi.com.statifyi.api.model.StatusRequest;
+import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.model.CallLog;
-import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -80,17 +79,21 @@ public class CustomPhoneStateListener extends PhoneStateListener {
             case TelephonyManager.CALL_STATE_RINGING:
                 if (lastState == TelephonyManager.CALL_STATE_IDLE) {
                     // Incolimg call
-                    CustomCall customCall = dbHelper.getCustomCall(Utils.getLastTenDigits(incomingNumber));
+                    String lastTenDigits = Utils.getLastTenDigits(incomingNumber);
+                    CustomCall customCall = dbHelper.getCustomCall(lastTenDigits);
                     if (customCall != null) {
                         customMessage = customCall.getMessage();
                         final String contactName = Utils.getContactName(mContext, incomingNumber);
                         floatingPopup.show();
                         floatingPopup.resetPopup();
                         floatingPopup.setPopupMenu(false);
+                        floatingPopup.setMobile(lastTenDigits);
                         floatingPopup.setTime("from " + contactName);
                         floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(customCall.getMessage(), mContext));
                         floatingPopup.setMessage(customCall.getMessage());
-
+                        if (contactName != null && contactName.equals(incomingNumber)) {
+                            fetchStatus(incomingNumber);
+                        }
                     }
                 }
                 break;
@@ -113,19 +116,18 @@ public class CustomPhoneStateListener extends PhoneStateListener {
     }
 
 
-    private void updateStatus(final Context context, final String status) {
-        StatusRequest request = new StatusRequest();
-        request.setMobile(DataUtils.getMobileNumber(context));
-        request.setStatus(status);
-        request.setIcon(status);
-        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+    private void fetchStatus(final String phoneNumber) {
+        final String tenDigitNumber = Utils.getLastTenDigits(phoneNumber);
+        userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+
             @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    DataUtils.saveStatus(context, status);
-                    int ico = Utils.getDrawableResByName(mContext, status);
-                    DataUtils.saveIcon(context, ico);
-                } else {
+            public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                if (floatingPopup != null && floatingPopup.isShowing()) {
+                    if (response.code() == 200) {
+                        StatusResponse s = response.body();
+                        String name = s.getName();
+                        floatingPopup.setTime("from " + name);
+                    }
                 }
             }
 

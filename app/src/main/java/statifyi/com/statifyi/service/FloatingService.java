@@ -74,12 +74,10 @@ public class FloatingService extends Service {
     }
 
     private void setExistingStatus(String mobile, String contactName, User mUser) {
-        if (mUser != null) {
-            floatingPopup.setMessage(contactName + " is " + mUser.getStatus().toUpperCase());
-            floatingPopup.setMobile(Utils.getLastTenDigits(mobile));
-            floatingPopup.setTime(Utils.timeAgo(mUser.getUpdated()));
-            floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
-        }
+        floatingPopup.setMessage(contactName + " is " + mUser.getStatus().toUpperCase());
+        floatingPopup.setMobile(Utils.getLastTenDigits(mobile));
+        floatingPopup.setTime(Utils.timeAgo(mUser.getUpdated()));
+        floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
     }
 
     private void fetchStatus(final String phoneNumber) {
@@ -91,6 +89,7 @@ public class FloatingService extends Service {
             setExistingStatus(phoneNumber, mContactName, mUser);
         } else {
             floatingPopup.resetPopup();
+            floatingPopup.setMobile(tenDigitNumber);
         }
         userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
@@ -106,7 +105,7 @@ public class FloatingService extends Service {
                         String icon = s.getIcon();
                         String name = s.getName();
                         long time = s.getUpdatedTime();
-                        floatingPopup.setMobile(tenDigitNumber);
+//                        floatingPopup.setMobile(tenDigitNumber);
                         contactName = contactName.equals(phoneNumber) ? name : contactName;
                         if (status.isEmpty()) {
                             statusMessage = contactName + getResources().getString(R.string.status_not_set);
@@ -139,7 +138,7 @@ public class FloatingService extends Service {
                     } else {
                         statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
                     }
-                    floatingPopup.setMobile(tenDigitNumber);
+//                    floatingPopup.setMobile(tenDigitNumber);
                     floatingPopup.setPopupMenu(false);
                     floatingPopup.setTime(Utils.timeAgo(user.getUpdated()));
                     floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));

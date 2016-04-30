@@ -8,6 +8,7 @@
         android:id="@+id/contactsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
         android:visibility="gone" />
 
     <ProgressBar
@@ -27,11 +28,11 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_wait" />
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,8 +40,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="@string/sync_status_message"
-            android:textColor="#999999"
-            android:textSize="18sp" />
+            android:textColor="#999999" />
     </LinearLayout>
 
 </FrameLayout>

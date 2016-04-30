@@ -2,7 +2,6 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,6 +42,7 @@ import statifyi.com.statifyi.adapter.StatusAdapter;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.CustomStatusDialog;
+import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -99,7 +99,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         setHasOptionsMenu(true);
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(getResources().getString(R.string.please_wait));
         progressDialog.setCancelable(false);
     }
 

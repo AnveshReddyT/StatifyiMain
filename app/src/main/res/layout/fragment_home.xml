@@ -42,44 +42,48 @@
             android:layout_weight="3"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/actionBarSize"
-            android:orientation="horizontal"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp">
+            android:orientation="horizontal">
 
             <statifyi.com.statifyi.widget.RadioButton
                 android:id="@+id/home_radio_status"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="@drawable/radio_bg_selector"
                 android:button="@null"
                 android:checked="true"
                 android:drawablePadding="5dp"
                 android:drawableTop="@drawable/ic_status"
                 android:gravity="center"
+                android:paddingTop="10dp"
                 android:text="STATUS"
                 android:textSize="10sp" />
 
             <statifyi.com.statifyi.widget.RadioButton
                 android:id="@+id/home_radio_contacts"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="@drawable/radio_bg_selector"
                 android:button="@null"
                 android:drawablePadding="5dp"
                 android:drawableTop="@drawable/ic_contacts"
                 android:gravity="center"
+                android:paddingTop="10dp"
                 android:text="CONTACTS"
                 android:textSize="10sp" />
 
             <statifyi.com.statifyi.widget.RadioButton
                 android:id="@+id/home_radio_calllog"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="@drawable/radio_bg_selector"
                 android:button="@null"
                 android:drawablePadding="5dp"
                 android:drawableTop="@drawable/ic_call"
                 android:gravity="center"
+                android:paddingTop="10dp"
                 android:text="CALL LOG"
                 android:textSize="10sp" />
 
@@ -88,13 +92,13 @@
         <statifyi.com.statifyi.widget.RadioButton
             android:id="@+id/home_radio_dialpad"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:button="@null"
             android:drawablePadding="5dp"
             android:drawableTop="@drawable/ic_dialer"
             android:gravity="center"
+            android:paddingTop="10dp"
             android:text="DIAL"
             android:textSize="10sp" />
     </LinearLayout>
