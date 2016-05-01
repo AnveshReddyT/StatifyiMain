@@ -1,10 +1,8 @@
 package statifyi.com.statifyi;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
@@ -17,14 +15,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        int SPLASH_TIME_OUT = 0;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (sharedPreferences.getBoolean("launched", false)) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("launched", true);
-            editor.apply();
-            SPLASH_TIME_OUT = 2000;
-        }
+        int SPLASH_TIME_OUT = 2000;
 
         new Handler().postDelayed(new Runnable() {
 

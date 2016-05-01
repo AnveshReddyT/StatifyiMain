@@ -77,20 +77,22 @@ public class CustomPhoneStateListener extends PhoneStateListener {
         }
         switch (state) {
             case TelephonyManager.CALL_STATE_RINGING:
-                if (lastState == TelephonyManager.CALL_STATE_IDLE) {
+                if (lastState == TelephonyManager.CALL_STATE_IDLE || lastState == TelephonyManager.CALL_STATE_OFFHOOK) {
                     // Incolimg call
                     String lastTenDigits = Utils.getLastTenDigits(incomingNumber);
                     CustomCall customCall = dbHelper.getCustomCall(lastTenDigits);
                     if (customCall != null) {
                         customMessage = customCall.getMessage();
-                        final String contactName = Utils.getContactName(mContext, incomingNumber);
+                        String contactName = Utils.getContactName(mContext, incomingNumber);
                         floatingPopup.show();
                         floatingPopup.resetPopup();
                         floatingPopup.setPopupMenu(false);
                         floatingPopup.setMobile(lastTenDigits);
                         floatingPopup.setTime("from " + contactName);
                         floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(customCall.getMessage(), mContext));
+                        floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(customCall.getMessage(), mContext));
                         floatingPopup.setMessage(customCall.getMessage());
+                        dbHelper.deletedCustomCall(lastTenDigits);
                         if (contactName != null && contactName.equals(incomingNumber)) {
                             fetchStatus(incomingNumber);
                         }
@@ -108,7 +110,6 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 }
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                     // Incoming Call ended
-                    Log.d("STAT", Utils.getCallLogs(mContext).get(0).toString());
                 }
                 break;
         }
@@ -125,7 +126,11 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 if (floatingPopup != null && floatingPopup.isShowing()) {
                     if (response.code() == 200) {
                         StatusResponse s = response.body();
+                        String status = s.getStatus().toUpperCase();
+                        String icon = s.getIcon();
                         String name = s.getName();
+                        long time = s.getUpdatedTime();
+                        Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
                         floatingPopup.setTime("from " + name);
                     }
                 }

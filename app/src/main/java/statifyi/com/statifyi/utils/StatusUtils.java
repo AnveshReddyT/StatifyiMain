@@ -57,4 +57,14 @@ public class StatusUtils {
             return R.drawable.ic_call_custom;
         }
     }
+
+    public static int getCustomCallLayoutColor(String message, Context mContext) {
+        if (mContext.getString(R.string.emergency_call).equals(message)) {
+            return android.R.color.holo_red_dark;
+        } else if (mContext.getString(R.string.business_call).equals(message)) {
+            return android.R.color.holo_blue_dark;
+        } else {
+            return R.color.accentColor;
+        }
+    }
 }

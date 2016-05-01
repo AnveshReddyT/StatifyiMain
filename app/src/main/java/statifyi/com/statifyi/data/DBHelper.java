@@ -242,6 +242,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return customCall;
     }
 
+    public Integer deletedCustomCall(String mobile) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(CUSTOM_CALLS_TABLE_NAME, CUSTOM_CALLS_COLUMN_MOBILE + " = ?", new String[]{mobile});
+    }
+
     public Integer deleteExpiredCustomCalls() {
         long expiryTime = System.currentTimeMillis() - 2 * 60 * 1000;
         SQLiteDatabase db = this.getWritableDatabase();

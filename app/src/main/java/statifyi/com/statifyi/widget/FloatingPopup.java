@@ -22,9 +22,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -34,7 +37,7 @@ import statifyi.com.statifyi.utils.Utils;
 
 public class FloatingPopup extends LinearLayout implements OnTouchListener {
     public static final int X_MARGIN = 64;
-    public static final int Y_MARGIN = 200;
+    public static final int Y_MARGIN = 100;
     private int screenWidth;
     private int screenHeight;
     private WindowManager windowManager; // to hold our image on screen
@@ -51,6 +54,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private android.widget.TextView closePopup;
     private ImageView statusIcon;
     private CircularImageView avatar;
+    private RelativeLayout statusIconLayout;
     private ImageView statusMenu;
     private String mobile;
     private boolean isShowing;
@@ -70,7 +74,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT | WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSPARENT);
 
         Display display = windowManager.getDefaultDisplay();
@@ -86,7 +90,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         params.gravity = Gravity.TOP | Gravity.LEFT; // setting the gravity of the imageView
         params.windowAnimations = android.R.style.Animation_Toast; // adding an animation to it.
         params.x = X_MARGIN; // horizontal location of imageView
-        params.y = Y_MARGIN; // vertical location of imageView
+        params.y = screenHeight / 2 - 100; // vertical location of imageView
 //        params.height = 120; // given it a fixed height in case of large image
 //        params.width = 120; // given it a fixed width in case of large image
         params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
@@ -98,6 +102,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         statusMenu = (ImageView) findViewById(R.id.popup_status_menu);
         statusTime = (TextView) findViewById(R.id.popup_status_time);
         avatar = (CircularImageView) findViewById(R.id.popup_status_avatar);
+        statusIconLayout = (RelativeLayout) findViewById(R.id.popup_status_icon_layout);
         closePopup = (android.widget.TextView) findViewById(R.id.popup_status_close);
         statusMenu.getDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
         closePopup.setOnClickListener(new OnClickListener() {
@@ -127,6 +132,8 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
 
     public void show() {
         if (!isShowing()) {
+            this.setAlpha(1f);
+            params.x = X_MARGIN;
             windowManager.addView(this, params); // adding the imageView & the  params to the WindowsManger.
             setIsShowing(true);
         }
@@ -152,7 +159,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
+//        gestureDetector.onTouchEvent(event);
         paramsF = params; // getting the layout params from the current one and assigning new one.
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -163,10 +170,26 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
                 initialTouchY = event.getRawY(); //Y coordinate  location of the ImageView
                 break;
             case MotionEvent.ACTION_UP: // this called when we actually leave the Imageview
+                this.setAlpha(1f);
                 break;
             case MotionEvent.ACTION_MOVE:
-                paramsF.x = initialX + (int) (event.getRawX() - initialTouchX);
-                paramsF.x = X_MARGIN;
+                this.setAlpha(0.6f);
+                int xMove = initialX + (int) (event.getRawX() - initialTouchX);
+                if (xMove < -X_MARGIN) {
+                    xMove = -X_MARGIN;
+                } else if (xMove > 3 * X_MARGIN) {
+                    xMove = 3 * X_MARGIN;
+                }
+                float diffX = initialTouchX - event.getRawX();
+                float diffY = initialTouchY - event.getRawY();
+                if (xMove > 0 || xMove < 2 * X_MARGIN) {
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        if (Math.abs(diffX) > 100) {
+                            destroy();
+                        }
+                    }
+                }
+                paramsF.x = xMove;
                 int yMove = initialY + (int) (event.getRawY() - initialTouchY);
                 if (yMove < Y_MARGIN) {
                     yMove = Y_MARGIN;
@@ -200,9 +223,14 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
 
     public void resetPopup() {
         setMessage(getResources().getString(R.string.please_wait));
+        setStatusLayoutColor(R.color.accentColor);
         setStatusIcon(R.drawable.ic_status);
         avatar.setImageResource(R.drawable.avatar);
         setTime(null);
+    }
+
+    public void setStatusLayoutColor(int res) {
+        statusIconLayout.setBackgroundResource(res);
     }
 
     public void setPopupMenu(final boolean newUser) {
@@ -250,6 +278,16 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         NetworkUtils.providePicasso(ctx).load(NetworkUtils.provideAvatarUrl(Utils.getLastTenDigits(mobile)))
                 .placeholder(R.drawable.avatar)
                 .error(R.drawable.avatar)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(avatar);
+        loadImageFromNetwork(mobile);
+    }
+
+    public void loadImageFromNetwork(String mobile) {
+        NetworkUtils.providePicasso(ctx).load(NetworkUtils.provideAvatarUrl(Utils.getLastTenDigits(mobile)))
+                .placeholder(avatar.getDrawable())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .into(avatar);
     }
 
