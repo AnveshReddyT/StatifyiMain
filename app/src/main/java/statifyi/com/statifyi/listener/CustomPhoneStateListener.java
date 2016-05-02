@@ -25,6 +25,8 @@ import statifyi.com.statifyi.widget.FloatingPopup;
  */
 public class CustomPhoneStateListener extends PhoneStateListener {
 
+    private static final String NORMAL_CALL = "Normal Call";
+
     private Context mContext;
 
     private FloatingPopup floatingPopup;
@@ -83,19 +85,20 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     CustomCall customCall = dbHelper.getCustomCall(lastTenDigits);
                     if (customCall != null) {
                         customMessage = customCall.getMessage();
-                        String contactName = Utils.getContactName(mContext, incomingNumber);
-                        floatingPopup.show();
-                        floatingPopup.resetPopup();
-                        floatingPopup.setPopupMenu(false);
-                        floatingPopup.setMobile(lastTenDigits);
-                        floatingPopup.setTime("from " + contactName);
-                        floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(customCall.getMessage(), mContext));
-                        floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(customCall.getMessage(), mContext));
-                        floatingPopup.setMessage(customCall.getMessage());
-                        dbHelper.deletedCustomCall(lastTenDigits);
-                        if (contactName != null && contactName.equals(incomingNumber)) {
-                            fetchStatus(incomingNumber);
-                        }
+                    }
+                    String contactName = Utils.getContactName(mContext, incomingNumber);
+                    floatingPopup.show();
+                    floatingPopup.resetPopup();
+                    floatingPopup.setPopupMenu(false);
+                    floatingPopup.setMobile(lastTenDigits);
+                    floatingPopup.setTime("from " + contactName);
+                    String message = customCall == null ? NORMAL_CALL : customCall.getMessage();
+                    floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(message, mContext));
+                    floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(message, mContext));
+                    floatingPopup.setMessage(message);
+                    dbHelper.deletedCustomCall(lastTenDigits);
+                    if (contactName != null && contactName.equals(incomingNumber)) {
+                        fetchStatus(incomingNumber);
                     }
                 }
                 break;

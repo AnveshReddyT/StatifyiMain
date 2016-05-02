@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -41,8 +44,10 @@ import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.StatusAdapter;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.CustomStatusDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
+import statifyi.com.statifyi.model.Status;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -82,6 +87,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private ProgressDialog progressDialog;
 
+    private DBHelper dbHelper;
+    private StatusAdapter statusAdapter;
+
     public StatusFragment() {
         // Required empty public constructor
     }
@@ -97,6 +105,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
+        dbHelper = DBHelper.getInstance(getActivity());
         setHasOptionsMenu(true);
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
@@ -108,7 +117,8 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         View root = inflater.inflate(R.layout.fragment_status, container, false);
         ButterKnife.inject(this, root);
 
-        statusGrid.setAdapter(new StatusAdapter(getActivity()));
+        statusAdapter = new StatusAdapter(getActivity());
+        statusGrid.setAdapter(statusAdapter);
         statusGrid.setOnItemClickListener(this);
 
         int width = Utils.getScreenWidth(getActivity()) - 32;
@@ -161,6 +171,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.ic_launcher : autoStatus == null ? DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity()));
         Animation scaleAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.scale);
         currentStatusIcon.startAnimation(scaleAnim);
+        statusAdapter.loadData();
+        statusAdapter.notifyDataSetChanged();
+        Log.d("MSP", new Gson().toJsonTree(dbHelper.getCustomStatusList()).toString());
     }
 
     @Override
@@ -183,7 +196,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final String status = parent.getItemAtPosition(position).toString();
+                Status status = (Status) parent.getItemAtPosition(position);
                 executeUpdateStatus(status);
                 searchAutoComplete.setText(null);
                 searchMenuItem.collapseActionView();
@@ -213,22 +226,22 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final String status = parent.getItemAtPosition(position).toString();
+        Status status = (Status) parent.getItemAtPosition(position);
         executeUpdateStatus(status);
     }
 
-    private void executeUpdateStatus(final String status) {
+    private void executeUpdateStatus(final Status status) {
         StatusRequest request = new StatusRequest();
         request.setMobile(DataUtils.getMobileNumber(getActivity()));
-        request.setStatus(status);
-        request.setIcon(status);
+        request.setStatus(status.getStatus());
+        request.setIcon(status.getIcon());
         progressDialog.show();
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    DataUtils.saveStatus(getActivity(), status);
-                    int ico = Utils.getDrawableResByName(getActivity(), status);
+                    DataUtils.saveStatus(getActivity(), status.getStatus());
+                    int ico = Utils.getDrawableResByName(getActivity(), status.getIcon());
                     DataUtils.saveIcon(getActivity(), ico);
 
                     updateStatus();
@@ -256,7 +269,13 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         if (!TextUtils.isEmpty(statusDialog.getMessage())) {
-                            updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
+//                            updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
+                            Status status = new Status();
+                            status.setStatus(statusDialog.getMessage());
+                            status.setIcon(statusDialog.getIcon());
+                            status.setDate(System.currentTimeMillis());
+                            dbHelper.insertOrUpdateCustomStatus(status);
+                            updateStatus();
                         }
                     }
                 });

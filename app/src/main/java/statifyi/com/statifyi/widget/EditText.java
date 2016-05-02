@@ -56,11 +56,14 @@ public class EditText extends android.widget.EditText {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MyFontView);
             String fontName = a.getString(R.styleable.MyFontView_fontName);
+            String fontStyle = a.getString(R.styleable.MyFontView_fontStyle);
             if (fontName == null) {
                 fontName = "Oswald";
             }
-            int textStyle = attrs.getAttributeIntValue(ANDROID_SCHEMA, "textStyle", 0);
-            setTypeface(Utils.selectTypeface(getContext(), fontName, textStyle));
+            if (fontStyle == null) {
+                fontStyle = "Regular";
+            }
+            setTypeface(Utils.selectTypeface(getContext(), fontName, fontStyle));
             a.recycle();
         }
         processAndroidAttributes(getContext(), attrs);

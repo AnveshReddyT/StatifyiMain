@@ -7,12 +7,14 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.adapter.StatusIconAdapter;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -31,7 +33,7 @@ public class CustomStatusDialog extends Dialog {
     EditText statusMessage;
 
     @InjectView(R.id.custom_status_icon)
-    ImageView statusIcon;
+    Spinner statusIcon;
 
     private UserAPIService userAPIService;
 
@@ -42,8 +44,6 @@ public class CustomStatusDialog extends Dialog {
     private Context mContext;
 
     private String[] statusMessages;
-
-    private int statusIconIndex;
 
     public CustomStatusDialog(Context context) {
         super(context);
@@ -73,7 +73,18 @@ public class CustomStatusDialog extends Dialog {
         }
 
         statusMessages = mContext.getResources().getStringArray(R.array.default_status_list);
-        statusIcon.setImageResource(Utils.getDrawableResByName(mContext, statusMessages[statusIconIndex]));
+        statusIcon.setAdapter(new StatusIconAdapter(mContext, R.layout.custom_status_icon_item, statusMessages));
+        statusIcon.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            }
+        });
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(getWindow().getAttributes());
@@ -107,23 +118,8 @@ public class CustomStatusDialog extends Dialog {
             statusMessage.setError("Cannot be blank!");
         } else {
             setMessage(statusMessage.getText().toString());
-            setIcon(statusMessages[statusIconIndex]);
+            setIcon(statusMessages[statusIcon.getSelectedItemPosition()]);
             dismiss();
         }
-    }
-
-    @OnClick(R.id.custom_status_icon_prev)
-    public void setStatusIconPrev(View view) {
-        if (statusIconIndex == 0) {
-            statusIconIndex = statusMessages.length;
-        }
-        statusIconIndex = statusIconIndex - 1;
-        statusIcon.setImageResource(Utils.getDrawableResByName(mContext, statusMessages[statusIconIndex]));
-    }
-
-    @OnClick(R.id.custom_status_icon_next)
-    public void setStatusIconNext(View view) {
-        statusIconIndex = (statusIconIndex + 1) % statusMessages.length;
-        statusIcon.setImageResource(Utils.getDrawableResByName(mContext, statusMessages[statusIconIndex]));
     }
 }

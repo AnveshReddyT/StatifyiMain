@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
+import butterknife.ButterKnife;
 import statifyi.com.statifyi.utils.DataUtils;
 
 public class SplashScreen extends AppCompatActivity {
@@ -14,8 +15,8 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-
-        int SPLASH_TIME_OUT = 2000;
+        ButterKnife.inject(this);
+        int SPLASH_TIME_OUT = 2500;
 
         new Handler().postDelayed(new Runnable() {
 

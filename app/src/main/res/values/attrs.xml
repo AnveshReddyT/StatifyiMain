@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="MyFontView">
         <attr name="fontName" format="string" />
+        <attr name="fontStyle" format="string" />
     </declare-styleable>
     <declare-styleable name="MyViewPager">
         <attr name="swipeable" format="boolean" />

@@ -64,22 +64,8 @@ public class Utils {
         return upArrow;
     }
 
-    public static Typeface selectTypeface(Context context, String fontName, int textStyle) {
-        if (fontName.contentEquals("Oswald")) {
-            switch (textStyle) {
-                case 1: // bold
-                    return Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Bold.ttf");
-
-                case 2: // italic
-                    return Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Italic.ttf");
-
-                case 0: // regular
-                default:
-                    return Typeface.createFromAsset(context.getAssets(), "fonts/Oswald-Regular.ttf");
-            }
-        } else {
-            return null;
-        }
+    public static Typeface selectTypeface(Context context, String fontName, String fontStyle) {
+        return Typeface.createFromAsset(context.getAssets(), "fonts/" + fontName + "-" + fontStyle + ".ttf");
     }
 
     public static int dpToPx(int dp) {

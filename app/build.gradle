@@ -9,7 +9,7 @@ android {
         applicationId "statifyi.com.statifyi"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 3
+        versionCode 4
         versionName "1"
 
         renderscriptTargetApi 21

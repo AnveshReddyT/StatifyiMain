@@ -27,20 +27,21 @@ public class TextView extends android.widget.TextView {
     public TextView(Context context) {
         super(context);
         init(null);
-        setTypeface(Utils.selectTypeface(getContext(), "Oswald", 0));
     }
 
     private void init(AttributeSet attrs) {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MyFontView);
             String fontName = a.getString(R.styleable.MyFontView_fontName);
+            String fontStyle = a.getString(R.styleable.MyFontView_fontStyle);
             if (fontName == null) {
                 fontName = "Oswald";
             }
-            int textStyle = attrs.getAttributeIntValue(ANDROID_SCHEMA, "textStyle", 0);
-            setTypeface(Utils.selectTypeface(getContext(), fontName, textStyle));
+            if (fontStyle == null) {
+                fontStyle = "Regular";
+            }
+            setTypeface(Utils.selectTypeface(getContext(), fontName, fontStyle));
             a.recycle();
-//            processAndroidAttributes(getContext(), attrs);
         }
     }
 

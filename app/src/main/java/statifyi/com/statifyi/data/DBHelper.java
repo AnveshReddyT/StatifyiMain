@@ -10,10 +10,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.User;
+import statifyi.com.statifyi.model.Status;
 
 /**
  * Created by KT on 22/01/16.
@@ -25,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String USERS_TABLE_NAME = "users";
     public static final String CUSTOM_CALLS_TABLE_NAME = "custom_calls";
     public static final String CALL_LOGS_TABLE_NAME = "call_logs";
+    public static final String CUSTOM_STATUS_TABLE_NAME = "custom_status";
 
     public static final String USERS_COLUMN_MOBILE = "mobile";
     public static final String USERS_COLUMN_NAME = "name";
@@ -39,6 +43,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String CALL_LOGS_COLUMN_DATE = "date";
     public static final String CALL_LOGS_COLUMN_MESSAGE = "message";
+
+    public static final String CUSTOM_STATUS_COLUMN_NAME = "status";
+    public static final String CUSTOM_STATUS_COLUMN_ICON = "icon";
+    public static final String CUSTOM_STATUS_COLUMN_DATE = "date";
 
     private static final String CREATE_TABLE_USERS = "create table " + USERS_TABLE_NAME + " (" +
             USERS_COLUMN_MOBILE + " text," +
@@ -56,6 +64,11 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_CALL_LOGS = "create table " + CALL_LOGS_TABLE_NAME + " (" +
             CALL_LOGS_COLUMN_DATE + " integer," +
             CALL_LOGS_COLUMN_MESSAGE + " text)";
+
+    private static final String CREATE_TABLE_CUSTOM_STATUS = "create table " + CUSTOM_STATUS_TABLE_NAME + " (" +
+            CUSTOM_STATUS_COLUMN_NAME + " text," +
+            CUSTOM_STATUS_COLUMN_ICON + " text," +
+            CUSTOM_STATUS_COLUMN_DATE + " integer)";
 
     private static DBHelper mInstance = null;
 
@@ -77,6 +90,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_CUSTOM_CALLS);
         db.execSQL(CREATE_TABLE_CALL_LOGS);
+        db.execSQL(CREATE_TABLE_CUSTOM_STATUS);
     }
 
     @Override
@@ -84,6 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + CUSTOM_CALLS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + CALL_LOGS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CUSTOM_STATUS_TABLE_NAME);
         onCreate(db);
     }
 
@@ -279,6 +294,77 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor.close();
         }
         return customCallLogFromCursor;
+    }
+
+    public boolean insertOrUpdateCustomStatus(Status status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = getCustomStatusContentValues(status);
+        if (numberOfCustomStatuses() == 6) {
+            Cursor cursor = db.rawQuery("select * from " + CUSTOM_STATUS_TABLE_NAME, null);
+            if (cursor.moveToFirst()) {
+                String statusName = cursor.getString(cursor.getColumnIndex(CUSTOM_STATUS_COLUMN_NAME));
+                deletedCustomStatus(statusName);
+            }
+            if (!cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        db.insert(CUSTOM_STATUS_TABLE_NAME, null, contentValues);
+        return true;
+    }
+
+    @NonNull
+    private ContentValues getCustomStatusContentValues(Status status) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CUSTOM_STATUS_COLUMN_DATE, status.getDate());
+        contentValues.put(CUSTOM_STATUS_COLUMN_NAME, status.getStatus());
+        contentValues.put(CUSTOM_STATUS_COLUMN_ICON, status.getIcon());
+        return contentValues;
+    }
+
+    public int numberOfCustomStatuses() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return (int) DatabaseUtils.queryNumEntries(db, CUSTOM_STATUS_TABLE_NAME);
+    }
+
+    public ArrayList<Status> getCustomStatusList() {
+        ArrayList<Status> statuses = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + CUSTOM_STATUS_TABLE_NAME, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            statuses.add(getCustomStatusFromCursor(cursor));
+            cursor.moveToNext();
+        }
+        if (!cursor.isClosed()) {
+            cursor.close();
+        }
+        Collections.sort(statuses, new Comparator<Status>() {
+            @Override
+            public int compare(Status lhs, Status rhs) {
+                if (lhs.getDate() < rhs.getDate())
+                    return 1;
+                else if (lhs.getDate() == rhs.getDate())
+                    return 0;
+                else return -1;
+            }
+        });
+        return statuses;
+    }
+
+    @NonNull
+    private Status getCustomStatusFromCursor(Cursor cursor) {
+        Status status = new Status();
+        status.setStatus(cursor.getString(cursor.getColumnIndex(CUSTOM_STATUS_COLUMN_NAME)));
+        status.setIcon(cursor.getString(cursor.getColumnIndex(CUSTOM_STATUS_COLUMN_ICON)));
+        status.setDate(cursor.getLong(cursor.getColumnIndex(CUSTOM_STATUS_COLUMN_DATE)));
+        return status;
+    }
+
+    public Integer deletedCustomStatus(String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(CUSTOM_STATUS_TABLE_NAME, CUSTOM_STATUS_COLUMN_NAME + " = ?", new String[]{status});
     }
 
     @Override
