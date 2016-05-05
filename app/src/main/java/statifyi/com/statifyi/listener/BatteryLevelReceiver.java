@@ -19,6 +19,7 @@ import statifyi.com.statifyi.utils.Utils;
 public class BatteryLevelReceiver extends BroadcastReceiver {
 
     private static final String ON_LOW_BATTERY = "On Low Battery";
+
     private UserAPIService userAPIService;
 
     private SharedPreferences sharedPreferences;

@@ -16,7 +16,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         ButterKnife.inject(this);
-        int SPLASH_TIME_OUT = 2500;
+        int SPLASH_TIME_OUT = 500;
 
         new Handler().postDelayed(new Runnable() {
 
