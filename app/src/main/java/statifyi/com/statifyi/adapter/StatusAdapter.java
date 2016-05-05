@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -70,8 +68,8 @@ public class StatusAdapter extends BaseAdapter {
         Status statusMessage = statusMessages.get(position);
         holder.status.setText(statusMessage.getStatus());
         holder.icon.setImageResource(Utils.getDrawableResByName(mContext, statusMessage.getIcon()));
-        Animation scaleAnim = AnimationUtils.loadAnimation(mContext, R.anim.scale);
-        holder.icon.startAnimation(scaleAnim);
+//        Animation scaleAnim = AnimationUtils.loadAnimation(mContext, R.anim.scale);
+//        holder.icon.startAnimation(scaleAnim);
         return convertView;
     }
 

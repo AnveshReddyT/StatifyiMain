@@ -11,10 +11,11 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.balysv.materialripple.MaterialRippleLayout;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -60,12 +61,14 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     RelativeLayout dialpadStarLayout;
     @InjectView(R.id.dialpad_hash_layout)
     RelativeLayout dialpadHashLayout;
+    @InjectView(R.id.dialpad_message_layout)
+    RelativeLayout dialpadMessageLayout;
+    @InjectView(R.id.dialpad_call_layout)
+    RelativeLayout dialpadCallLayout;
+    @InjectView(R.id.dialpad_delete_layout)
+    RelativeLayout dialpadDeleteLayout;
     @InjectView(R.id.dialer_text)
     TextView dialerText;
-    @InjectView(R.id.dialer_input_delete)
-    ImageView deleteText;
-    @InjectView(R.id.dialer_call_btn)
-    android.widget.TextView dialerCallBtn;
     @InjectView(R.id.dialer_button_emergency)
     Button emergencyBtn;
     @InjectView(R.id.dialer_button_business)
@@ -111,39 +114,37 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         RelativeLayout[] layouts = {
                 dialpad0Layout, dialpad1Layout, dialpad2Layout, dialpad3Layout,
                 dialpad4Layout, dialpad5Layout, dialpad6Layout, dialpad7Layout,
-                dialpad8Layout, dialpad9Layout, dialpadHashLayout, dialpadStarLayout
+                dialpad8Layout, dialpad9Layout, dialpadHashLayout, dialpadStarLayout,
+                dialpadMessageLayout, dialpadCallLayout, dialpadDeleteLayout
+        };
+
+        Button buttons[] = {
+                emergencyBtn, businessBtn, casualbtn, customBtn
         };
 
         int width = Utils.getScreenWidth(getActivity()) - 64;
         int height = Utils.getScreenHeight(getActivity());
-        height = (int) (height * 0.75);
+        height = (int) (height * 0.7);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) dialpad0Layout.getLayoutParams();
         layoutParams.width = width / 3;
-        layoutParams.height = height / 5;
+        layoutParams.height = height / 6;
 
         for (RelativeLayout layout : layouts) {
             layout.setLayoutParams(layoutParams);
+            MaterialRippleLayout.on(layout)
+                    .rippleOverlay(true)
+                    .rippleAlpha(0.2f)
+                    .rippleColor(getResources().getColor(R.color.accentColor))
+                    .rippleHover(true)
+                    .create();
             layout.setOnClickListener(this);
         }
 
-        emergencyBtn.setOnClickListener(this);
-        businessBtn.setOnClickListener(this);
-        casualbtn.setOnClickListener(this);
-        customBtn.setOnClickListener(this);
+        for (Button button : buttons) {
 
-        deleteText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CharSequence editable = dialerText.getText();
-                if (!TextUtils.isEmpty(editable)) {
-                    String text = editable.toString();
-                    dialerText.setText(text.substring(0, text.length() - 1));
-                }
 
-            }
-        });
-
-        dialerCallBtn.setOnClickListener(this);
+            button.setOnClickListener(this);
+        }
 
         return root;
     }
@@ -187,12 +188,27 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             case R.id.dialpad_hash_layout:
                 dialerText.append("#");
                 break;
-            case R.id.dialer_call_btn:
+            case R.id.dialpad_call_layout:
                 CharSequence phone = dialerText.getText();
                 if (Patterns.PHONE.matcher(phone).matches()) {
                     Intent intent = new Intent(Intent.ACTION_CALL);
                     intent.setData(Uri.parse("tel:" + phone.toString()));
                     startActivity(intent);
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.dialpad_delete_layout:
+                CharSequence editable = dialerText.getText();
+                if (!TextUtils.isEmpty(editable)) {
+                    String text = editable.toString();
+                    dialerText.setText(text.substring(0, text.length() - 1));
+                }
+                break;
+            case R.id.dialpad_message_layout:
+                CharSequence mobile = dialerText.getText();
+                if (Patterns.PHONE.matcher(mobile).matches()) {
+                    Utils.sendSMS(getActivity(), mobile.toString());
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }

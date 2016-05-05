@@ -274,27 +274,32 @@ public class Utils {
 
     public static String getContactName(Context context, String telNum) {
         String name = null;
-        try {
-            ContentResolver cr = context.getContentResolver();
-            Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(telNum));
-            Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
-            if (cursor == null)
-                return telNum;
-            if (cursor.moveToFirst()) {
-                name = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        DBHelper dbHelper = DBHelper.getInstance(context);
+        String statifyName = dbHelper.getName(getLastTenDigits(telNum));
+        if (statifyName == null) {
+            try {
+                ContentResolver cr = context.getContentResolver();
+                Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(telNum));
+                Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+                if (cursor == null)
+                    return telNum;
+                if (cursor.moveToFirst()) {
+                    name = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+                }
+
+                if (!cursor.isClosed())
+                    cursor.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            if (!cursor.isClosed())
-                cursor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (name != null) {
-            return name;
+            if (name != null) {
+                return name;
+            } else {
+                return telNum;
+            }
         } else {
-            DBHelper dbHelper = DBHelper.getInstance(context);
-            String statifyName = dbHelper.getName(getLastTenDigits(telNum));
-            return statifyName == null ? telNum : statifyName;
+            return statifyName;
         }
     }
 
@@ -327,5 +332,20 @@ public class Utils {
         Intent chooserIntent = Intent.createChooser(shareIntent, "Share with");
         chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(chooserIntent);
+    }
+
+    public static void sendSMS(Context mContext, String mobile) {
+        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+
+        smsIntent.setData(Uri.parse("smsto:"));
+        smsIntent.setType("vnd.android-dir/mms-sms");
+        smsIntent.putExtra("address", mobile);
+        smsIntent.putExtra("sms_body", "");
+
+        try {
+            mContext.startActivity(smsIntent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(mContext, "SMS faild, please try again later.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -1,13 +1,22 @@
 package statifyi.com.statifyi.service;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -22,7 +31,8 @@ import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
 
-public class FloatingService extends Service {
+public class FloatingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private UserAPIService userAPIService;
 
@@ -41,6 +51,8 @@ public class FloatingService extends Service {
     };
     private CustomPhoneStateListener listener;
 
+    private GoogleApiClient mApiClient;
+
     /**
      * @param intent
      */
@@ -58,6 +70,13 @@ public class FloatingService extends Service {
         listener = new CustomPhoneStateListener(this, floatingPopup);
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
         registerReceiver(OutgoingCallReceiver, new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL));
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(ActivityRecognition.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mApiClient.connect();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -71,6 +90,8 @@ public class FloatingService extends Service {
         unregisterReceiver(OutgoingCallReceiver);
         listener.unregisterObserver();
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_NONE);
+        stopActivityRecognitionUpdates();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private void setExistingStatus(String mobile, String contactName, User mUser) {
@@ -150,5 +171,69 @@ public class FloatingService extends Service {
                 floatingPopup.setMessage(statusMessage);
             }
         });
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences.getBoolean(getString(R.string.key_auto_status), false)
+                && sharedPreferences.getBoolean(getString(R.string.key_driving_mode), false)) {
+            startActivityRecognitionUpdates();
+        }
+
+    }
+
+    private void startActivityRecognitionUpdates() {
+        if (mApiClient.isConnected()) {
+            PendingIntent pendingIntent = getActivityRecognitionPendingIntent();
+            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mApiClient, 10 * 60 * 1000, pendingIntent);
+        } else {
+            Log.d("STAT", "API not connected");
+        }
+    }
+
+    private void stopActivityRecognitionUpdates() {
+        if (mApiClient.isConnected()) {
+            PendingIntent pendingIntent = getActivityRecognitionPendingIntent();
+            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, pendingIntent);
+        } else {
+            Log.d("STAT", "API not connected");
+        }
+    }
+
+    private PendingIntent getActivityRecognitionPendingIntent() {
+        Intent intent = new Intent(this, ActivityRecognizeService.class);
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("STAT", "Connection Failed");
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (getString(R.string.key_auto_status).equals(key)) {
+            if (sharedPreferences.getBoolean(getString(R.string.key_auto_status), false)) {
+                if (sharedPreferences.getBoolean(getString(R.string.key_driving_mode), false)) {
+                    startActivityRecognitionUpdates();
+                }
+            } else {
+                stopActivityRecognitionUpdates();
+            }
+        } else if (getString(R.string.key_driving_mode).equals(key)) {
+            if (sharedPreferences.getBoolean(getString(R.string.key_driving_mode), false)) {
+                if (sharedPreferences.getBoolean(getString(R.string.key_auto_status), false)) {
+                    startActivityRecognitionUpdates();
+                }
+            } else {
+                stopActivityRecognitionUpdates();
+            }
+        }
     }
 }

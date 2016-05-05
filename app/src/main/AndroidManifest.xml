@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
     <permission
         android:name="statifyi.com.statifyi.permission.C2D_MESSAGE"
@@ -51,11 +52,9 @@
         <activity
             android:name=".RegistrationActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ProfileActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".SplashScreen"
             android:screenOrientation="portrait">
@@ -128,7 +127,11 @@
             android:name=".service.GCMSubscribeService"
             android:exported="false" />
 
-        <activity android:name=".DashboardActivity"></activity>
+        <activity android:name=".DashboardActivity" />
+
+        <service
+            android:name=".service.ActivityRecognizeService"
+            android:exported="false" />
     </application>
 
 </manifest>

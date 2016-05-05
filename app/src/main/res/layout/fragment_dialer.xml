@@ -20,16 +20,6 @@
         android:textColorHint="@color/gray"
         android:textSize="18sp" />
 
-    <ImageView
-        android:id="@+id/dialer_input_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/dialer_shadow"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@id/dialer_text"
-        android:padding="16dp"
-        android:src="@drawable/ic_dial_back" />
-
     <View
         android:id="@+id/dialer_shadow"
         android:layout_width="match_parent"

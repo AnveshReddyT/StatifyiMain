@@ -63,6 +63,8 @@ public class StatusUtils {
             return android.R.color.holo_red_dark;
         } else if (mContext.getString(R.string.business_call).equals(message)) {
             return android.R.color.holo_blue_dark;
+        } else if (mContext.getString(R.string.casual_call).equals(message)) {
+            return android.R.color.holo_purple;
         } else {
             return R.color.accentColor;
         }
