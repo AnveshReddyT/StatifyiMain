@@ -51,8 +51,8 @@ public class StatusUtils {
             return R.drawable.ic_call_emergency;
         } else if (mContext.getString(R.string.business_call).equals(message)) {
             return R.drawable.ic_call_business;
-        } else if (mContext.getString(R.string.casual_call).equals(message)) {
-            return R.drawable.ic_call_casual;
+        } else if (mContext.getString(R.string.normal_call).equals(message)) {
+            return R.drawable.ic_dial_call;
         } else {
             return R.drawable.ic_call_custom;
         }

@@ -83,6 +83,7 @@
     <string name="emergency_call">Emergency Call</string>
     <string name="business_call">Business Call</string>
     <string name="casual_call">Casual Call</string>
+    <string name="normal_call">Normal Call</string>
 
     <string name="invalid_number">Please dial a valid number!</string>
 

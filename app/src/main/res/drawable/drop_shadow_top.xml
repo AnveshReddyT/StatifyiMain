@@ -28,32 +28,6 @@
             <solid android:color="#10333333" />
         </shape>
     </item>
-    <item>
-        <shape>
-            <padding
-                android:bottom="0dp"
-                android:left="0dp"
-                android:right="0dp"
-                android:top="1dp" />
-
-            <corners android:radius="1dp" />
-
-            <solid android:color="#20333333" />
-        </shape>
-    </item>
-    <item>
-        <shape>
-            <padding
-                android:bottom="0dp"
-                android:left="0dp"
-                android:right="0dp"
-                android:top="1dp" />
-
-            <corners android:radius="1dp" />
-
-            <solid android:color="#30333333" />
-        </shape>
-    </item>
 
     <!-- Background -->
     <item>

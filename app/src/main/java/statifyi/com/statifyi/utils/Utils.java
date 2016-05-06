@@ -125,6 +125,40 @@ public class Utils {
         return contacts;
     }
 
+    public static List<Contact> suggestPhoneContacts(Context cntx, String partial) {
+        final String[] PROJECTION = new String[]{
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_URI
+        };
+        List<String> temp = new ArrayList<>();
+        List<Contact> contacts = new ArrayList<>();
+        Uri uri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode(partial));
+        Cursor cursor = cntx.getContentResolver().query(uri, PROJECTION, null, null, null);
+        if (cursor == null) {
+            return contacts;
+        }
+        Integer contactsCount = cursor.getCount();
+        if (contactsCount > 0) {
+            while (cursor.moveToNext()) {
+                String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                String imageUri = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+                String phoneNo = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phoneNo = phoneNo.replaceAll(" ", "");
+                if (!temp.contains(phoneNo)) {
+                    Contact mContact = new Contact();
+                    mContact.setMobile(phoneNo);
+                    mContact.setName(contactName);
+                    mContact.setPhoto(imageUri);
+                    contacts.add(mContact);
+                    temp.add(phoneNo);
+                }
+            }
+            cursor.close();
+        }
+        return contacts;
+    }
+
     public static String getLastTenDigits(String number) {
         if (TextUtils.isEmpty(number)) {
             return null;

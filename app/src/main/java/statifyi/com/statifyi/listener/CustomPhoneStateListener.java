@@ -10,6 +10,7 @@ import android.util.Log;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -24,8 +25,6 @@ import statifyi.com.statifyi.widget.FloatingPopup;
  * Created by KT on 9/27/15.
  */
 public class CustomPhoneStateListener extends PhoneStateListener {
-
-    private static final String NORMAL_CALL = "Normal Call";
 
     private Context mContext;
 
@@ -92,7 +91,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     floatingPopup.setPopupMenu(false);
                     floatingPopup.setMobile(lastTenDigits);
                     floatingPopup.setTime("from " + contactName);
-                    String message = customCall == null ? NORMAL_CALL : customCall.getMessage();
+                    String message = customCall == null ? mContext.getString(R.string.normal_call) : customCall.getMessage();
                     floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(message, mContext));
                     floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(message, mContext));
                     floatingPopup.setMessage(message);

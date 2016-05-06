@@ -17,13 +17,13 @@
         android:gravity="center"
         android:hint="@string/hint_dial_number"
         android:textColor="@color/accentColor"
-        android:textColorHint="@color/gray"
+        android:textColorHint="@color/dialpad_divider"
         android:textSize="18sp" />
 
     <View
         android:id="@+id/dialer_shadow"
         android:layout_width="match_parent"
-        android:layout_height="16dp"
+        android:layout_height="10dp"
         android:layout_above="@+id/layout_dialpad"
         android:background="@drawable/drop_shadow_top" />
 
