@@ -156,6 +156,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
         if (getActivity().getIntent().hasExtra(PARAM_MOBILE_NUM)) {
             dialerText.setText(getActivity().getIntent().getStringExtra(PARAM_MOBILE_NUM));
+            fetchContacts();
         }
         LinearLayout[] layouts = {
                 dialpad0Layout, dialpad1Layout, dialpad2Layout, dialpad3Layout,
