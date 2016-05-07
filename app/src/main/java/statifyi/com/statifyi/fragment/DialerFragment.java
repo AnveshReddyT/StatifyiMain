@@ -31,6 +31,7 @@ import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.CustomCallDialog;
+import statifyi.com.statifyi.dialog.InfoDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Contact;
 import statifyi.com.statifyi.utils.DataUtils;
@@ -357,6 +358,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                         Intent intent = new Intent(Intent.ACTION_CALL);
                         intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
                         startActivity(intent);
+                    } else {
+                        showInfoDialog(dialerText.getText().toString());
                     }
                 }
             }
@@ -367,6 +370,14 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 Utils.showToast(getActivity(), "Failed! Please try again.");
             }
         });
+    }
+
+    private void showInfoDialog(String mobile) {
+        String contact = Utils.getContactName(getActivity(), mobile);
+        InfoDialog infoDialog = new InfoDialog(getActivity());
+        infoDialog.show();
+        infoDialog.setInfoTitle("STATIFYI");
+        infoDialog.setMessage("You cannot make a custom call!\n" + contact + " is not on StatiFYI.");
     }
 
 }

@@ -4,12 +4,12 @@ import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import statifyi.com.statifyi.service.FloatingService;
+import statifyi.com.statifyi.utils.DataUtils;
 
 public class OnBootReceiver extends BroadcastReceiver {
-
-    private AlarmManager alarmManager;
 
     public OnBootReceiver() {
     }
@@ -17,9 +17,11 @@ public class OnBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Intent serviceIntent = new Intent(context, FloatingService.class);
-        context.startService(serviceIntent);
+        if (!TextUtils.isEmpty(DataUtils.getMobileNumber(context))) {
+            Intent serviceIntent = new Intent(context, FloatingService.class);
+            context.startService(serviceIntent);
+        }
     }
 }

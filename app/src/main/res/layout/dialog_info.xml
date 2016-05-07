@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <statifyi.com.statifyi.widget.TextView
+        android:id="@+id/info_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/accentColor"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="@color/white" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp">
+
+        <statifyi.com.statifyi.widget.TextView
+            android:id="@+id/info_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/info_btn_layout"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:textColor="@color/primaryColorDark" />
+
+        <LinearLayout
+            android:id="@+id/info_btn_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/info_close_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_close_btn"
+                android:paddingBottom="8dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:paddingTop="8dp"
+                android:text="CLOSE"
+                android:textColor="@color/accentColor"
+                android:textSize="12sp" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/info_invite_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:background="@drawable/bg_rectangle_rounded_fill_green"
+                android:paddingBottom="8dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:paddingTop="8dp"
+                android:text="INVITE"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
