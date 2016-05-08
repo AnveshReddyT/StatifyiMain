@@ -143,27 +143,31 @@ public class RegisterMobileFragment extends Fragment {
             final String mobile = mobileText.getText().toString();
             request.setMobile(mobile);
 
-            progressDialog.show();
-            userAPIService.registerUser(request).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Response<Void> response, Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        DataUtils.saveMobile(getActivity(), mobile);
-                        DataUtils.setActive(getActivity(), false);
-                        registerBtn.setText(R.string.join_statifyi);
-                        registerBtn.setEnabled(true);
-                        ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));
-                    } else {
-                        Utils.showToast(getActivity(), "Failed to register");
+            if (NetworkUtils.isOnline()) {
+                progressDialog.show();
+                userAPIService.registerUser(request).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Response<Void> response, Retrofit retrofit) {
+                        if (response.isSuccess()) {
+                            DataUtils.saveMobile(getActivity(), mobile);
+                            DataUtils.setActive(getActivity(), false);
+                            registerBtn.setText(R.string.join_statifyi);
+                            registerBtn.setEnabled(true);
+                            ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));
+                        } else {
+                            Utils.showToast(getActivity(), "Failed to register");
+                        }
+                        progressDialog.dismiss();
                     }
-                    progressDialog.dismiss();
-                }
 
-                @Override
-                public void onFailure(Throwable t) {
-                    progressDialog.dismiss();
-                }
-            });
+                    @Override
+                    public void onFailure(Throwable t) {
+                        progressDialog.dismiss();
+                    }
+                });
+            } else {
+                Utils.showToast(getActivity(), "No Internet!");
+            }
         }
     }
 

@@ -196,7 +196,10 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Status status = (Status) parent.getItemAtPosition(position);
+                String statusString = (String) parent.getItemAtPosition(position);
+                Status status = new Status();
+                status.setStatus(statusString);
+                status.setIcon(statusString);
                 executeUpdateStatus(status);
                 searchAutoComplete.setText(null);
                 searchMenuItem.collapseActionView();
@@ -235,28 +238,32 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         request.setMobile(DataUtils.getMobileNumber(getActivity()));
         request.setStatus(status.getStatus());
         request.setIcon(status.getIcon());
-        progressDialog.show();
-        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    DataUtils.saveStatus(getActivity(), status.getStatus());
-                    int ico = Utils.getDrawableResByName(getActivity(), status.getIcon());
-                    DataUtils.saveIcon(getActivity(), ico);
+        if (NetworkUtils.isOnline()) {
+            progressDialog.show();
+            userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Response<Void> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        DataUtils.saveStatus(getActivity(), status.getStatus());
+                        int ico = Utils.getDrawableResByName(getActivity(), status.getIcon());
+                        DataUtils.saveIcon(getActivity(), ico);
 
-                    updateStatus();
-                } else {
+                        updateStatus();
+                    } else {
+                        Utils.showToast(getActivity(), "Failed to change status");
+                    }
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    progressDialog.dismiss();
                     Utils.showToast(getActivity(), "Failed to change status");
                 }
-                progressDialog.dismiss();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                progressDialog.dismiss();
-                Utils.showToast(getActivity(), "Failed to change status");
-            }
-        });
+            });
+        } else {
+            Utils.showToast(getActivity(), "No Internet!");
+        }
     }
 
     @Override
@@ -284,31 +291,35 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     }
 
     private void updateCustomStatus(final String status, final String icon) {
-        progressDialog.show();
         StatusRequest request = new StatusRequest();
         request.setMobile(DataUtils.getMobileNumber(getActivity()));
         request.setStatus(status);
         request.setIcon(icon);
-        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    DataUtils.saveStatus(getActivity(), status);
-                    int ico = Utils.getDrawableResByName(getActivity(), icon);
-                    DataUtils.saveIcon(getActivity(), ico == 0 ? R.drawable.ic_launcher : ico);
+        if (NetworkUtils.isOnline()) {
+            progressDialog.show();
+            userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Response<Void> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        DataUtils.saveStatus(getActivity(), status);
+                        int ico = Utils.getDrawableResByName(getActivity(), icon);
+                        DataUtils.saveIcon(getActivity(), ico == 0 ? R.drawable.ic_launcher : ico);
 
-                    updateStatus();
-                } else {
+                        updateStatus();
+                    } else {
+                        Utils.showToast(getActivity(), "Failed to change status");
+                    }
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    progressDialog.dismiss();
                     Utils.showToast(getActivity(), "Failed to change status");
                 }
-                progressDialog.dismiss();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                progressDialog.dismiss();
-                Utils.showToast(getActivity(), "Failed to change status");
-            }
-        });
+            });
+        } else {
+            Utils.showToast(getActivity(), "No Internet!");
+        }
     }
 }

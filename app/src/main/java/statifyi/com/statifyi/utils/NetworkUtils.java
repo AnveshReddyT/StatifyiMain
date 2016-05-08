@@ -123,6 +123,19 @@ public class NetworkUtils {
         return BASE_URL + BASE_CONTEXT + "/image/" + mobile;
     }
 
+    public static boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static Downloader createBigCacheDownloader(Context ctx) {
         File cacheDir = createDefaultCacheDir(ctx, BIG_CACHE_PATH);
         long cacheSize = calculateDiskCacheSize(cacheDir);
@@ -138,7 +151,6 @@ public class NetworkUtils {
         okHttpClient.setCache(new Cache(cacheDir, cacheSize));
         OkHttpDownloader okHttpDownloader = new OkHttpDownloader(okHttpClient);
 
-        OkHttpDownloader downloader = new OkHttpDownloader(cacheDir, cacheSize);
         return okHttpDownloader;
     }
 

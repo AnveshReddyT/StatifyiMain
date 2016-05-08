@@ -112,65 +112,69 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
             floatingPopup.resetPopup();
             floatingPopup.setMobile(tenDigitNumber);
         }
-        userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+        if (NetworkUtils.isOnline()) {
+            userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
-            String contactName = mContactName == null ? phoneNumber : mContactName;
+                String contactName = mContactName == null ? phoneNumber : mContactName;
 
-            @Override
-            public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
-                if (floatingPopup != null && floatingPopup.isShowing()) {
-                    String statusMessage;
-                    if (response.code() == 200) {
-                        StatusResponse s = response.body();
-                        String status = s.getStatus().toUpperCase();
-                        String icon = s.getIcon();
-                        String name = s.getName();
-                        long time = s.getUpdatedTime();
+                @Override
+                public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                    if (floatingPopup != null && floatingPopup.isShowing()) {
+                        String statusMessage;
+                        if (response.code() == 200) {
+                            StatusResponse s = response.body();
+                            String status = s.getStatus().toUpperCase();
+                            String icon = s.getIcon();
+                            String name = s.getName();
+                            long time = s.getUpdatedTime();
 //                        floatingPopup.setMobile(tenDigitNumber);
-                        contactName = contactName.equals(phoneNumber) ? name : contactName;
+                            contactName = contactName.equals(phoneNumber) ? name : contactName;
+                            if (status.isEmpty()) {
+                                statusMessage = contactName + getResources().getString(R.string.status_not_set);
+                            } else {
+                                Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
+                                statusMessage = contactName + " is " + status;
+                            }
+                            floatingPopup.setPopupMenu(false);
+                            floatingPopup.setTime(Utils.timeAgo(s.getUpdatedTime()));
+                            floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
+                        } else {
+                            floatingPopup.setPopupMenu(true);
+                            floatingPopup.setTime(null);
+                            statusMessage = contactName + getResources().getString(R.string.status_user_not_found);
+                            floatingPopup.setStatusIcon(R.drawable.ic_status);
+                        }
+                        floatingPopup.setMessage(statusMessage);
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    String statusMessage;
+                    User user = dbHelper.getUser(tenDigitNumber);
+                    if (user != null) {
+                        String status = user.getStatus().toUpperCase();
+                        String icon = user.getIcon();
                         if (status.isEmpty()) {
                             statusMessage = contactName + getResources().getString(R.string.status_not_set);
                         } else {
-                            Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
-                            statusMessage = contactName + " is " + status;
+                            statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
                         }
+//                    floatingPopup.setMobile(tenDigitNumber);
                         floatingPopup.setPopupMenu(false);
-                        floatingPopup.setTime(Utils.timeAgo(s.getUpdatedTime()));
+                        floatingPopup.setTime(Utils.timeAgo(user.getUpdated()));
                         floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
                     } else {
-                        floatingPopup.setPopupMenu(true);
                         floatingPopup.setTime(null);
-                        statusMessage = contactName + getResources().getString(R.string.status_user_not_found);
+                        statusMessage = getResources().getString(R.string.status_no_network);
                         floatingPopup.setStatusIcon(R.drawable.ic_status);
                     }
                     floatingPopup.setMessage(statusMessage);
                 }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                String statusMessage;
-                User user = dbHelper.getUser(tenDigitNumber);
-                if (user != null) {
-                    String status = user.getStatus().toUpperCase();
-                    String icon = user.getIcon();
-                    if (status.isEmpty()) {
-                        statusMessage = contactName + getResources().getString(R.string.status_not_set);
-                    } else {
-                        statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
-                    }
-//                    floatingPopup.setMobile(tenDigitNumber);
-                    floatingPopup.setPopupMenu(false);
-                    floatingPopup.setTime(Utils.timeAgo(user.getUpdated()));
-                    floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
-                } else {
-                    floatingPopup.setTime(null);
-                    statusMessage = getResources().getString(R.string.status_no_network);
-                    floatingPopup.setStatusIcon(R.drawable.ic_status);
-                }
-                floatingPopup.setMessage(statusMessage);
-            }
-        });
+            });
+        } else {
+//            Utils.showToast(FloatingService.this, "No Internet!");
+        }
     }
 
     @Override

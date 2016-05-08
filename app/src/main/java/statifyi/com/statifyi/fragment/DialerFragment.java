@@ -348,28 +348,32 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         request.setFromMobile(DataUtils.getMobileNumber(getActivity()));
         request.setMobile(Utils.getLastTenDigits(dialerText.getText().toString()));
         request.setMessage(message);
-        progressDialog.show();
-        userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
-            @Override
-            public void onResponse(Response<Boolean> response, Retrofit retrofit) {
-                progressDialog.dismiss();
-                if (response.isSuccess()) {
-                    if (response.body()) {
-                        Intent intent = new Intent(Intent.ACTION_CALL);
-                        intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
-                        startActivity(intent);
-                    } else {
-                        showInfoDialog(dialerText.getText().toString());
+        if (NetworkUtils.isOnline()) {
+            progressDialog.show();
+            userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Response<Boolean> response, Retrofit retrofit) {
+                    progressDialog.dismiss();
+                    if (response.isSuccess()) {
+                        if (response.body()) {
+                            Intent intent = new Intent(Intent.ACTION_CALL);
+                            intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
+                            startActivity(intent);
+                        } else {
+                            showInfoDialog(dialerText.getText().toString());
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
-                progressDialog.dismiss();
-                Utils.showToast(getActivity(), "Failed! Please try again.");
-            }
-        });
+                @Override
+                public void onFailure(Throwable t) {
+                    progressDialog.dismiss();
+                    Utils.showToast(getActivity(), "Failed! Please try again.");
+                }
+            });
+        } else {
+            Utils.showToast(getActivity(), "No Internet!");
+        }
     }
 
     private void showInfoDialog(String mobile) {

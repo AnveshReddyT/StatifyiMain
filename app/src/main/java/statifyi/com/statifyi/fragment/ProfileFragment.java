@@ -141,38 +141,42 @@ public class ProfileFragment extends Fragment {
     private void doUpdateProfile(final String name) {
         UserNameRequest request = new UserNameRequest();
         request.setName(name);
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
-        userAPIService.setUserName(DataUtils.getMobileNumber(getActivity()), request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    DataUtils.saveName(getActivity(), name);
-                    if (DataUtils.isAvatarChanged(getActivity())) {
-                        doUploadImage();
+        if (NetworkUtils.isOnline()) {
+            if (!progressDialog.isShowing()) {
+                progressDialog.show();
+            }
+            userAPIService.setUserName(DataUtils.getMobileNumber(getActivity()), request).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Response<Void> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        DataUtils.saveName(getActivity(), name);
+                        if (DataUtils.isAvatarChanged(getActivity())) {
+                            doUploadImage();
+                        } else {
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                            }
+                            finishUpdate();
+                        }
                     } else {
                         if (progressDialog.isShowing()) {
                             progressDialog.dismiss();
                         }
-                        finishUpdate();
+                        Utils.showToast(getActivity(), "Failed to update profile");
                     }
-                } else {
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
                     if (progressDialog.isShowing()) {
                         progressDialog.dismiss();
                     }
                     Utils.showToast(getActivity(), "Failed to update profile");
                 }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                Utils.showToast(getActivity(), "Failed to update profile");
-            }
-        });
+            });
+        } else {
+            Utils.showToast(getActivity(), "No Internet!");
+        }
     }
 
     private void finishUpdate() {

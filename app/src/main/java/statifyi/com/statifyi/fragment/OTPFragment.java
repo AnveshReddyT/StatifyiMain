@@ -132,48 +132,56 @@ public class OTPFragment extends Fragment {
         final String mobileNumber = DataUtils.getMobileNumber(getActivity());
         request.setMobile(mobileNumber);
 
-        progressDialog.show();
-        userAPIService.activateUser(request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
-                    userAPIService.getUserStatus(request.getMobile()).enqueue(new Callback<StatusResponse>() {
-                        @Override
-                        public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
-                            if (response.isSuccess()) {
-                                StatusResponse s = response.body();
-                                DataUtils.setActive(getActivity(), true);
-                                DataUtils.saveName(getActivity(), s.getName());
-                                DataUtils.saveStatus(getActivity(), s.getStatus());
-                                DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
-                                if (!TextUtils.isEmpty(s.getName())) {
-                                    NetworkUtils.providePicasso(getActivity()).load(NetworkUtils.provideAvatarUrl(mobileNumber)).into(target);
-                                } else {
-                                    progressDialog.dismiss();
-                                    launchHomeScreen();
+        if (NetworkUtils.isOnline()) {
+            progressDialog.show();
+            userAPIService.activateUser(request).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Response<Void> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
+                        if (NetworkUtils.isOnline()) {
+                            userAPIService.getUserStatus(request.getMobile()).enqueue(new Callback<StatusResponse>() {
+                                @Override
+                                public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                                    if (response.isSuccess()) {
+                                        StatusResponse s = response.body();
+                                        DataUtils.setActive(getActivity(), true);
+                                        DataUtils.saveName(getActivity(), s.getName());
+                                        DataUtils.saveStatus(getActivity(), s.getStatus());
+                                        DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
+                                        if (!TextUtils.isEmpty(s.getName())) {
+                                            NetworkUtils.providePicasso(getActivity()).load(NetworkUtils.provideAvatarUrl(mobileNumber)).into(target);
+                                        } else {
+                                            progressDialog.dismiss();
+                                            launchHomeScreen();
+                                        }
+                                    }
                                 }
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Throwable t) {
-                            progressDialog.dismiss();
-                            t.printStackTrace();
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    progressDialog.dismiss();
+                                    t.printStackTrace();
+                                }
+                            });
+                        } else {
+                            Utils.showToast(getActivity(), "No Internet!");
                         }
-                    });
-                } else {
+                    } else {
+                        progressDialog.dismiss();
+                        Utils.showToast(getActivity(), "Failed to activate");
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
                     progressDialog.dismiss();
                     Utils.showToast(getActivity(), "Failed to activate");
                 }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                progressDialog.dismiss();
-                Utils.showToast(getActivity(), "Failed to activate");
-            }
-        });
+            });
+        } else {
+            Utils.showToast(getActivity(), "No Internet!");
+        }
     }
 
     @OnClick(R.id.register_otp_change_number)

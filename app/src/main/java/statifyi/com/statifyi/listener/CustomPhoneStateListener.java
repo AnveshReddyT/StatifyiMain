@@ -121,26 +121,30 @@ public class CustomPhoneStateListener extends PhoneStateListener {
 
     private void fetchStatus(final String phoneNumber) {
         final String tenDigitNumber = Utils.getLastTenDigits(phoneNumber);
-        userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+        if (NetworkUtils.isOnline()) {
+            userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
-            @Override
-            public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
-                if (floatingPopup != null && floatingPopup.isShowing()) {
-                    if (response.code() == 200) {
-                        StatusResponse s = response.body();
-                        String status = s.getStatus().toUpperCase();
-                        String icon = s.getIcon();
-                        String name = s.getName();
-                        long time = s.getUpdatedTime();
-                        Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
-                        floatingPopup.setTime("from " + name);
+                @Override
+                public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                    if (floatingPopup != null && floatingPopup.isShowing()) {
+                        if (response.code() == 200) {
+                            StatusResponse s = response.body();
+                            String status = s.getStatus().toUpperCase();
+                            String icon = s.getIcon();
+                            String name = s.getName();
+                            long time = s.getUpdatedTime();
+                            Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
+                            floatingPopup.setTime("from " + name);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(Throwable t) {
+                }
+            });
+        } else {
+//            Utils.showToast(mContext, "No Internet!");
+        }
     }
 }
