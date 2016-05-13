@@ -141,7 +141,9 @@ public class RegisterMobileFragment extends Fragment {
         if (isMobileNumberValid()) {
             RegisterUserRequest request = new RegisterUserRequest();
             final String mobile = mobileText.getText().toString();
+            final String countryCode = countryCodeText.getText().toString();
             request.setMobile(mobile);
+            request.setCountryCode(countryCode);
 
             if (NetworkUtils.isOnline()) {
                 progressDialog.show();

@@ -12,6 +12,7 @@ public class User {
     private String status;
     private boolean active;
     private String icon;
+    private int autoStatus;
     private long updated;
 
     public String getMobile() {
@@ -60,6 +61,14 @@ public class User {
 
     public void setUpdated(long updated) {
         this.updated = updated;
+    }
+
+    public int getAutoStatus() {
+        return autoStatus;
+    }
+
+    public void setAutoStatus(int autoStatus) {
+        this.autoStatus = autoStatus;
     }
 
     @Override

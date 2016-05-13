@@ -347,7 +347,7 @@ public class Utils {
         return false;
     }
 
-    public static void saveUserStatusToLocal(String status, String name, String icon, String phoneNumber, long time, DBHelper dbHelper) {
+    public static void saveUserStatusToLocal(String status, String name, String icon, String phoneNumber, int autoStatus, long time, DBHelper dbHelper) {
         User user = new User();
         user.setMobile(phoneNumber);
         user.setName(name);

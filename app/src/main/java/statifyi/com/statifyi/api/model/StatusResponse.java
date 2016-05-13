@@ -17,6 +17,9 @@ public class StatusResponse {
     @SerializedName("icon")
     private String icon;
 
+    @SerializedName("autoStatus")
+    private int autoStatus;
+
     @SerializedName("updatedTime")
     private long updatedTime;
 
@@ -50,6 +53,14 @@ public class StatusResponse {
 
     public void setUpdatedTime(long updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public int getAutoStatus() {
+        return autoStatus;
+    }
+
+    public void setAutoStatus(int autoStatus) {
+        this.autoStatus = autoStatus;
     }
 
     @Override

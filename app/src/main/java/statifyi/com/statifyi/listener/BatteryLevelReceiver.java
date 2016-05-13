@@ -59,6 +59,7 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
         request.setMobile(DataUtils.getMobileNumber(context));
         request.setStatus(status);
         request.setIcon(status);
+        request.setAutoStatus(1);
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {

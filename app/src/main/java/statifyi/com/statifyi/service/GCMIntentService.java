@@ -44,11 +44,12 @@ public class GCMIntentService extends GcmListenerService {
                 String status = s.getStatus().toUpperCase();
                 String name = s.getName();
                 String icon = s.getIcon();
+                int autoStatus = s.getAutoStatus();
                 long time = s.getUpdatedTime();
                 if (!status.isEmpty()) {
                     String phoneNumber = from.replace(TOPICS, "");
                     Log.d("STAT", s.toString());
-                    Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, time, dbHelper);
+                    Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, autoStatus, time, dbHelper);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
                     if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
                         sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status to " + status);

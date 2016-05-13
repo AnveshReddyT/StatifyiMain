@@ -97,7 +97,11 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
     private void setExistingStatus(String mobile, String contactName, User mUser) {
         floatingPopup.setMessage(contactName + " is " + mUser.getStatus().toUpperCase());
         floatingPopup.setMobile(Utils.getLastTenDigits(mobile));
-        floatingPopup.setTime(Utils.timeAgo(mUser.getUpdated()));
+        String updatedTime = Utils.timeAgo(mUser.getUpdated());
+        if (mUser.getAutoStatus() > 0) {
+            updatedTime += " - Auto-status";
+        }
+        floatingPopup.setTime(updatedTime);
         floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
     }
 
@@ -126,17 +130,22 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                             String status = s.getStatus().toUpperCase();
                             String icon = s.getIcon();
                             String name = s.getName();
+                            int autoStatus = s.getAutoStatus();
                             long time = s.getUpdatedTime();
 //                        floatingPopup.setMobile(tenDigitNumber);
                             contactName = contactName.equals(phoneNumber) ? name : contactName;
                             if (status.isEmpty()) {
                                 statusMessage = contactName + getResources().getString(R.string.status_not_set);
                             } else {
-                                Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
+                                Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, autoStatus, time, dbHelper);
                                 statusMessage = contactName + " is " + status;
                             }
+                            String updatedTime = Utils.timeAgo(s.getUpdatedTime());
+                            if (s.getAutoStatus() > 0) {
+                                updatedTime += " - Auto-status";
+                            }
                             floatingPopup.setPopupMenu(false);
-                            floatingPopup.setTime(Utils.timeAgo(s.getUpdatedTime()));
+                            floatingPopup.setTime(updatedTime);
                             floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
                         } else {
                             floatingPopup.setPopupMenu(true);

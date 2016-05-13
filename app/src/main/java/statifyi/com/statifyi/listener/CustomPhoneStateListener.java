@@ -132,8 +132,9 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                             String status = s.getStatus().toUpperCase();
                             String icon = s.getIcon();
                             String name = s.getName();
+                            int autoStatus = s.getAutoStatus();
                             long time = s.getUpdatedTime();
-                            Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, time, dbHelper);
+                            Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, autoStatus, time, dbHelper);
                             floatingPopup.setTime("from " + name);
                         }
                     }

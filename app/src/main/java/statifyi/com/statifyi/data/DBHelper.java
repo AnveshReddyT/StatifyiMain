@@ -35,6 +35,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String USERS_COLUMN_STATUS = "status";
     public static final String USERS_COLUMN_ACTIVE = "active";
     public static final String USERS_COLUMN_ICON = "icon";
+    public static final String USERS_COLUMN_AUTOSTATUS = "autostatus";
     public static final String USERS_COLUMN_UPDATED = "updated";
 
     public static final String CUSTOM_CALLS_COLUMN_MOBILE = "mobile";
@@ -54,6 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
             USERS_COLUMN_STATUS + " text," +
             USERS_COLUMN_ACTIVE + " integer," +
             USERS_COLUMN_ICON + " text," +
+            USERS_COLUMN_AUTOSTATUS + " integer," +
             USERS_COLUMN_UPDATED + " text)";
 
     private static final String CREATE_TABLE_CUSTOM_CALLS = "create table " + CUSTOM_CALLS_TABLE_NAME + " (" +
@@ -122,6 +124,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(USERS_COLUMN_STATUS, user.getStatus());
         contentValues.put(USERS_COLUMN_ACTIVE, user.isActive() ? 1 : 0);
         contentValues.put(USERS_COLUMN_ICON, user.getIcon());
+        contentValues.put(USERS_COLUMN_AUTOSTATUS, user.getAutoStatus());
         contentValues.put(USERS_COLUMN_UPDATED, user.getUpdated());
         return contentValues;
     }
@@ -160,6 +163,7 @@ public class DBHelper extends SQLiteOpenHelper {
         user.setStatus(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_STATUS)));
         user.setActive(cursor.getInt(cursor.getColumnIndex(USERS_COLUMN_ACTIVE)) == 1);
         user.setIcon(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_ICON)));
+        user.setAutoStatus(cursor.getInt(cursor.getColumnIndex(USERS_COLUMN_AUTOSTATUS)));
         user.setUpdated(Long.parseLong(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_UPDATED))));
         return user;
     }

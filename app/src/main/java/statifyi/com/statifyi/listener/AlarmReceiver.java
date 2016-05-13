@@ -61,6 +61,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         request.setMobile(DataUtils.getMobileNumber(context));
         request.setStatus(status);
         request.setIcon(status);
+        request.setAutoStatus(2);
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
