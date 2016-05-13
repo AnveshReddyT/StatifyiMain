@@ -354,6 +354,7 @@ public class Utils {
         user.setStatus(status);
         user.setIcon(icon);
         user.setUpdated(time);
+        user.setAutoStatus(autoStatus);
         dbHelper.insertOrUpdateUser(user);
     }
 

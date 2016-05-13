@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -34,6 +36,7 @@ import statifyi.com.statifyi.dialog.CustomCallDialog;
 import statifyi.com.statifyi.dialog.InfoDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Contact;
+import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -343,9 +346,9 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void makeCustomCallRequest(String message) {
+    private void makeCustomCallRequest(final String message) {
         if (NetworkUtils.isOnline()) {
-            String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
+            final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
             CustomCallRequest request = new CustomCallRequest();
             request.setFromMobile(DataUtils.getMobileNumber(getActivity()));
             request.setMobile(lastTenDigits);
@@ -362,6 +365,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     public void onFailure(Throwable t) {
                     }
                 });
+                FloatingService.customCall = getCustomCall(message, lastTenDigits);
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
                 startActivity(intent);
@@ -373,6 +377,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                         progressDialog.dismiss();
                         if (response.isSuccess()) {
                             if (response.body()) {
+                                FloatingService.customCall = getCustomCall(message, lastTenDigits);
                                 Intent intent = new Intent(Intent.ACTION_CALL);
                                 intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
                                 startActivity(intent);
@@ -390,8 +395,17 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 });
             }
         } else {
-            Utils.showToast(getActivity(), "No Internet!");
+            Utils.showToast(getActivity(), "No Internet! Please make a normal call");
         }
+    }
+
+    @NonNull
+    private CustomCall getCustomCall(String message, String lastTenDigits) {
+        CustomCall customCall = new CustomCall();
+        customCall.setMessage(message);
+        customCall.setMobile(lastTenDigits);
+        customCall.setTime(System.currentTimeMillis());
+        return customCall;
     }
 
     private void showInfoDialog(String mobile) {

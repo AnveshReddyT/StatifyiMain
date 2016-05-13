@@ -7,5 +7,5 @@
         android:entryValues="@array/showStatusToValues"
         android:key="showStatusTo"
         android:summary="%s"
-        android:title="Who can see my status?" />
+        android:title="Who can see my profile?" />
 </PreferenceScreen>

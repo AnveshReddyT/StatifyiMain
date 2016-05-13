@@ -5,7 +5,6 @@ import android.database.ContentObserver;
 import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -47,7 +46,6 @@ public class CustomPhoneStateListener extends PhoneStateListener {
             if (customMessage != null) {
                 dbHelper.insertOrUpdateCallLog(mCallLog.getDate(), customMessage);
                 customMessage = null;
-                Log.d("STAT", dbHelper.getCustomCallLog(mCallLog.getDate()));
             }
         }
 

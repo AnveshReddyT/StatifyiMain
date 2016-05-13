@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -12,6 +13,7 @@ import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
+import statifyi.com.statifyi.fragment.StatusFragment;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -54,7 +56,7 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
         }
     }
 
-    private void updateStatus(Context context, String status) {
+    private void updateStatus(final Context context, String status) {
         StatusRequest request = new StatusRequest();
         request.setMobile(DataUtils.getMobileNumber(context));
         request.setStatus(status);
@@ -63,7 +65,9 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
         userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
-
+                if (response.isSuccess()) {
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
+                }
             }
 
             @Override

@@ -7,7 +7,7 @@
     <string name="welcome_message1">Know the status of your call recipient as you dial</string>
     <string name="welcome_message2">Know the status of your contacts</string>
     <string name="welcome_message3">Your Phone number is your ID</string>
-    <string name="register_message">We will send you a One Time Password via SMS to verify your Phone number. Ensure that you have a working SMS plan. Carrier charges may apply</string>
+    <string name="register_message">We will send you a Verification code via SMS to verify your Phone number. Ensure that you have a working SMS plan. Carrier charges may apply</string>
 
     <string name="menu_profile">Profile</string>
     <string name="menu_auto_status">Auto status</string>
@@ -20,9 +20,9 @@
 
     <string name="hint_mobile">Enter your Phone Number</string>
     <string name="hint_name">Enter your Full Name</string>
-    <string name="hint_otp">OTP</string>
+    <string name="hint_otp">Verification code</string>
     <string name="hint_dial_number">DIAL THE NUMBER</string>
-    <string name="otp_message">Did you get OTP via SMS to your Phone Number?\n Enter it here</string>
+    <string name="otp_message">Did you get Verification code via SMS to your Phone Number?\n Enter it here</string>
     <string name="hint_country">Choose your Country</string>
     <string name="hint_avatar">Click to change avatar</string>
     <string name="hello_world">Hello world!</string>
@@ -35,6 +35,7 @@
     <string name="verify_mobile">VERIFY MOBILE</string>
     <string name="update_profile">UPDATE</string>
     <string name="finish">FINISH</string>
+    <string name="resend_otp">Resend Verification code</string>
     <string name="change_mobile">Entered a wrong number? Tap here</string>
     <string name="_continue">CONTINUE</string>
     <string name="status_user_not_found">\u0020 is not on StatiFYI</string>

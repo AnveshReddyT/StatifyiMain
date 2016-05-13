@@ -3,12 +3,16 @@ package statifyi.com.statifyi.fragment;
 
 import android.app.Fragment;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
@@ -56,6 +60,8 @@ import statifyi.com.statifyi.widget.TextView;
 
 public class StatusFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, View.OnClickListener {
 
+    public static final String BROADCAST_ACTION_STATUS_UPDATE = "statifyi.broadcast.status_update";
+
     @InjectView(R.id.status_add_text_layout)
     RelativeLayout addStatusLayout;
 
@@ -88,7 +94,20 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     private ProgressDialog progressDialog;
 
     private DBHelper dbHelper;
+
     private StatusAdapter statusAdapter;
+
+    private boolean isLoaded;
+
+    private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (getUserVisibleHint()) {
+                updateStatus();
+            }
+        }
+    };
 
     public StatusFragment() {
         // Required empty public constructor
@@ -161,7 +180,26 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     @Override
     public void onResume() {
         super.onResume();
-        updateStatus();
+        if (!isLoaded) {
+            updateStatus();
+            isLoaded = true;
+        }
+        IntentFilter filter = new IntentFilter(BROADCAST_ACTION_STATUS_UPDATE);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onStatusChangeReceiver);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isLoaded) {
+            updateStatus();
+        }
     }
 
     private void updateStatus() {

@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -22,26 +24,26 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.listener.CustomPhoneStateListener;
+import statifyi.com.statifyi.model.CallLog;
 import statifyi.com.statifyi.utils.NetworkUtils;
+import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.FloatingPopup;
 
 public class FloatingService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    public static CustomCall customCall;
     private UserAPIService userAPIService;
-
     private DBHelper dbHelper;
-
     private TelephonyManager TelephonyMgr;
-
     private FloatingPopup floatingPopup;
-
     private BroadcastReceiver OutgoingCallReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -50,8 +52,24 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         }
     };
     private CustomPhoneStateListener listener;
-
     private GoogleApiClient mApiClient;
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            CallLog mCallLog = Utils.getCallLogs(FloatingService.this).get(0);
+            if (customCall != null) {
+                dbHelper.insertOrUpdateCallLog(mCallLog.getDate(), customCall.getMessage());
+                customCall = null;
+            }
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+    };
 
     /**
      * @param intent
@@ -69,6 +87,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         listener = new CustomPhoneStateListener(this, floatingPopup);
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+        getContentResolver().registerContentObserver(android.provider.CallLog.Calls.CONTENT_URI, true, mObserver);
         registerReceiver(OutgoingCallReceiver, new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL));
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(ActivityRecognition.API)
@@ -89,6 +108,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         super.onDestroy();
         unregisterReceiver(OutgoingCallReceiver);
         listener.unregisterObserver();
+        getContentResolver().unregisterContentObserver(mObserver);
         TelephonyMgr.listen(listener, PhoneStateListener.LISTEN_NONE);
         stopActivityRecognitionUpdates();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
@@ -99,7 +119,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         floatingPopup.setMobile(Utils.getLastTenDigits(mobile));
         String updatedTime = Utils.timeAgo(mUser.getUpdated());
         if (mUser.getAutoStatus() > 0) {
-            updatedTime += " - Auto-status";
+            updatedTime += " [Auto-status]";
         }
         floatingPopup.setTime(updatedTime);
         floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, mUser.getIcon()));
@@ -107,8 +127,16 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
 
     private void fetchStatus(final String phoneNumber) {
         final String tenDigitNumber = Utils.getLastTenDigits(phoneNumber);
+        if (tenDigitNumber == null) {
+            return;
+        }
         final String mContactName = Utils.getContactName(FloatingService.this, tenDigitNumber);
         floatingPopup.show();
+        if (customCall != null) {
+            floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(customCall.getMessage(), FloatingService.this));
+        } else {
+            floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor("", FloatingService.this));
+        }
         User mUser = dbHelper.getUser(tenDigitNumber);
         if (mUser != null) {
             setExistingStatus(phoneNumber, mContactName, mUser);
@@ -142,7 +170,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                             }
                             String updatedTime = Utils.timeAgo(s.getUpdatedTime());
                             if (s.getAutoStatus() > 0) {
-                                updatedTime += " - Auto-status";
+                                updatedTime += " [Auto-status]";
                             }
                             floatingPopup.setPopupMenu(false);
                             floatingPopup.setTime(updatedTime);
