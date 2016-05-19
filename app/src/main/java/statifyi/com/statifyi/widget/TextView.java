@@ -35,7 +35,7 @@ public class TextView extends android.widget.TextView {
             String fontName = a.getString(R.styleable.MyFontView_fontName);
             String fontStyle = a.getString(R.styleable.MyFontView_fontStyle);
             if (fontName == null) {
-                fontName = "Oswald";
+                fontName = "RobotoCondensed";
             }
             if (fontStyle == null) {
                 fontStyle = "Regular";
