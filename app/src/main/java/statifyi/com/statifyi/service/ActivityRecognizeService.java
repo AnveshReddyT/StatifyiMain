@@ -126,23 +126,26 @@ public class ActivityRecognizeService extends IntentService {
     }
 
     private void updateStatus(final Context context, String status) {
-        StatusRequest request = new StatusRequest();
-        request.setMobile(DataUtils.getMobileNumber(context));
-        request.setStatus(status);
-        request.setIcon(status);
-        request.setAutoStatus(1);
-        userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Response<Void> response, Retrofit retrofit) {
-                if(response.isSuccess()) {
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
+        String mStatus = DataUtils.getStatus(context);
+        if (!mStatus.equals(status)) {
+            StatusRequest request = new StatusRequest();
+            request.setMobile(DataUtils.getMobileNumber(context));
+            request.setStatus(status);
+            request.setIcon(status);
+            request.setAutoStatus(1);
+            userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Response<Void> response, Retrofit retrofit) {
+                    if (response.isSuccess()) {
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable t) {
+                @Override
+                public void onFailure(Throwable t) {
 
-            }
-        });
+                }
+            });
+        }
     }
 }

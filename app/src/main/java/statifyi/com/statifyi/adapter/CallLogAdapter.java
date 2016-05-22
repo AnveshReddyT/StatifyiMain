@@ -81,9 +81,9 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
     public View generateView(final int position, ViewGroup parent) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.calllog_list_item, null);
         final SwipeLayout swipeLayout = (SwipeLayout) v.findViewById(getSwipeLayoutResourceId(position));
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, v.findViewById(R.id.bottom_wrapper));
-        swipeLayout.setLeftSwipeEnabled(true);
-        swipeLayout.setRightSwipeEnabled(false);
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Right, v.findViewById(R.id.bottom_wrapper));
+        swipeLayout.setLeftSwipeEnabled(false);
+        swipeLayout.setRightSwipeEnabled(true);
         return v;
     }
 
@@ -150,9 +150,8 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
             @Override
             public void onClick(View view) {
                 swipeLayout.close();
-                Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:" + filteredData.get(position).getPhone()));
-                mContext.startActivity(intent);
+                dbHelper.deleteCustomCallLog(callLog.getDate());
+                notifyDataSetChanged();
             }
         });
         convertView.findViewById(R.id.calllog_list_item_surface).setOnClickListener(new View.OnClickListener() {

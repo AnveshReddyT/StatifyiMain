@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -38,6 +40,7 @@ import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Contact;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.DialerUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -129,6 +132,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     private DBHelper dbHelper;
 
+    private DialerUtils dialerUtils;
+
     public DialerFragment() {
         // Required empty public constructor
     }
@@ -155,6 +160,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         ButterKnife.inject(this, root);
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         dbHelper = DBHelper.getInstance(getActivity());
+        dialerUtils = new DialerUtils();
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
 
@@ -335,6 +341,10 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     contactStatusLayout.setVisibility(View.GONE);
                 }
             } else {
+                ArrayList<String> list = dialerUtils.letterCombinations(mobile.toString());
+                for (String s : list) {
+                    Log.d("STAT", " --- " + s);
+                }
                 contactName.setText(null);
                 contactName.setTag(null);
                 contactStatusLayout.setVisibility(View.GONE);
@@ -370,29 +380,33 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
                 startActivity(intent);
             } else {
-                progressDialog.show();
-                userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Response<Boolean> response, Retrofit retrofit) {
-                        progressDialog.dismiss();
-                        if (response.isSuccess()) {
-                            if (response.body()) {
-                                FloatingService.customCall = getCustomCall(message, lastTenDigits);
-                                Intent intent = new Intent(Intent.ACTION_CALL);
-                                intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
-                                startActivity(intent);
-                            } else {
-                                showInfoDialog(dialerText.getText().toString());
+                if (TextUtils.isEmpty(contactName.getText())) {
+                    progressDialog.show();
+                    userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Response<Boolean> response, Retrofit retrofit) {
+                            progressDialog.dismiss();
+                            if (response.isSuccess()) {
+                                if (response.body()) {
+                                    FloatingService.customCall = getCustomCall(message, lastTenDigits);
+                                    Intent intent = new Intent(Intent.ACTION_CALL);
+                                    intent.setData(Uri.parse("tel:" + dialerText.getText().toString()));
+                                    startActivity(intent);
+                                } else {
+                                    showInfoDialog(dialerText.getText().toString());
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Throwable t) {
-                        progressDialog.dismiss();
-                        Utils.showToast(getActivity(), "Failed! Please try again.");
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable t) {
+                            progressDialog.dismiss();
+                            Utils.showToast(getActivity(), "Failed! Please try again.");
+                        }
+                    });
+                } else {
+                    showInfoDialog(dialerText.getText().toString());
+                }
             }
         } else {
             Utils.showToast(getActivity(), "No Internet! Please make a normal call");

@@ -133,8 +133,9 @@ public class Utils {
         };
         List<String> temp = new ArrayList<>();
         List<Contact> contacts = new ArrayList<>();
-        Uri uri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode(partial));
-        Cursor cursor = cntx.getContentResolver().query(uri, PROJECTION, null, null, null);
+        Uri uri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode("*" + partial + "*"));
+        String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + partial + "%'";
+        Cursor cursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, selection, null, null);
         if (cursor == null) {
             return contacts;
         }

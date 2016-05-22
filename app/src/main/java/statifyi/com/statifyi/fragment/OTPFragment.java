@@ -2,11 +2,16 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.telephony.SmsMessage;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,12 +44,21 @@ import statifyi.com.statifyi.widget.EditText;
 
 public class OTPFragment extends Fragment {
 
+    private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+
+    private static final String STATIFYI_TEXT = "StatiFYI verification code : ";
+
     @InjectView(R.id.register_otp_text)
     EditText otpText;
+
     @InjectView(R.id.register_otp_btn)
+
     Button otpVerifyBtn;
+
     private UserAPIService userAPIService;
+
     private ProgressDialog progressDialog;
+
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -86,6 +100,31 @@ public class OTPFragment extends Fragment {
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
     };
+    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final Bundle bundle = intent.getExtras();
+            try {
+                if (bundle != null) {
+                    final Object[] pdusObj = (Object[]) bundle.get("pdus");
+                    for (Object aPdusObj : pdusObj) {
+                        SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) aPdusObj);
+                        String phoneNumber = currentMessage.getDisplayOriginatingAddress();
+                        String message = currentMessage.getDisplayMessageBody();
+                        if (message.contains(STATIFYI_TEXT)) {
+                            message = message.replace(STATIFYI_TEXT, "").trim();
+                            otpText.setText(message);
+                            doActivateUser();
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                Log.e("SmsReceiver", "Exception smsReceiver" + e);
+
+            }
+        }
+    };
 
     public OTPFragment() {
         // Required empty public constructor
@@ -119,6 +158,18 @@ public class OTPFragment extends Fragment {
             }
         });
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(smsReceiver, new IntentFilter(SMS_RECEIVED));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(smsReceiver);
     }
 
     @OnClick(R.id.register_otp_btn)

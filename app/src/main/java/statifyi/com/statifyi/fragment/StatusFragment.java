@@ -272,35 +272,40 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     }
 
     private void executeUpdateStatus(final Status status) {
-        StatusRequest request = new StatusRequest();
-        request.setMobile(DataUtils.getMobileNumber(getActivity()));
-        request.setStatus(status.getStatus());
-        request.setIcon(status.getIcon());
-        if (NetworkUtils.isOnline()) {
-            progressDialog.show();
-            userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Response<Void> response, Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        DataUtils.saveStatus(getActivity(), status.getStatus());
-                        int ico = Utils.getDrawableResByName(getActivity(), status.getIcon());
-                        DataUtils.saveIcon(getActivity(), ico);
+        String mStatus = DataUtils.getStatus(getActivity());
+        if (mStatus.equals(status.getStatus())) {
+            Utils.showToast(getActivity(), "Status already set!");
+        } else {
+            StatusRequest request = new StatusRequest();
+            request.setMobile(DataUtils.getMobileNumber(getActivity()));
+            request.setStatus(status.getStatus());
+            request.setIcon(status.getIcon());
+            if (NetworkUtils.isOnline()) {
+                progressDialog.show();
+                userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Response<Void> response, Retrofit retrofit) {
+                        if (response.isSuccess()) {
+                            DataUtils.saveStatus(getActivity(), status.getStatus());
+                            int ico = Utils.getDrawableResByName(getActivity(), status.getIcon());
+                            DataUtils.saveIcon(getActivity(), ico);
 
-                        updateStatus();
-                    } else {
+                            updateStatus();
+                        } else {
+                            Utils.showToast(getActivity(), "Failed to change status");
+                        }
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        progressDialog.dismiss();
                         Utils.showToast(getActivity(), "Failed to change status");
                     }
-                    progressDialog.dismiss();
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    progressDialog.dismiss();
-                    Utils.showToast(getActivity(), "Failed to change status");
-                }
-            });
-        } else {
-            Utils.showToast(getActivity(), "No Internet!");
+                });
+            } else {
+                Utils.showToast(getActivity(), "No Internet!");
+            }
         }
     }
 

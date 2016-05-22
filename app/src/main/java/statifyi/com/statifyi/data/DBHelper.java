@@ -300,6 +300,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return customCallLogFromCursor;
     }
 
+    public Integer deleteCustomCallLog(long date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(CALL_LOGS_TABLE_NAME, CALL_LOGS_COLUMN_DATE + " = ?", new String[]{String.valueOf(date)});
+    }
+
     public boolean insertOrUpdateCustomStatus(Status status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = getCustomStatusContentValues(status);
