@@ -153,6 +153,7 @@ public class RegisterMobileFragment extends Fragment {
                         if (response.isSuccess()) {
                             DataUtils.saveMobile(getActivity(), mobile);
                             DataUtils.setActive(getActivity(), false);
+                            DataUtils.saveCountryCode(getActivity(), countryCode);
                             registerBtn.setText(R.string.join_statifyi);
                             registerBtn.setEnabled(true);
                             ((RegistrationActivity) getActivity()).replaceFragment(OTPFragment.newInstance(null, null));

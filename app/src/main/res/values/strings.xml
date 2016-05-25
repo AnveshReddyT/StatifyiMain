@@ -22,7 +22,8 @@
     <string name="hint_name">Enter your Full Name</string>
     <string name="hint_otp">Verification code</string>
     <string name="hint_dial_number">DIAL THE NUMBER</string>
-    <string name="otp_message">Did you get Verification code via SMS to your Phone Number?\n Enter it here</string>
+    <string name="otp_message">Did you get Verification code via SMS to your Phone Number?</string>
+    <string name="hint_enter_otp">Enter it here</string>
     <string name="hint_country">Choose your Country</string>
     <string name="hint_avatar">Click to change avatar</string>
     <string name="hello_world">Hello world!</string>

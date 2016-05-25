@@ -30,6 +30,8 @@ public interface UserAPIService {
 
     Call<Void> registerUser(RegisterUserRequest request);
 
+    Call<Void> resendOtp(RegisterUserRequest request);
+
     Call<Void> activateUser(ActivateUserRequest request);
 
     Call<Boolean> customCall(CustomCallRequest request);

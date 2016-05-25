@@ -48,6 +48,9 @@ public interface RemoteServerAPI {
     @POST(BASE_CONTEXT + "/register")
     Call<Void> registerUser(@Body RegisterUserRequest request);
 
+    @POST(BASE_CONTEXT + "/resendOTP")
+    Call<Void> resendOtp(@Body RegisterUserRequest request);
+
     @POST(BASE_CONTEXT + "/activate")
     Call<Void> activateUser(@Body ActivateUserRequest request);
 

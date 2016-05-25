@@ -65,6 +65,11 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
+    public Call<Void> resendOtp(RegisterUserRequest request) {
+        return remoteServerAPI.resendOtp(request);
+    }
+
+    @Override
     public Call<Void> activateUser(final ActivateUserRequest request) {
         return remoteServerAPI.activateUser(request);
     }

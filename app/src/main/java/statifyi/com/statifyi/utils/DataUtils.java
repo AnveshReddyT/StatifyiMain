@@ -15,6 +15,7 @@ import statifyi.com.statifyi.R;
 public class DataUtils {
 
     public static final String KEY_MOBILE = "key_mobile";
+    public static final String KEY_COUNTRY_CODE = "key_country_code";
     public static final String KEY_NAME = "key_name";
     public static final String KEY_STATUS = "key_status";
     public static final String KEY_AUTO_STATUS = "key_auto_status";
@@ -28,6 +29,18 @@ public class DataUtils {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_MOBILE, mobile);
+        editor.apply();
+    }
+
+    public static String getCountryCode(Context mContext) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(KEY_COUNTRY_CODE, null);
+    }
+
+    public static void saveCountryCode(Context mContext, String countryCode) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_COUNTRY_CODE, countryCode);
         editor.apply();
     }
 
