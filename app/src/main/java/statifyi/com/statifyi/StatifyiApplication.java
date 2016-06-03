@@ -1,12 +1,16 @@
 package statifyi.com.statifyi;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.squareup.picasso.Picasso;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
+
+import java.io.File;
 
 import statifyi.com.statifyi.utils.NetworkUtils;
 
@@ -23,6 +27,26 @@ import statifyi.com.statifyi.utils.NetworkUtils;
 )
 public class StatifyiApplication extends Application {
 
+    public static boolean deleteFile(File file) {
+        boolean deletedAll = true;
+        if (file != null) {
+            if (file.isDirectory()) {
+                String[] children = file.list();
+                for (String aChildren : children) {
+                    deletedAll = deleteFile(new File(file, aChildren)) && deletedAll;
+                }
+            } else {
+                deletedAll = file.delete();
+            }
+        }
+        return deletedAll;
+    }
+
+    public static void clearSharedPreferences(Context mContext, String file) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(file, MODE_PRIVATE);
+        sharedPreferences.edit().clear().apply();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -32,5 +56,18 @@ public class StatifyiApplication extends Application {
                 .indicatorsEnabled(BuildConfig.DEBUG)
                 .downloader(NetworkUtils.createBigCacheDownloader(this)).build();
         Picasso.setSingletonInstance(picasso);
+    }
+
+    public void clearApplicationData() {
+        File cacheDirectory = getCacheDir();
+        File applicationDirectory = new File(cacheDirectory.getParent());
+        if (applicationDirectory.exists()) {
+            String[] fileNames = applicationDirectory.list();
+            for (String fileName : fileNames) {
+                if (!fileName.equals("lib")) {
+                    deleteFile(new File(applicationDirectory, fileName));
+                }
+            }
+        }
     }
 }

@@ -113,7 +113,7 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
         inflater.inflate(R.menu.menu_contacts, menu);
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
@@ -127,6 +127,7 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(CallLogFragment.this);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

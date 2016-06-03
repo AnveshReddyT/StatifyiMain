@@ -217,7 +217,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_contacts, menu);
 
         final SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
@@ -252,6 +251,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(StatusFragment.this);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

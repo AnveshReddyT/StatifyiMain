@@ -2,10 +2,13 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +28,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -34,6 +38,7 @@ import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
+import statifyi.com.statifyi.dialog.ContactsSuggestionDialog;
 import statifyi.com.statifyi.dialog.CustomCallDialog;
 import statifyi.com.statifyi.dialog.InfoDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
@@ -134,6 +139,12 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     private DialerUtils dialerUtils;
 
+    private List<Contact> contactList;
+
+    private Thread contactsThread;
+
+    private List<Contact> totalContacts;
+
     public DialerFragment() {
         // Required empty public constructor
     }
@@ -163,10 +174,12 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         dialerUtils = new DialerUtils();
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
+        contactList = new ArrayList<>();
+        totalContacts = Utils.readPhoneContacts(getActivity());
 
         if (getActivity().getIntent().hasExtra(PARAM_MOBILE_NUM)) {
             dialerText.setText(getActivity().getIntent().getStringExtra(PARAM_MOBILE_NUM));
-            fetchContacts();
+            startSuggestionsThread();
         }
         LinearLayout[] layouts = {
                 dialpad0Layout, dialpad1Layout, dialpad2Layout, dialpad3Layout,
@@ -191,6 +204,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             MaterialRippleLayout.on(layout)
                     .rippleOverlay(true)
                     .rippleAlpha(0.2f)
+                    .rippleDuration(400)
                     .rippleColor(getResources().getColor(R.color.accentColor))
                     .rippleHover(true)
                     .create();
@@ -204,6 +218,19 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         contactLayout.setOnClickListener(this);
 
         return root;
+    }
+
+    private void startSuggestionsThread() {
+        if (contactsThread != null) {
+            contactsThread.interrupt();
+        }
+        contactsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                fetchContacts();
+            }
+        });
+        contactsThread.start();
     }
 
     @Override
@@ -229,7 +256,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.dialpad_6_layout:
                 clickedDialPad("6");
-                fetchContacts();
                 break;
             case R.id.dialpad_7_layout:
                 clickedDialPad("7");
@@ -261,7 +287,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 if (!TextUtils.isEmpty(editable)) {
                     String text = editable.toString();
                     dialerText.setText(text.substring(0, text.length() - 1));
-                    fetchContacts();
+                    startSuggestionsThread();
                 }
                 break;
             case R.id.dialpad_message_layout:
@@ -319,41 +345,166 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @OnClick(R.id.dialpad_more_contacts)
+    public void showContactsDialog() {
+        if (contactList != null) {
+            final ContactsSuggestionDialog contactsSuggestionDialog = new ContactsSuggestionDialog(getActivity(), contactList);
+            contactsSuggestionDialog.show();
+            contactsSuggestionDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (contactsSuggestionDialog.getContact() != null) {
+                        Contact contact = contactsSuggestionDialog.getContact();
+                        contactName.setText(contact.getName());
+                        contactName.setTag(contact.getMobile());
+                        if (contactName.getTag() != null) {
+                            dialerText.setText(contactName.getTag().toString());
+                        }
+                        User user = dbHelper.getUser(Utils.getLastTenDigits(contact.getMobile()));
+                        if (user != null) {
+                            contactStatusLayout.setVisibility(View.VISIBLE);
+                            contactStatus.setText(user.getStatus());
+                            contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getStatus()));
+                            contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getStatus()));
+                        } else {
+                            contactStatusLayout.setVisibility(View.GONE);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     private void clickedDialPad(String letter) {
         dialerText.append(letter);
-        fetchContacts();
+        startSuggestionsThread();
+    }
+
+    private void getContactsByNumber(String number) {
+        for (Contact mContact : totalContacts) {
+            if (mContact.getMobile() != null && mContact.getMobile().contains(number)) {
+                contactList.add(mContact);
+                updateSuggestion();
+            }
+        }
+    }
+
+    private void getContactsByName(String name) {
+        name = name.toLowerCase();
+        for (Contact mContact : totalContacts) {
+            String mContactName = mContact.getName().toLowerCase();
+            if (mContactName.startsWith(name)) {
+                contactList.add(mContact);
+                updateSuggestion();
+            }
+        }
     }
 
     private void fetchContacts() {
         CharSequence mobile = dialerText.getText();
         if (!TextUtils.isEmpty(mobile) && mobile.length() > 1) {
-            List<Contact> contactList = Utils.suggestPhoneContacts(getActivity(), mobile.toString());
-            if (!contactList.isEmpty()) {
-                Contact contact = contactList.get(0);
-                contactName.setText(contact.getName());
-                contactName.setTag(contact.getMobile());
-                User user = dbHelper.getUser(Utils.getLastTenDigits(contact.getMobile()));
-                if (user != null) {
-                    contactStatusLayout.setVisibility(View.VISIBLE);
-                    contactStatus.setText(user.getStatus());
-                    contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getStatus()));
-                } else {
-                    contactStatusLayout.setVisibility(View.GONE);
+            contactList.clear();
+//            suggestPhoneContacts(getActivity(), mobile.toString(), true);
+            getContactsByNumber(mobile.toString());
+            ArrayList<String> list = dialerUtils.letterCombinations(mobile.toString());
+            for (String s : list) {
+                Log.d("STAT", s);
+                if (contactsThread.isInterrupted()) {
+                    return;
                 }
-            } else {
-                ArrayList<String> list = dialerUtils.letterCombinations(mobile.toString());
-                for (String s : list) {
-                    Log.d("STAT", " --- " + s);
-                }
+//                suggestPhoneContacts(getActivity(), s, false);
+                getContactsByName(s);
+            }
+            if (contactList.isEmpty()) {
+                clearSuggestions();
+            }
+        } else {
+            clearSuggestions();
+        }
+    }
+
+    private void clearSuggestions() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 contactName.setText(null);
                 contactName.setTag(null);
                 contactStatusLayout.setVisibility(View.GONE);
             }
+        });
+    }
+
+    private void suggestPhoneContacts(Context cntx, String partial, boolean isNumber) {
+        final String[] PROJECTION = new String[]{
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_URI
+        };
+        List<String> temp = new ArrayList<>();
+        String selection = null;
+        if (isNumber) {
+            selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + partial + "%'";
         } else {
-            contactName.setText(null);
-            contactName.setTag(null);
-            contactStatusLayout.setVisibility(View.GONE);
+            selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE '%" + partial + "%'";
         }
+        if (cntx == null) {
+            return;
+        }
+        Cursor cursor = cntx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, selection, null, null);
+        if (cursor != null) {
+            try {
+                Integer contactsCount = cursor.getCount();
+                if (contactsCount > 0 && cursor.moveToFirst()) {
+                    while (cursor.moveToNext()) {
+                        if (contactsThread.isInterrupted()) {
+                            return;
+                        }
+                        String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                        String imageUri = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+                        String phoneNo = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        phoneNo = phoneNo.replaceAll(" ", "");
+                        if (!temp.contains(phoneNo)) {
+                            Contact mContact = new Contact();
+                            mContact.setMobile(phoneNo);
+                            mContact.setName(name);
+                            mContact.setPhoto(imageUri);
+                            contactList.add(mContact);
+                            Log.d("STAT", mContact.toString());
+                            updateSuggestion();
+                            temp.add(phoneNo);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                cursor.close();
+            }
+        }
+    }
+
+    private void updateSuggestion() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!contactList.isEmpty()) {
+                    Contact contact = contactList.get(0);
+                    contactName.setText(contact.getName());
+                    contactName.setTag(contact.getMobile());
+                    User user = dbHelper.getUser(Utils.getLastTenDigits(contact.getMobile()));
+                    if (user != null) {
+                        contactStatusLayout.setVisibility(View.VISIBLE);
+                        contactStatus.setText(user.getStatus());
+                    } else {
+                        contactStatusLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    contactName.setText(null);
+                    contactName.setTag(null);
+                    contactStatusLayout.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void makeCustomCallRequest(final String message) {

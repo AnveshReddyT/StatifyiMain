@@ -125,7 +125,7 @@ public class Utils {
         return contacts;
     }
 
-    public static List<Contact> suggestPhoneContacts(Context cntx, String partial) {
+    public static List<Contact> suggestPhoneContacts(Context cntx, String partial, String name) {
         final String[] PROJECTION = new String[]{
                 ContactsContract.Contacts.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -135,6 +135,9 @@ public class Utils {
         List<Contact> contacts = new ArrayList<>();
         Uri uri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode("*" + partial + "*"));
         String selection = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + partial + "%'";
+        if (name != null) {
+            selection = selection + " OR " + ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE '%" + partial + "%'";
+        }
         Cursor cursor = cntx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, selection, null, null);
         if (cursor == null) {
             return contacts;

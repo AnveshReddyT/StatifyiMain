@@ -27,8 +27,10 @@ public class DialerUtils {
         for (int i = 0; i < digits.length(); i++) {
             for (String str : res) {
                 String letters = map.get(digits.charAt(i));
-                for (int j = 0; j < letters.length(); j++)
-                    preres.add(str + letters.charAt(j));
+                if (letters != null) {
+                    for (int j = 0; j < letters.length(); j++)
+                        preres.add(str + letters.charAt(j));
+                }
             }
             res = preres;
             preres = new ArrayList<String>();

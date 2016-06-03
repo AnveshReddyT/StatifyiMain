@@ -121,7 +121,7 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
         inflater.inflate(R.menu.menu_contacts, menu);
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
@@ -135,6 +135,7 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(ContactsFragment.this);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

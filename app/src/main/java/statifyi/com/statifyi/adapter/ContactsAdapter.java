@@ -27,6 +27,7 @@ import statifyi.com.statifyi.SingleFragmentActivity;
 import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
+import statifyi.com.statifyi.dialog.ContactsSuggestionDialog;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.Contact;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -47,6 +48,7 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
     private List<Contact> filteredData = null;
     private ItemFilter mFilter = new ItemFilter();
     private ArrayList<User> users;
+    private ContactsSuggestionDialog.ContactsSuggestionListener contactsSuggestionListener;
 
     public ContactsAdapter(Activity mContext, List<Contact> contacts) {
         this.mContext = mContext;
@@ -63,6 +65,10 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
     public ArrayList<User> loadUsers() {
         return dbHelper.getAllUsers();
+    }
+
+    public void setContactsSuggestionListener(ContactsSuggestionDialog.ContactsSuggestionListener contactsSuggestionListener) {
+        this.contactsSuggestionListener = contactsSuggestionListener;
     }
 
     @Override
@@ -137,11 +143,15 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
         convertView.findViewById(R.id.contact_list_item_surface).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, SingleFragmentActivity.class);
-                intent.putExtra(SingleFragmentActivity.KEY_SINGLE_FRAGMENT, SingleFragmentActivity.FragmentName.DIALER);
-                intent.putExtra("title", "Dial");
-                intent.putExtra(DialerFragment.PARAM_MOBILE_NUM, mobile);
-                mContext.startActivity(intent);
+                if (contactsSuggestionListener != null) {
+                    contactsSuggestionListener.onContactSelected(position);
+                } else {
+                    Intent intent = new Intent(mContext, SingleFragmentActivity.class);
+                    intent.putExtra(SingleFragmentActivity.KEY_SINGLE_FRAGMENT, SingleFragmentActivity.FragmentName.DIALER);
+                    intent.putExtra("title", "Dial");
+                    intent.putExtra(DialerFragment.PARAM_MOBILE_NUM, mobile);
+                    mContext.startActivity(intent);
+                }
             }
         });
     }

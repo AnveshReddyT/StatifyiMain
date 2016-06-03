@@ -16,14 +16,15 @@
             android:id="@+id/dialpad_contact_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:textColor="@color/dialer_alphabets" />
 
         <RelativeLayout
             android:id="@+id/dialpad_status_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/dialpad_more_contacts"
             android:background="@drawable/bg_rectangle_rounded_green"
             android:visibility="gone">
 
@@ -33,6 +34,7 @@
                 android:layout_height="24dp"
                 android:layout_alignBottom="@+id/dialpad_status"
                 android:layout_alignTop="@+id/dialpad_status"
+                android:layout_centerVertical="true"
                 android:paddingBottom="2dp"
                 android:paddingTop="2dp"
                 android:scaleType="fitCenter"
@@ -42,6 +44,7 @@
                 android:id="@+id/dialpad_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/dialpad_status_icon"
                 android:gravity="center"
                 android:text="DRIVING"
@@ -49,6 +52,16 @@
                 android:textSize="9sp" />
 
         </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/dialpad_more_contacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:src="@android:drawable/ic_menu_more" />
 
     </RelativeLayout>
 
