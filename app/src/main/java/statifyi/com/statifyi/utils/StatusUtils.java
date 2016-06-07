@@ -2,7 +2,6 @@ package statifyi.com.statifyi.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -14,34 +13,40 @@ import statifyi.com.statifyi.R;
  */
 public class StatusUtils {
 
+    public static final String KEY_NOTIFY_STATUS_CHANGED = "key_notify_status_changed";
+    private static final String STATUS_PREF = "status_pref";
+
     public static boolean isNotifyEnabled(Context mContext, String mobile) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        Set<String> stringSet = preferences.getStringSet(mContext.getString(R.string.key_notify_when_status_changed), null);
+        SharedPreferences preferences = mContext.getSharedPreferences(STATUS_PREF, Context.MODE_PRIVATE);
+        Set<String> stringSet = preferences.getStringSet(KEY_NOTIFY_STATUS_CHANGED, null);
         return stringSet != null && stringSet.contains(mobile);
     }
 
     public static void addNotifyStatus(Context mContext, String mobile) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences preferences = mContext.getSharedPreferences(STATUS_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        Set<String> stringSet = preferences.getStringSet(mContext.getString(R.string.key_notify_when_status_changed), null);
+        Set<String> stringSet = preferences.getStringSet(KEY_NOTIFY_STATUS_CHANGED, null);
         if (stringSet != null && stringSet.contains(mobile)) {
             return;
         }
-        if (stringSet == null) {
-            stringSet = new LinkedHashSet<>();
+        Set<String> tempSet = new LinkedHashSet<>();
+        if (stringSet != null) {
+            tempSet.addAll(stringSet);
         }
-        stringSet.add(mobile);
-        editor.putStringSet(mContext.getString(R.string.key_notify_when_status_changed), stringSet);
+        tempSet.add(mobile);
+        editor.putStringSet(KEY_NOTIFY_STATUS_CHANGED, tempSet);
         editor.apply();
     }
 
     public static void removeNotifyStatus(Context mContext, String mobile) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = preferences.edit();
-        Set<String> stringSet = preferences.getStringSet(mContext.getString(R.string.key_notify_when_status_changed), null);
+        SharedPreferences preferences = mContext.getSharedPreferences(STATUS_PREF, Context.MODE_PRIVATE);
+        Set<String> stringSet = preferences.getStringSet(KEY_NOTIFY_STATUS_CHANGED, null);
         if (stringSet != null) {
-            stringSet.remove(mobile);
-            editor.putStringSet(mContext.getString(R.string.key_notify_when_status_changed), stringSet);
+            Set<String> tempSet = new LinkedHashSet<>();
+            tempSet.addAll(stringSet);
+            tempSet.remove(mobile);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putStringSet(KEY_NOTIFY_STATUS_CHANGED, tempSet);
             editor.apply();
         }
     }

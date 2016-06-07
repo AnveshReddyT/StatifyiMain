@@ -94,7 +94,6 @@
     <string name="key_silent_mode">silentMode</string>
     <string name="key_vibrating_mode">vibratingMode</string>
     <string name="key_driving_mode">drivingMode</string>
-    <string name="key_notify_when_status_changed">notifyStatusChanged</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
