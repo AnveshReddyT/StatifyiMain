@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -76,7 +75,6 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             isContactsUpdated = true;
-            Log.d("STAT", "Contacts updated");
         }
 
         @Override

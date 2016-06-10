@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,7 +69,6 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             isCallLogUpdated = true;
-            Log.d("STAT", "Call Log updated");
         }
 
         @Override

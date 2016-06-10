@@ -7,7 +7,6 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -239,7 +238,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public CustomCall getCustomCall(String mobile) {
-        Log.d("STAT", "Deleted calls:  " + deleteExpiredCustomCalls());
+//        Log.d("STAT", "Deleted calls:  " + deleteExpiredCustomCalls());
         CustomCall customCallFromCursor = null;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from " + CUSTOM_CALLS_TABLE_NAME + " where " + CUSTOM_CALLS_COLUMN_MOBILE + "=" + mobile, null);

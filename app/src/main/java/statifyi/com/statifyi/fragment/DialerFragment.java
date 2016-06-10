@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -413,7 +412,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             getContactsByNumber(mobile.toString());
             ArrayList<String> list = dialerUtils.letterCombinations(mobile.toString());
             for (String s : list) {
-                Log.d("STAT", s);
                 if (contactsThread.isInterrupted()) {
                     return;
                 }
@@ -474,7 +472,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                             mContact.setName(name);
                             mContact.setPhoto(imageUri);
                             contactList.add(mContact);
-                            Log.d("STAT", mContact.toString());
                             updateSuggestion();
                             temp.add(phoneNo);
                         }

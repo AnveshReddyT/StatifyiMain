@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmPubSub;
 
@@ -120,7 +119,6 @@ public class GCMUtils {
                 SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
                 savedTopics.addAll(prefs.getStringSet(GCM_TOPICS, new HashSet<String>()));
                 GcmPubSub pubSub = GcmPubSub.getInstance(mContext);
-                Log.d("STAT", currentContacts.size() + " --- " + savedTopics.size());
                 for (int i = 0; i < currentContacts.size(); i++) {
                     String contact = currentContacts.get(i);
                     if (!savedTopics.contains(contact)) {

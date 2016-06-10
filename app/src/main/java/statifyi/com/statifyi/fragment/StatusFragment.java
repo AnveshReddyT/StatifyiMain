@@ -16,7 +16,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,8 +32,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -211,7 +208,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         currentStatusIcon.startAnimation(scaleAnim);
         statusAdapter.loadData();
         statusAdapter.notifyDataSetChanged();
-        Log.d("MSP", new Gson().toJsonTree(dbHelper.getCustomStatusList()).toString());
     }
 
     @Override

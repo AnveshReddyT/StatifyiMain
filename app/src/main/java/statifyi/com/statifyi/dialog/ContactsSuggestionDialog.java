@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ListView;
@@ -46,9 +45,6 @@ public class ContactsSuggestionDialog extends Dialog {
         this.mContext = context;
         this.contacts = contacts;
         this.mActivity = context;
-        for (Contact contact : contacts) {
-            Log.d("MSP", contact.toString());
-        }
     }
 
     public ContactsSuggestionDialog(Context context, int themeResId) {

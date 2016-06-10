@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.JsonSyntaxException;
@@ -38,7 +37,6 @@ public class GCMIntentService extends GcmListenerService {
             dbHelper = DBHelper.getInstance(this);
         }
         String message = data.getString("message");
-        Log.d("TAG_STAT", message.toString());
         if (from.startsWith(TOPICS)) {
             try {
                 if (from.contains("-customCall")) {
@@ -61,7 +59,6 @@ public class GCMIntentService extends GcmListenerService {
                     long time = s.getUpdatedTime();
                     if (!status.isEmpty()) {
                         String phoneNumber = from.replace(TOPICS, "");
-                        Log.d("STAT", s.toString());
                         Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, autoStatus, time, dbHelper);
                         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
                         if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
