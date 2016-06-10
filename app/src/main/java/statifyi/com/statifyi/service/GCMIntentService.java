@@ -29,7 +29,7 @@ public class GCMIntentService extends GcmListenerService {
 
     public static final int NOTIFICATION_ID = 1;
     public static final String BROADCAST_ACTION_STATUS_CHANGE = "statifyi.broadcast.status_change";
-    private static final String TOPICS = "/topics/";
+    public static final String TOPICS = "/topics/";
     DBHelper dbHelper;
 
     @Override
@@ -38,22 +38,36 @@ public class GCMIntentService extends GcmListenerService {
             dbHelper = DBHelper.getInstance(this);
         }
         String message = data.getString("message");
+        Log.d("TAG_STAT", message.toString());
         if (from.startsWith(TOPICS)) {
             try {
-                StatusResponse s = NetworkUtils.provideGson().fromJson(message, StatusResponse.class);
-                String status = s.getStatus().toUpperCase();
-                String name = s.getName();
-                String icon = s.getIcon();
-                int autoStatus = s.getAutoStatus();
-                long time = s.getUpdatedTime();
-                if (!status.isEmpty()) {
-                    String phoneNumber = from.replace(TOPICS, "");
-                    Log.d("STAT", s.toString());
-                    Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, autoStatus, time, dbHelper);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
-                    if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
-                        sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status to " + status);
-                        StatusUtils.removeNotifyStatus(this, phoneNumber);
+                if (from.contains("-customCall")) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(message);
+                        CustomCall call = new CustomCall();
+                        call.setMobile(jsonObject.getString("mobile"));
+                        call.setMessage(jsonObject.getString("message"));
+                        call.setTime(System.currentTimeMillis());
+                        dbHelper.insertOrUpdateCustomCall(call);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    StatusResponse s = NetworkUtils.provideGson().fromJson(message, StatusResponse.class);
+                    String status = s.getStatus().toUpperCase();
+                    String name = s.getName();
+                    String icon = s.getIcon();
+                    int autoStatus = s.getAutoStatus();
+                    long time = s.getUpdatedTime();
+                    if (!status.isEmpty()) {
+                        String phoneNumber = from.replace(TOPICS, "");
+                        Log.d("STAT", s.toString());
+                        Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, autoStatus, time, dbHelper);
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
+                        if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
+                            sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status to " + status);
+                            StatusUtils.removeNotifyStatus(this, phoneNumber);
+                        }
                     }
                 }
             } catch (JsonSyntaxException e) {

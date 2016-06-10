@@ -4,6 +4,7 @@ import com.squareup.okhttp.ResponseBody;
 
 import retrofit.Call;
 import statifyi.com.statifyi.api.GCMServerAPI;
+import statifyi.com.statifyi.api.model.TopicMessageRequest;
 
 /**
  * Created by KT on 13/04/16.
@@ -19,5 +20,10 @@ public class GCMAPIServiceImpl implements GCMAPIService {
     @Override
     public Call<ResponseBody> getGcmInfo(String token) {
         return gcmServerAPI.getGcmInfo(token, true);
+    }
+
+    @Override
+    public Call<ResponseBody> sendGcmMessaheToTopic(TopicMessageRequest request) {
+        return gcmServerAPI.sendGcmMessageToTopic(request);
     }
 }

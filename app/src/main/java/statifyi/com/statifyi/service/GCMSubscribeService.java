@@ -1,10 +1,7 @@
 package statifyi.com.statifyi.service;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmPubSub;
@@ -19,8 +16,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import retrofit.Response;
-import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.service.GCMAPIService;
+import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -33,9 +30,11 @@ import statifyi.com.statifyi.utils.Utils;
  */
 public class GCMSubscribeService extends IntentService {
 
+    public static final String[] CUSTOM_TOPICS = {"", "-customCall"};
     private static final int NOTIFICATION_ID = 101;
-
     private static boolean isRunning = false;
+
+    private String mobile;
 
     public GCMSubscribeService() {
         super("GCMSubscribeService");
@@ -45,8 +44,9 @@ public class GCMSubscribeService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (!isRunning) {
             isRunning = true;
+            mobile = DataUtils.getMobileNumber(this);
             try {
-                GCMAPIService gcmapiService = NetworkUtils.provideGCMAPIService(this);
+                GCMAPIService gcmapiService = NetworkUtils.provideGCMAPIService(this, false);
                 Response<ResponseBody> response = gcmapiService.getGcmInfo(GCMUtils.getRegistrationId(this)).execute();
                 ResponseBody responseBody = response.body();
                 if (responseBody != null) {
@@ -59,7 +59,8 @@ public class GCMSubscribeService extends IntentService {
                                 Iterator<String> topics = gcmTopics.keys();
                                 Set<String> gcmTopicSet = new HashSet<>();
                                 while (topics.hasNext()) {
-                                    gcmTopicSet.add(topics.next());
+                                    String mTopic = topics.next();
+                                    gcmTopicSet.add(mTopic);
                                 }
                                 verifySubscriptions(gcmTopicSet);
                             }
@@ -72,6 +73,15 @@ public class GCMSubscribeService extends IntentService {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean isCustomTopic(String topic) {
+        for (String str : CUSTOM_TOPICS) {
+            if ((mobile + str).equals(topic)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -87,46 +97,46 @@ public class GCMSubscribeService extends IntentService {
         Set<String> subscribeList = new HashSet<>();
         subscribeList.addAll(contactList);
         subscribeList.removeAll(gcmTopicSet);
+        for (String customTopic : CUSTOM_TOPICS) {
+            if (!gcmTopicSet.contains(mobile + customTopic)) {
+                subscribeList.add(mobile + customTopic);
+            }
+        }
 
-        Log.d("STAT", "Subscribed to : " + gcmTopicSet.size());
-        Log.d("STAT", "Available : " + contactList.size());
-        Log.d("STAT", "Remaining: " + subscribeList.size());
-        subscribe(subscribeList, contactList.size());
+        Log.d("TAG_STAT", "Subscribed to : " + gcmTopicSet.size());
+        Log.d("TAG_STAT", "Available : " + contactList.size());
+        Log.d("TAG_STAT", "Remaining: " + subscribeList.size());
+        subscribe(subscribeList);
 
         gcmTopicSet.addAll(subscribeList);
-        Log.d("STAT", "Subscribed to : " + gcmTopicSet.size());
+        Log.d("TAG_STAT", "Subscribed to : " + gcmTopicSet.size());
 
-        contactList.removeAll(gcmTopicSet);
-        Log.d("STAT", "to delete: " + contactList.size());
-        unSubscribe(contactList);
+        gcmTopicSet.removeAll(contactList);
+        for (String customTopic : CUSTOM_TOPICS) {
+            if (gcmTopicSet.contains(mobile + customTopic)) {
+                gcmTopicSet.remove(mobile + customTopic);
+            }
+        }
+        Log.d("TAG_STAT", "to delete: " + gcmTopicSet.size());
+        unSubscribe(gcmTopicSet);
     }
 
-    private void subscribe(Set<String> subscribeList, int totalCount) {
-        NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle(getResources().getString(R.string.app_name))
-                .setSmallIcon(R.drawable.ic_status);
+    private void subscribe(Set<String> subscribeList) {
         GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        int count = totalCount - subscribeList.size();
         for (String topic : subscribeList) {
             try {
-                mBuilder.setContentText("Subscription in progress ( " + (count * 100 / totalCount) + "% )")
-                        .setProgress(totalCount, count, false);
-//                mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
-                pubSub.subscribe(GCMUtils.getRegistrationId(this), "/topics/" + topic, null);
-                count++;
+                pubSub.subscribe(GCMUtils.getRegistrationId(this), GCMIntentService.TOPICS + topic, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-//        mNotifyManager.cancel(NOTIFICATION_ID);
     }
 
     private void unSubscribe(Set<String> unSubscribeList) {
         GcmPubSub pubSub = GcmPubSub.getInstance(this);
         for (String topic : unSubscribeList) {
             try {
-                pubSub.unsubscribe(GCMUtils.getRegistrationId(this), topic);
+                pubSub.unsubscribe(GCMUtils.getRegistrationId(this), GCMIntentService.TOPICS + topic);
             } catch (IOException e) {
                 e.printStackTrace();
             }

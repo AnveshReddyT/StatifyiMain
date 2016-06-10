@@ -39,7 +39,8 @@ public class NetworkUtils {
 
     public static final String SERVER_IP = "54.201.38.232";
     private static final String BASE_URL = "http://" + SERVER_IP + ":8080";
-    private static final String GCM_URL = "https://iid.googleapis.com";
+    private static final String GCM_INFO_URL = "https://iid.googleapis.com";
+    private static final String GCM_HTTP_URL = "https://gcm-http.googleapis.com";
     private static final String BASE_CONTEXT = "/Statifyi/src/users";
     private static final String BIG_CACHE_PATH = "picasso-big-cache";
     private static final int MIN_DISK_CACHE_SIZE = 32 * 1024 * 1024;       // 32MB
@@ -103,8 +104,8 @@ public class NetworkUtils {
         return Picasso.with(mContext);
     }
 
-    public static GCMServerAPI provideGCMServerAPI(Context mContext) {
-        return provideRetrofit(mContext, GCM_URL, false).create(GCMServerAPI.class);
+    public static GCMServerAPI provideGCMServerAPI(Context mContext, boolean http) {
+        return provideRetrofit(mContext, http ? GCM_HTTP_URL : GCM_INFO_URL, true).create(GCMServerAPI.class);
     }
 
     public static RemoteServerAPI provideServerAPI(Context mContext) {
@@ -115,8 +116,8 @@ public class NetworkUtils {
         return new UserAPIServiceImpl(provideServerAPI(mContext));
     }
 
-    public static GCMAPIService provideGCMAPIService(Context mContext) {
-        return new GCMAPIServiceImpl(provideGCMServerAPI(mContext));
+    public static GCMAPIService provideGCMAPIService(Context mContext, boolean http) {
+        return new GCMAPIServiceImpl(provideGCMServerAPI(mContext, http));
     }
 
     public static String provideAvatarUrl(String mobile) {

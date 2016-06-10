@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.balysv.materialripple.MaterialRippleLayout;
+import com.squareup.okhttp.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,10 @@ import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
+import statifyi.com.statifyi.api.model.TopicMessageData;
+import statifyi.com.statifyi.api.model.TopicMessageRequest;
 import statifyi.com.statifyi.api.model.User;
+import statifyi.com.statifyi.api.service.GCMAPIService;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.ContactsSuggestionDialog;
@@ -44,6 +48,7 @@ import statifyi.com.statifyi.dialog.InfoDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Contact;
 import statifyi.com.statifyi.service.FloatingService;
+import statifyi.com.statifyi.service.GCMIntentService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.DialerUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -510,20 +515,31 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     private void makeCustomCallRequest(final String message) {
         if (NetworkUtils.isOnline()) {
             final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
-            CustomCallRequest request = new CustomCallRequest();
-            request.setFromMobile(DataUtils.getMobileNumber(getActivity()));
-            request.setMobile(lastTenDigits);
-            request.setMessage(message);
 
             User user = dbHelper.getUser(lastTenDigits);
             if (user != null) {
-                userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
+                CustomCall customCall = new CustomCall();
+                customCall.setMessage(message);
+                customCall.setMobile(DataUtils.getMobileNumber(getActivity()));
+                TopicMessageRequest topicRequest = new TopicMessageRequest();
+                topicRequest.setTo(GCMIntentService.TOPICS + lastTenDigits + "-customCall");
+                TopicMessageData data = new TopicMessageData();
+                data.setMessage(customCall.toString());
+                topicRequest.setData(data);
+
+                GCMAPIService gcmapiService = NetworkUtils.provideGCMAPIService(getActivity(), true);
+                gcmapiService.sendGcmMessaheToTopic(topicRequest).enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(Response<Boolean> response, Retrofit retrofit) {
+                    public void onResponse(Response<ResponseBody> response, Retrofit retrofit) {
+                        if (!response.isSuccess()) {
+                            Utils.showToast(getActivity(), "Failed! Please make a normal call");
+                        }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
+                        progressDialog.dismiss();
+                        Utils.showToast(getActivity(), "Failed! Please try again.");
                     }
                 });
                 FloatingService.customCall = getCustomCall(message, lastTenDigits);
@@ -533,6 +549,10 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             } else {
                 if (TextUtils.isEmpty(contactName.getText())) {
                     progressDialog.show();
+                    CustomCallRequest request = new CustomCallRequest();
+                    request.setFromMobile(DataUtils.getMobileNumber(getActivity()));
+                    request.setMobile(lastTenDigits);
+                    request.setMessage(message);
                     userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
                         @Override
                         public void onResponse(Response<Boolean> response, Retrofit retrofit) {
