@@ -203,7 +203,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         String autoStatus = DataUtils.getAutoStatus(getActivity().getApplicationContext());
         String status = autoStatus == null ? DataUtils.getStatus(getActivity()) : autoStatus;
         currentStatusText.setText(status == null || status.isEmpty() ? "status not set" : status);
-        currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.ic_launcher : autoStatus == null ? DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity()));
+        currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.nostatus : autoStatus == null ? DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity()));
         Animation scaleAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.scale);
         currentStatusIcon.startAnimation(scaleAnim);
         statusAdapter.loadData();

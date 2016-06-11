@@ -11,6 +11,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SectionIndexer;
+import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
@@ -25,12 +26,12 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
 import statifyi.com.statifyi.api.model.User;
-import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.ContactsSuggestionDialog;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.Contact;
 import statifyi.com.statifyi.utils.NetworkUtils;
+import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.StringMatcher;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
@@ -40,7 +41,6 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, SectionIndexer {
 
-    private UserAPIService userAPIService;
     private DBHelper dbHelper;
     private Activity mContext;
     private String mSections = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -52,7 +52,6 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
 
     public ContactsAdapter(Activity mContext, List<Contact> contacts) {
         this.mContext = mContext;
-        userAPIService = NetworkUtils.provideUserAPIService(mContext);
         dbHelper = DBHelper.getInstance(mContext);
         setData(contacts);
     }
@@ -106,7 +105,7 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
         final Contact mContact = filteredData.get(position);
         holder.name.setText(mContact.getName());
         final String mobile = mContact.getMobile();
-        String tenDigitNumber = Utils.getLastTenDigits(mobile);
+        final String tenDigitNumber = Utils.getLastTenDigits(mobile);
         holder.mobile.setText(mobile);
 
         User mUser = null;
@@ -130,13 +129,23 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
                     .into(holder.avatar);
         }
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
-        convertView.findViewById(R.id.contact_list_item_call).setOnClickListener(new View.OnClickListener() {
+        ImageView quickLink = (ImageView) convertView.findViewById(R.id.contact_list_item_call);
+        final boolean isStatifyiUser = mUser == null;
+        if (isStatifyiUser) {
+            quickLink.setImageResource(R.drawable.ic_menu_share);
+        } else {
+            quickLink.setImageResource(R.drawable.ic_menu_timely);
+        }
+        quickLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 swipeLayout.close();
-                Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:" + filteredData.get(position).getMobile()));
-                mContext.startActivity(intent);
+                if (isStatifyiUser) {
+                    Utils.inviteFriends(mContext);
+                } else {
+                    StatusUtils.addNotifyStatus(mContext, tenDigitNumber);
+                    Toast.makeText(mContext, "Reminder added!", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
