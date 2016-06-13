@@ -50,6 +50,7 @@ import statifyi.com.statifyi.dialog.CustomStatusDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Status;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
@@ -273,12 +274,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
             Utils.showToast(getActivity(), "Status already set!");
         } else {
             StatusRequest request = new StatusRequest();
-            request.setMobile(DataUtils.getMobileNumber(getActivity()));
             request.setStatus(status.getStatus());
             request.setIcon(status.getIcon());
             if (NetworkUtils.isOnline()) {
                 progressDialog.show();
-                userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+                userAPIService.setUserStatus(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Response<Void> response, Retrofit retrofit) {
                         if (response.isSuccess()) {
@@ -331,12 +331,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private void updateCustomStatus(final String status, final String icon) {
         StatusRequest request = new StatusRequest();
-        request.setMobile(DataUtils.getMobileNumber(getActivity()));
         request.setStatus(status);
         request.setIcon(icon);
         if (NetworkUtils.isOnline()) {
             progressDialog.show();
-            userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+            userAPIService.setUserStatus(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {

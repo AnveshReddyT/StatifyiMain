@@ -50,6 +50,7 @@ import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMIntentService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.DialerUtils;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -559,10 +560,9 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 if (TextUtils.isEmpty(contactName.getText())) {
                     progressDialog.show();
                     CustomCallRequest request = new CustomCallRequest();
-                    request.setFromMobile(DataUtils.getMobileNumber(getActivity()));
                     request.setMobile(lastTenDigits);
                     request.setMessage(message);
-                    userAPIService.customCall(request).enqueue(new Callback<Boolean>() {
+                    userAPIService.customCall(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Boolean>() {
                         @Override
                         public void onResponse(Response<Boolean> response, Retrofit retrofit) {
                             progressDialog.dismiss();

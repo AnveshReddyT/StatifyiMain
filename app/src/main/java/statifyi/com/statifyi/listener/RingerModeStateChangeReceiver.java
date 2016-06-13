@@ -16,6 +16,7 @@ import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.fragment.StatusFragment;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 
 public class RingerModeStateChangeReceiver extends BroadcastReceiver {
@@ -78,11 +79,10 @@ public class RingerModeStateChangeReceiver extends BroadcastReceiver {
         String mStatus = DataUtils.getStatus(context);
         if (!mStatus.equals(status)) {
             StatusRequest request = new StatusRequest();
-            request.setMobile(DataUtils.getMobileNumber(context));
             request.setStatus(status);
             request.setIcon(status);
             request.setAutoStatus(1);
-            userAPIService.setUserStatus(request).enqueue(new Callback<Void>() {
+            userAPIService.setUserStatus(GCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {

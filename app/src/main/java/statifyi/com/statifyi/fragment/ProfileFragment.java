@@ -30,6 +30,7 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -145,7 +146,7 @@ public class ProfileFragment extends Fragment {
             if (!progressDialog.isShowing()) {
                 progressDialog.show();
             }
-            userAPIService.setUserName(DataUtils.getMobileNumber(getActivity()), request).enqueue(new Callback<Void>() {
+            userAPIService.setUserName(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
@@ -189,9 +190,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void doUploadImage() {
-        String mobileNumber = DataUtils.getMobileNumber(getActivity());
+        String gcmId = GCMUtils.getRegistrationId(getActivity());
         File file = new File(getActivity().getFilesDir(), "user.jpg");
-        userAPIService.uploadImage(mobileNumber, file).enqueue(new Callback<Void>() {
+        userAPIService.uploadImage(gcmId, file).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {

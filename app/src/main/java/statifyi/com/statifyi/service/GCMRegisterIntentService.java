@@ -2,6 +2,7 @@ package statifyi.com.statifyi.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -24,6 +25,8 @@ import statifyi.com.statifyi.utils.Utils;
  */
 public class GCMRegisterIntentService extends IntentService {
 
+    public static final String BROADCAST_ACTION_GCM_REGISTER = "statifyi.broadcast.gcm_register";
+
     private UserAPIService userAPIService;
 
     public GCMRegisterIntentService() {
@@ -40,6 +43,7 @@ public class GCMRegisterIntentService extends IntentService {
             String token = instanceID.getToken(getString(R.string.google_project_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             Log.i("STAT", "GCM Registration Token: " + token);
             GCMUtils.storeRegistrationId(this, token);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_GCM_REGISTER));
             sendRegistrationToServer(token);
             if (!Utils.isMyServiceRunning(this, GCMSubscribeService.class)) {
                 startService(new Intent(this, GCMSubscribeService.class));

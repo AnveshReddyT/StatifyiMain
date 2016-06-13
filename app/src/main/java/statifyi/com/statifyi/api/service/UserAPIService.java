@@ -18,13 +18,13 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
  */
 public interface UserAPIService {
 
-    Call<StatusResponse> getUserStatus(String mobile);
+    Call<StatusResponse> getUserStatus(String gcmId);
 
-    Call<Void> setUserStatus(StatusRequest request);
+    Call<Void> setUserStatus(String gcmId, StatusRequest request);
 
-    Call<Void> setUserName(String mobile, UserNameRequest request);
+    Call<Void> setUserName(String gcmId, UserNameRequest request);
 
-    Call<Void> uploadImage(String mobile, File file);
+    Call<Void> uploadImage(String gcmId, File file);
 
     Call<List<MultiStatusResponse>> getAllStatus(List<String> mobiles);
 
@@ -34,7 +34,7 @@ public interface UserAPIService {
 
     Call<Void> activateUser(ActivateUserRequest request);
 
-    Call<Boolean> customCall(CustomCallRequest request);
+    Call<Boolean> customCall(String gcmId, CustomCallRequest request);
 
     Call<Void> registerGCM(GCMRequest request);
 }

@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import com.squareup.picasso.Downloader;
@@ -137,7 +138,7 @@ public class NetworkUtils {
         return false;
     }
 
-    public static Downloader createBigCacheDownloader(Context ctx) {
+    public static Downloader createBigCacheDownloader(final Context ctx) {
         File cacheDir = createDefaultCacheDir(ctx, BIG_CACHE_PATH);
         long cacheSize = calculateDiskCacheSize(cacheDir);
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -145,14 +146,25 @@ public class NetworkUtils {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Response originalResponse = chain.proceed(chain.request());
-                return originalResponse.newBuilder().header("Cache-Control", "max-age=" + (60 * 60 * 24 * 365)).build();
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "max-age=" + (60 * 60 * 24 * 365))
+                        .header("token", GCMUtils.getRegistrationId(ctx))
+                        .build();
+            }
+        });
+        okHttpClient.networkInterceptors().add(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request newRequest = chain.request().newBuilder()
+                        .addHeader("token", GCMUtils.getRegistrationId(ctx))
+                        .build();
+                return chain.proceed(newRequest);
             }
         });
 
         okHttpClient.setCache(new Cache(cacheDir, cacheSize));
-        OkHttpDownloader okHttpDownloader = new OkHttpDownloader(okHttpClient);
 
-        return okHttpDownloader;
+        return new OkHttpDownloader(okHttpClient);
     }
 
     private static File createDefaultCacheDir(Context context, String path) {

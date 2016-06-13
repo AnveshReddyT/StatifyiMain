@@ -2,10 +2,14 @@ package statifyi.com.statifyi.fragment;
 
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -31,8 +35,10 @@ import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.ProgressDialog;
+import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.service.SyncAllStatusService;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -49,7 +55,6 @@ public class OTPFragment extends Fragment {
     private UserAPIService userAPIService;
 
     private ProgressDialog progressDialog;
-
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -91,6 +96,41 @@ public class OTPFragment extends Fragment {
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
     };
+    private BroadcastReceiver onGCMRegisterReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetworkUtils.isOnline()) {
+                userAPIService.getUserStatus(GCMUtils.getRegistrationId(getActivity())).enqueue(new Callback<StatusResponse>() {
+                    @Override
+                    public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                        if (response.isSuccess()) {
+                            StatusResponse s = response.body();
+                            DataUtils.setActive(getActivity(), true);
+                            DataUtils.saveName(getActivity(), s.getName());
+                            DataUtils.saveStatus(getActivity(), s.getStatus());
+                            DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
+                            if (!TextUtils.isEmpty(s.getName())) {
+                                String mobileNumber = DataUtils.getMobileNumber(getActivity());
+                                NetworkUtils.providePicasso(getActivity()).load(NetworkUtils.provideAvatarUrl(mobileNumber)).into(target);
+                            } else {
+                                progressDialog.dismiss();
+                                launchHomeScreen();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        progressDialog.dismiss();
+                        t.printStackTrace();
+                    }
+                });
+            } else {
+                Utils.showToast(getActivity(), "No Internet!");
+            }
+        }
+    };
 
     public OTPFragment() {
         // Required empty public constructor
@@ -129,11 +169,14 @@ public class OTPFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        IntentFilter filter = new IntentFilter(GCMRegisterIntentService.BROADCAST_ACTION_GCM_REGISTER);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onGCMRegisterReceiver, filter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onGCMRegisterReceiver);
     }
 
     @OnClick(R.id.register_otp_btn)
@@ -153,35 +196,8 @@ public class OTPFragment extends Fragment {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
+                        getActivity().startService(new Intent(getActivity(), GCMRegisterIntentService.class));
                         getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
-                        if (NetworkUtils.isOnline()) {
-                            userAPIService.getUserStatus(request.getMobile()).enqueue(new Callback<StatusResponse>() {
-                                @Override
-                                public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
-                                    if (response.isSuccess()) {
-                                        StatusResponse s = response.body();
-                                        DataUtils.setActive(getActivity(), true);
-                                        DataUtils.saveName(getActivity(), s.getName());
-                                        DataUtils.saveStatus(getActivity(), s.getStatus());
-                                        DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
-                                        if (!TextUtils.isEmpty(s.getName())) {
-                                            NetworkUtils.providePicasso(getActivity()).load(NetworkUtils.provideAvatarUrl(mobileNumber)).into(target);
-                                        } else {
-                                            progressDialog.dismiss();
-                                            launchHomeScreen();
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Throwable t) {
-                                    progressDialog.dismiss();
-                                    t.printStackTrace();
-                                }
-                            });
-                        } else {
-                            Utils.showToast(getActivity(), "No Internet!");
-                        }
                     } else {
                         progressDialog.dismiss();
                         Utils.showToast(getActivity(), "Failed to activate");

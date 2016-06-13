@@ -7,9 +7,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class StatusRequest {
 
-    @SerializedName("mobile")
-    private String mobile;
-
     @SerializedName("status")
     private String status;
 
@@ -18,14 +15,6 @@ public class StatusRequest {
 
     @SerializedName("autoStatus")
     private int autoStatus;
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
 
     public String getStatus() {
         return status;

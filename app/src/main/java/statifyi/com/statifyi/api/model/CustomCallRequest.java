@@ -8,22 +8,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class CustomCallRequest {
 
-    @SerializedName("fromMobile")
-    private String fromMobile;
-
     @SerializedName("mobile")
     private String mobile;
 
     @SerializedName("message")
     private String message;
-
-    public String getFromMobile() {
-        return fromMobile;
-    }
-
-    public void setFromMobile(String fromMobile) {
-        this.fromMobile = fromMobile;
-    }
 
     public String getMobile() {
         return mobile;

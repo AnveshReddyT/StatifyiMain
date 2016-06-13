@@ -30,28 +30,28 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Call<StatusResponse> getUserStatus(final String mobile) {
-        return remoteServerAPI.getUserStatus(mobile);
+    public Call<StatusResponse> getUserStatus(String gcmId) {
+        return remoteServerAPI.getUserStatus(gcmId);
     }
 
     @Override
-    public Call<Void> setUserStatus(StatusRequest request) {
-        return remoteServerAPI.setUserStatus(request);
+    public Call<Void> setUserStatus(String gcmId, StatusRequest request) {
+        return remoteServerAPI.setUserStatus(gcmId, request);
     }
 
     @Override
-    public Call<Void> setUserName(String mobile, UserNameRequest request) {
-        return remoteServerAPI.setUserName(mobile, request);
+    public Call<Void> setUserName(String gcmId, UserNameRequest request) {
+        return remoteServerAPI.setUserName(gcmId, request);
     }
 
     @Override
-    public Call<Void> uploadImage(String mobile, File file) {
+    public Call<Void> uploadImage(String gcmId, File file) {
         RequestBody photo = RequestBody.create(MediaType.parse("image/*"), file);
         RequestBody body = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("file", file.getName(), photo)
                 .build();
-        return remoteServerAPI.uploadImage(mobile, photo);
+        return remoteServerAPI.uploadImage(gcmId, photo);
     }
 
     @Override
@@ -75,8 +75,8 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Call<Boolean> customCall(CustomCallRequest request) {
-        return remoteServerAPI.customCall(request);
+    public Call<Boolean> customCall(String gcmId, CustomCallRequest request) {
+        return remoteServerAPI.customCall(gcmId, request);
     }
 
     @Override

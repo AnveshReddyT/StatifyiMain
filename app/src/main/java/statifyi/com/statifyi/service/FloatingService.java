@@ -31,6 +31,7 @@ import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.listener.CustomPhoneStateListener;
 import statifyi.com.statifyi.model.CallLog;
+import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -145,7 +146,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
             floatingPopup.setMobile(tenDigitNumber);
         }
         if (NetworkUtils.isOnline()) {
-            userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+            userAPIService.getUserStatus(GCMUtils.getRegistrationId(FloatingService.this)).enqueue(new Callback<StatusResponse>() {
 
                 String contactName = mContactName == null ? phoneNumber : mContactName;
 
