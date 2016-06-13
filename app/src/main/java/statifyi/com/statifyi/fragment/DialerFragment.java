@@ -135,6 +135,9 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     @InjectView(R.id.dialpad_contact_layout)
     RelativeLayout contactLayout;
 
+    @InjectView(R.id.dialpad_more_contacts)
+    ImageView moreContacts;
+
     private UserAPIService userAPIService;
 
     private ProgressDialog progressDialog;
@@ -218,6 +221,13 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         for (Button button : buttons) {
             button.setOnClickListener(this);
         }
+        dialpad0Layout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                clickedDialPad("+");
+                return true;
+            }
+        });
 
         contactLayout.setOnClickListener(this);
 
@@ -228,6 +238,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
         if (contactsThread != null) {
             contactsThread.interrupt();
         }
+        CharSequence mobile = dialerText.getText();
+        moreContacts.setVisibility((!TextUtils.isEmpty(mobile) && mobile.length() > 1) ? View.VISIBLE : View.INVISIBLE);
         contactsThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -351,7 +363,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     @OnClick(R.id.dialpad_more_contacts)
     public void showContactsDialog() {
-        if (contactList != null) {
+        if (contactList != null && !contactList.isEmpty()) {
             final ContactsSuggestionDialog contactsSuggestionDialog = new ContactsSuggestionDialog(getActivity(), contactList);
             contactsSuggestionDialog.show();
             contactsSuggestionDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -368,8 +380,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                         if (user != null) {
                             contactStatusLayout.setVisibility(View.VISIBLE);
                             contactStatus.setText(user.getStatus());
-                            contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getStatus()));
-                            contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getStatus()));
+                            contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getIcon()));
                         } else {
                             contactStatusLayout.setVisibility(View.GONE);
                         }
@@ -406,8 +417,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     private void fetchContacts() {
         CharSequence mobile = dialerText.getText();
+        contactList.clear();
         if (!TextUtils.isEmpty(mobile) && mobile.length() > 1) {
-            contactList.clear();
 //            suggestPhoneContacts(getActivity(), mobile.toString(), true);
             getContactsByNumber(mobile.toString());
             ArrayList<String> list = dialerUtils.letterCombinations(mobile.toString());
@@ -497,6 +508,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     if (user != null) {
                         contactStatusLayout.setVisibility(View.VISIBLE);
                         contactStatus.setText(user.getStatus());
+                        contactStatusIcon.setImageResource(Utils.getDrawableResByName(getActivity(), user.getIcon()));
                     } else {
                         contactStatusLayout.setVisibility(View.GONE);
                     }

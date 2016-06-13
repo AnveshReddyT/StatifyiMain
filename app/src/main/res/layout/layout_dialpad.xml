@@ -61,7 +61,8 @@
             android:layout_centerVertical="true"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:src="@android:drawable/ic_menu_more" />
+            android:src="@android:drawable/ic_menu_more"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 
@@ -447,6 +448,14 @@
                 android:textColor="@color/accentColor"
                 android:textSize="24sp"
                 app:fontStyle="Light" />
+
+            <statifyi.com.statifyi.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:text="+"
+                android:textColor="@color/dialer_alphabets"
+                android:textSize="12sp" />
 
         </LinearLayout>
 

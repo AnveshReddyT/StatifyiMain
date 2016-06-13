@@ -22,7 +22,7 @@
         android:orientation="vertical">
 
 
-        <Spinner
+        <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/custom_status_icon"
             android:layout_width="128dp"
             android:layout_height="128dp"

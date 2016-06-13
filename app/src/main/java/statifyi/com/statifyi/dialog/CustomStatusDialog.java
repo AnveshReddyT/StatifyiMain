@@ -3,12 +3,12 @@ package statifyi.com.statifyi.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,7 +33,7 @@ public class CustomStatusDialog extends Dialog {
     EditText statusMessage;
 
     @InjectView(R.id.custom_status_icon)
-    Spinner statusIcon;
+    AppCompatSpinner statusIcon;
 
     private UserAPIService userAPIService;
 
