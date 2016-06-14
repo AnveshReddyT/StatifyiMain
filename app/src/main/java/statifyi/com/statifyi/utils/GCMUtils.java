@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class GCMUtils {
 
-    private static final String GCM_PREF = "gcm_pref";
+    public static final String GCM_PREF = "gcm_pref";
     private static final String REG_ID = "regId";
     private static final String GCM_SEND_SERVER = "gcm_send_server";
     private static final String GCM_TOPICS = "gcm_topics";

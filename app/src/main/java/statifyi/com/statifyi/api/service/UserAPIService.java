@@ -18,7 +18,7 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
  */
 public interface UserAPIService {
 
-    Call<StatusResponse> getUserStatus(String gcmId);
+    Call<StatusResponse> getUserStatus(String mobile);
 
     Call<Void> setUserStatus(String gcmId, StatusRequest request);
 

@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import statifyi.com.statifyi.HomeActivity;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.data.DBHelper;
@@ -73,11 +74,9 @@ public class GCMIntentService extends GcmListenerService {
         } else {
             try {
                 JSONObject jsonObject = new JSONObject(message);
-                CustomCall call = new CustomCall();
-                call.setMobile(jsonObject.getString("from"));
-                call.setMessage(jsonObject.getString("message"));
-                call.setTime(System.currentTimeMillis());
-                dbHelper.insertOrUpdateCustomCall(call);
+                if("logout".equals(message)) {
+                    StatifyiApplication.logout(GCMIntentService.this);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

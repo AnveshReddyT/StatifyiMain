@@ -23,7 +23,7 @@ public class DataUtils {
     public static final String KEY_AUTO_STATUS_ICON = "key_auto_status_icon";
     public static final String KEY_ACTIVE = "key_active";
     public static final String KEY_AVATAR_CHANGED = "key_avatar_changed";
-    private static final String USER_PREF = "user_pref";
+    public static final String USER_PREF = "user_pref";
 
     public static void saveMobile(Context mContext, String mobile) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);

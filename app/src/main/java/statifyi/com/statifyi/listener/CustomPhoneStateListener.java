@@ -121,7 +121,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
     private void fetchStatus(final String phoneNumber) {
         final String tenDigitNumber = Utils.getLastTenDigits(phoneNumber);
         if (NetworkUtils.isOnline()) {
-            userAPIService.getUserStatus(GCMUtils.getRegistrationId(mContext)).enqueue(new Callback<StatusResponse>() {
+            userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
                 @Override
                 public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {

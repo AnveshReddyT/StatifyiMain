@@ -12,7 +12,7 @@ import statifyi.com.statifyi.model.TimelyStatus;
  */
 public class TimelyStatusUtils {
 
-    private static final String PREF_TIMELY_STATUS = "pref_timely_status";
+    public static final String PREF_TIMELY_STATUS = "pref_timely_status";
 
     public static void saveTimelyStatusList(Context mContext, TimelyStatus[] statusList) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREF_TIMELY_STATUS, Context.MODE_PRIVATE);

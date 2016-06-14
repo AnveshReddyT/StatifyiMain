@@ -14,7 +14,7 @@ import statifyi.com.statifyi.R;
 public class StatusUtils {
 
     public static final String KEY_NOTIFY_STATUS_CHANGED = "key_notify_status_changed";
-    private static final String STATUS_PREF = "status_pref";
+    public static final String STATUS_PREF = "status_pref";
 
     public static boolean isNotifyEnabled(Context mContext, String mobile) {
         SharedPreferences preferences = mContext.getSharedPreferences(STATUS_PREF, Context.MODE_PRIVATE);

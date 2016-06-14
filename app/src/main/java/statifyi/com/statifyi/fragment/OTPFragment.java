@@ -101,7 +101,8 @@ public class OTPFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isOnline()) {
-                userAPIService.getUserStatus(GCMUtils.getRegistrationId(getActivity())).enqueue(new Callback<StatusResponse>() {
+                final String mobileNumber = DataUtils.getMobileNumber(getActivity());
+                userAPIService.getUserStatus(mobileNumber).enqueue(new Callback<StatusResponse>() {
                     @Override
                     public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
                         if (response.isSuccess()) {
@@ -111,7 +112,6 @@ public class OTPFragment extends Fragment {
                             DataUtils.saveStatus(getActivity(), s.getStatus());
                             DataUtils.saveIcon(getActivity(), Utils.getDrawableResByName(getActivity(), s.getIcon()));
                             if (!TextUtils.isEmpty(s.getName())) {
-                                String mobileNumber = DataUtils.getMobileNumber(getActivity());
                                 NetworkUtils.providePicasso(getActivity()).load(NetworkUtils.provideAvatarUrl(mobileNumber)).into(target);
                             } else {
                                 progressDialog.dismiss();
