@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
@@ -23,6 +24,7 @@ import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.fragment.StatusFragment;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 
 public class ActivityRecognizeService extends IntentService {
@@ -97,6 +99,9 @@ public class ActivityRecognizeService extends IntentService {
     }
 
     private void changeStatus(String activity) {
+        if(sharedPreferences == null) {
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        }
         if (!sharedPreferences.getBoolean(getString(R.string.key_auto_status), false)) {
             return;
         }
