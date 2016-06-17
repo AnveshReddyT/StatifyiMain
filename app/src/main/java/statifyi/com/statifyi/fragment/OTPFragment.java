@@ -102,7 +102,7 @@ public class OTPFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isOnline()) {
                 final String mobileNumber = DataUtils.getMobileNumber(getActivity());
-                userAPIService.getUserStatus(mobileNumber).enqueue(new Callback<StatusResponse>() {
+                userAPIService.getUserStatus(GCMUtils.getRegistrationId(getActivity()), mobileNumber).enqueue(new Callback<StatusResponse>() {
                     @Override
                     public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
                         if (response.isSuccess()) {

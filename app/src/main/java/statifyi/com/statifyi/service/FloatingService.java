@@ -146,7 +146,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
             floatingPopup.setMobile(tenDigitNumber);
         }
         if (NetworkUtils.isOnline()) {
-            userAPIService.getUserStatus(tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+            userAPIService.getUserStatus(GCMUtils.getRegistrationId(FloatingService.this), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
                 String contactName = mContactName == null ? phoneNumber : mContactName;
 

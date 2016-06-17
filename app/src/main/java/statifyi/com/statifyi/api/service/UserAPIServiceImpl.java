@@ -30,8 +30,8 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Call<StatusResponse> getUserStatus(String mobile) {
-        return remoteServerAPI.getUserStatus(mobile);
+    public Call<StatusResponse> getUserStatus(String gcmId, String mobile) {
+        return remoteServerAPI.getUserStatus(gcmId, mobile);
     }
 
     @Override

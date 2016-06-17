@@ -13,6 +13,7 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Part;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.GCMRequest;
@@ -29,8 +30,8 @@ public interface RemoteServerAPI {
 
     String BASE_CONTEXT = "/Statifyi/src/users";
 
-    @GET(BASE_CONTEXT + "/status/{mobile}")
-    Call<StatusResponse> getUserStatus(@Path("mobile") String mobile);
+    @GET(BASE_CONTEXT + "/status")
+    Call<StatusResponse> getUserStatus(@Header("token") String gcmId, @Query("mobile") String mobile);
 
     @PUT(BASE_CONTEXT + "/status")
     Call<Void> setUserStatus(@Header("token") String gcmId, @Body StatusRequest request);

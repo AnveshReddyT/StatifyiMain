@@ -43,7 +43,6 @@ public class GCMRegisterIntentService extends IntentService {
             String token = instanceID.getToken(getString(R.string.google_project_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             Log.i("STAT", "GCM Registration Token: " + token);
             GCMUtils.storeRegistrationId(this, token);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_GCM_REGISTER));
             sendRegistrationToServer(token);
             if (!Utils.isMyServiceRunning(this, GCMSubscribeService.class)) {
                 startService(new Intent(this, GCMSubscribeService.class));
@@ -62,7 +61,9 @@ public class GCMRegisterIntentService extends IntentService {
         userAPIService.registerGCM(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
-
+                if(response.isSuccess()) {
+                    LocalBroadcastManager.getInstance(GCMRegisterIntentService.this).sendBroadcast(new Intent(BROADCAST_ACTION_GCM_REGISTER));
+                }
             }
 
             @Override
