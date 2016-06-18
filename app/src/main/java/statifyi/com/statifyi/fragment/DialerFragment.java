@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.balysv.materialripple.MaterialRippleLayout;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.squareup.okhttp.ResponseBody;
 
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.DialerUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
+import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
 import statifyi.com.statifyi.widget.TextView;
@@ -153,6 +157,10 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     private List<Contact> totalContacts;
 
+    private ShowcaseView showcaseView;
+
+    private int counter;
+
     public DialerFragment() {
         // Required empty public constructor
     }
@@ -234,6 +242,47 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
         return root;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(!ShowcaseUtils.getDialerPage(getActivity())) {
+            showcaseView = new ShowcaseView.Builder(getActivity())
+                    .setTarget(new ViewTarget(emergencyBtn))
+                    .setStyle(R.style.CustomShowcaseTheme)
+                    .setOnClickListener(showcaseViewClickListener)
+                    .build();
+            showcaseView.setContentTitle("Emergency call");
+            showcaseView.setContentText("Make a custom call with message 'Emergency call'");
+            showcaseView.setButtonText(getString(R.string.next));
+        }
+    }
+
+    View.OnClickListener showcaseViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (counter) {
+                case 0:
+                    showcaseView.setShowcase(new ViewTarget(customBtn), true);
+                    showcaseView.setContentTitle("Custom Call");
+                    showcaseView.setContentText("Make a custom call with a message of your choice");
+                    break;
+
+                case 1:
+                    showcaseView.setShowcase(new ViewTarget(dialpadCallLayout), true);
+                    showcaseView.setContentTitle("Normal Call");
+                    showcaseView.setContentText("Make a normal call if the person is not on Statifyi!");
+                    showcaseView.setButtonText(getString(R.string.close));
+                    break;
+
+                case 2:
+                    showcaseView.hide();
+                    ShowcaseUtils.setDialerPage(getActivity(), true);
+                    break;
+            }
+            counter++;
+        }
+    };
 
     private void startSuggestionsThread() {
         if (contactsThread != null) {

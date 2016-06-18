@@ -56,6 +56,7 @@ import statifyi.com.statifyi.model.Status;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
+import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
 
@@ -120,19 +121,22 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         @Override
         public void onReceive(Context context, Intent intent) {
             if (getUserVisibleHint()) {
-                showcaseView = new ShowcaseView.Builder(getActivity())
-                        .setTarget(new ViewTarget(statusGrid))
-                        .setStyle(R.style.CustomShowcaseTheme)
-                        .setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                showcaseView.hide();
-                            }
-                        })
-                        .build();
-                showcaseView.setContentTitle("Set status");
-                showcaseView.setContentText("Select an item from the grid to set your status");
-                showcaseView.setButtonText(getString(R.string.close));
+                if(!ShowcaseUtils.getStatusPage(getActivity())) {
+                    showcaseView = new ShowcaseView.Builder(getActivity())
+                            .setTarget(new ViewTarget(statusGrid))
+                            .setStyle(R.style.CustomShowcaseTheme)
+                            .setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    showcaseView.hide();
+                                    ShowcaseUtils.setStatusPage(getActivity(), true);
+                                }
+                            })
+                            .build();
+                    showcaseView.setContentTitle("Set status");
+                    showcaseView.setContentText("Select an item from the grid to set your status");
+                    showcaseView.setButtonText(getString(R.string.close));
+                }
             }
         }
     };

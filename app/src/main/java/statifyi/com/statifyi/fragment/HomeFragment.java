@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
+import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.widget.RadioButton;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -66,14 +67,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        showcaseView = new ShowcaseView.Builder(getActivity())
-                .setTarget(new ViewTarget(statusTabBtn))
-                .setStyle(R.style.CustomShowcaseTheme)
-                .setOnClickListener(this)
-                .build();
-        showcaseView.setContentTitle("Status");
-        showcaseView.setContentText("View and manage your status");
-        showcaseView.setButtonText(getString(R.string.next));
+        if(!ShowcaseUtils.getHomePage(getActivity())) {
+            showcaseView = new ShowcaseView.Builder(getActivity())
+                    .setTarget(new ViewTarget(statusTabBtn))
+                    .setStyle(R.style.CustomShowcaseTheme)
+                    .setOnClickListener(this)
+                    .build();
+            showcaseView.setContentTitle("Status");
+            showcaseView.setContentText("View and manage your status");
+            showcaseView.setButtonText(getString(R.string.next));
+        }
     }
 
     @Override
@@ -140,6 +143,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 showcaseView.hide();
                 setAlpha(1.0f, statusTabBtn, contactsTabBtn, calllogTabBtn, dialPadBtn);
                 LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_SHOWCASEVIEW));
+                ShowcaseUtils.setHomePage(getActivity(), true);
                 break;
         }
         counter++;

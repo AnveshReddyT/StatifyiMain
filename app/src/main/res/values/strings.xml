@@ -29,7 +29,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="home">HOME</string>
     <string name="next">NEXT</string>
-    <string name="close">Lets GO!</string>
+    <string name="close">DONE</string>
     <string name="action_settings">Settings</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
