@@ -48,4 +48,11 @@ public class ShowcaseUtils {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHOWCASEVIEW_PREF, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(KEY_DIAERL_PAGE, false);
     }
+
+    public static void clearAll(Context mContext) {
+        setHomePage(mContext, false);
+        setStatusPage(mContext, false);
+        setDialerPage(mContext, false);
+
+    }
 }

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import butterknife.ButterKnife;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.ShowcaseUtils;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -17,6 +18,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         ButterKnife.inject(this);
         int SPLASH_TIME_OUT = 500;
+        ShowcaseUtils.clearAll(this);
 
         new Handler().postDelayed(new Runnable() {
 

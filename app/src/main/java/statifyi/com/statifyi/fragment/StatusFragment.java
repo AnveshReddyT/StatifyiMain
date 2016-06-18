@@ -106,6 +106,8 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private ShowcaseView showcaseView;
 
+    private int counter;
+
     private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
 
         @Override
@@ -128,14 +130,26 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                             .setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    showcaseView.hide();
-                                    ShowcaseUtils.setStatusPage(getActivity(), true);
+                                    switch (counter) {
+                                        case 0:
+                                            showcaseView.setShowcase(new ViewTarget(addStatusText), true);
+                                            showcaseView.setContentTitle("Custom Status");
+                                            showcaseView.setContentText("Type in a custom status of your choice");
+                                            showcaseView.setButtonText(getString(R.string.close));
+                                            break;
+
+                                        case 1:
+                                            showcaseView.hide();
+                                            ShowcaseUtils.setStatusPage(getActivity(), true);
+                                            break;
+                                    }
+                                    counter++;
                                 }
                             })
                             .build();
                     showcaseView.setContentTitle("Set status");
                     showcaseView.setContentText("Select an item from the grid to set your status");
-                    showcaseView.setButtonText(getString(R.string.close));
+                    showcaseView.setButtonText(getString(R.string.next));
                 }
             }
         }
