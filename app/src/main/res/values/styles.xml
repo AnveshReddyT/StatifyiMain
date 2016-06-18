@@ -34,6 +34,29 @@
         <item name="android:textColor">@color/primaryColorDark</item>
     </style>
 
+    <style name="CustomShowcaseTheme" parent="ShowcaseView.Light">
+        <item name="sv_backgroundColor">#D0000000</item>
+        <item name="sv_showcaseColor">#87AA28</item>
+        <item name="sv_buttonText">Hide</item>
+        <item name="sv_tintButtonColor">false</item>
+        <item name="sv_titleTextAppearance">@style/CustomTitle</item>
+        <item name="sv_detailTextAppearance">@style/CustomText</item>
+        <item name="sv_buttonBackgroundColor">@drawable/bg_rectangle_green</item>
+        <item name="sv_buttonForegroundColor">@drawable/bg_rectangle_green</item>
+    </style>
+
+    <style name="CustomTitle" parent="TextAppearance.ShowcaseView.Title">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="CustomText" parent="TextAppearance.ShowcaseView.Detail.Light">
+        <item name="android:textColor">#A0FFFFFF</item>
+    </style>
+
+    <style name="CustomButton" parent="ShowcaseButton">
+        <item name="android:background">@drawable/bg_rectangle_green</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

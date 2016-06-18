@@ -33,6 +33,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -59,6 +63,8 @@ import statifyi.com.statifyi.widget.TextView;
 public class StatusFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener, View.OnClickListener {
 
     public static final String BROADCAST_ACTION_STATUS_UPDATE = "statifyi.broadcast.status_update";
+
+    public static final String BROADCAST_ACTION_SHOWCASEVIEW = "statifyi.broadcast.showcaseview";
 
     @InjectView(R.id.status_add_text_layout)
     RelativeLayout addStatusLayout;
@@ -97,12 +103,36 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private boolean isLoaded;
 
+    private ShowcaseView showcaseView;
+
     private BroadcastReceiver onStatusChangeReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (getUserVisibleHint()) {
                 updateStatus();
+            }
+        }
+    };
+
+    private BroadcastReceiver showcaseViewReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (getUserVisibleHint()) {
+                showcaseView = new ShowcaseView.Builder(getActivity())
+                        .setTarget(new ViewTarget(statusGrid))
+                        .setStyle(R.style.CustomShowcaseTheme)
+                        .setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                showcaseView.hide();
+                            }
+                        })
+                        .build();
+                showcaseView.setContentTitle("Set status");
+                showcaseView.setContentText("Select an item from the grid to set your status");
+                showcaseView.setButtonText(getString(R.string.close));
             }
         }
     };
@@ -184,6 +214,9 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         }
         IntentFilter filter = new IntentFilter(BROADCAST_ACTION_STATUS_UPDATE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
+
+        IntentFilter showcaseViewFilter = new IntentFilter(BROADCAST_ACTION_SHOWCASEVIEW);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(showcaseViewReceiver, showcaseViewFilter);
     }
 
     @Override
@@ -204,7 +237,8 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         String autoStatus = DataUtils.getAutoStatus(getActivity().getApplicationContext());
         String status = autoStatus == null ? DataUtils.getStatus(getActivity()) : autoStatus;
         currentStatusText.setText(status == null || status.isEmpty() ? "status not set" : status);
-        currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.nostatus : autoStatus == null ? DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity()));
+        currentStatusIcon.setImageResource(status == null || status.isEmpty() ? R.drawable.nostatus : ((autoStatus == null) ?
+                DataUtils.getStatusIcon(getActivity()) : DataUtils.getAutoStatusIcon(getActivity())));
         Animation scaleAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.scale);
         currentStatusIcon.startAnimation(scaleAnim);
         statusAdapter.loadData();

@@ -4,14 +4,20 @@ package statifyi.com.statifyi.fragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -19,7 +25,7 @@ import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
 import statifyi.com.statifyi.widget.RadioButton;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private static final String[] TAB_NAMES = {"STATUS", "CONTACTS", "CALL LOG", "DIAL"};
     @InjectView(R.id.home_pager)
@@ -28,8 +34,16 @@ public class HomeFragment extends Fragment {
     TabLayout tabLayout;
     @InjectView(R.id.home_radio_group)
     RadioGroup radioGroup;
+    @InjectView(R.id.home_radio_status)
+    RadioButton statusTabBtn;
+    @InjectView(R.id.home_radio_contacts)
+    RadioButton contactsTabBtn;
+    @InjectView(R.id.home_radio_calllog)
+    RadioButton calllogTabBtn;
     @InjectView(R.id.home_radio_dialpad)
     RadioButton dialPadBtn;
+    private ShowcaseView showcaseView;
+    private int counter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -47,6 +61,19 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        showcaseView = new ShowcaseView.Builder(getActivity())
+                .setTarget(new ViewTarget(statusTabBtn))
+                .setStyle(R.style.CustomShowcaseTheme)
+                .setOnClickListener(this)
+                .build();
+        showcaseView.setContentTitle("Status");
+        showcaseView.setContentText("View and manage your status");
+        showcaseView.setButtonText(getString(R.string.next));
     }
 
     @Override
@@ -86,6 +113,44 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (counter) {
+            case 0:
+                showcaseView.setShowcase(new ViewTarget(contactsTabBtn), true);
+                showcaseView.setContentTitle("Contacts");
+                showcaseView.setContentText("View the current status of your saved contacts");
+                break;
+
+            case 1:
+                showcaseView.setShowcase(new ViewTarget(calllogTabBtn), true);
+                showcaseView.setContentTitle("Call Log");
+                showcaseView.setContentText("View your call logs & custom call messages");
+                break;
+
+            case 2:
+                showcaseView.setShowcase(new ViewTarget(dialPadBtn), true);
+                showcaseView.setContentTitle("Dialer");
+                showcaseView.setContentText("Dial your number and make custom calls");
+                break;
+
+            case 3:
+                showcaseView.hide();
+                setAlpha(1.0f, statusTabBtn, contactsTabBtn, calllogTabBtn, dialPadBtn);
+                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_SHOWCASEVIEW));
+                break;
+        }
+        counter++;
+    }
+
+    private void setAlpha(float alpha, View... views) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            for (View view : views) {
+                view.setAlpha(alpha);
+            }
+        }
     }
 
     class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

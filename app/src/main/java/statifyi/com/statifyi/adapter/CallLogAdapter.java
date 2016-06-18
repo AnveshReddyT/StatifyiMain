@@ -121,13 +121,16 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
         }
 
 //        User mUser = findUser(callLog.getPhone());
+        final boolean hasCustomMessage;
         if (callLog.getMessage() != null) {
             holder.statusLayout.setVisibility(View.VISIBLE);
             holder.time.setVisibility(View.INVISIBLE);
             holder.status.setText(callLog.getMessage());
             holder.icon.setImageResource(StatusUtils.getCustomCallIcon(callLog.getMessage(), mContext));
+            hasCustomMessage = true;
 //            holder.time.setText(Utils.timeAgo(mUser.getUpdated()));
         } else {
+            hasCustomMessage = false;
             holder.statusLayout.setVisibility(View.INVISIBLE);
             holder.time.setVisibility(View.INVISIBLE);
             holder.status.setText(null);
@@ -146,12 +149,23 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
                     .into(holder.avatar);
         }
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
-        convertView.findViewById(R.id.calllog_list_item_call).setOnClickListener(new View.OnClickListener() {
+        ImageView quickLink = (ImageView) convertView.findViewById(R.id.calllog_list_item_call);
+        if (hasCustomMessage) {
+            quickLink.setImageResource(R.drawable.places_ic_clear);
+        } else {
+            quickLink.setImageDrawable(null);
+        }
+        quickLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 swipeLayout.close();
-                dbHelper.deleteCustomCallLog(callLog.getDate());
-                notifyDataSetChanged();
+                if(hasCustomMessage) {
+                    dbHelper.deleteCustomCallLog(callLog.getDate());
+                    notifyDataSetChanged();
+                    Utils.showToast(mContext, "Deleted custom call message");
+                } else {
+
+                }
             }
         });
         convertView.findViewById(R.id.calllog_list_item_surface).setOnClickListener(new View.OnClickListener() {

@@ -128,10 +128,11 @@
         <service
             android:name=".service.GCMSubscribeService"
             android:exported="false" />
-
         <service
             android:name=".service.ActivityRecognizeService"
             android:exported="false" />
+
+        <activity android:name=".AppIntroActivity"></activity>
     </application>
 
 </manifest>
