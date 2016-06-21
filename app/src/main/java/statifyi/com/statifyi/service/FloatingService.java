@@ -148,10 +148,9 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         if (NetworkUtils.isOnline()) {
             userAPIService.getUserStatus(GCMUtils.getRegistrationId(FloatingService.this), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
-                String contactName = mContactName == null ? phoneNumber : mContactName;
-
                 @Override
                 public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
+                    String contactName = mContactName == null ? phoneNumber : mContactName;
                     if (floatingPopup != null && floatingPopup.isShowing()) {
                         String statusMessage;
                         if (response.code() == 200) {
@@ -188,6 +187,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
 
                 @Override
                 public void onFailure(Throwable t) {
+                    String contactName = mContactName == null ? phoneNumber : mContactName;
                     String statusMessage;
                     User user = dbHelper.getUser(tenDigitNumber);
                     if (user != null) {

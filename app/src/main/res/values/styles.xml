@@ -9,6 +9,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="toolbarStyle">@style/ToolBarStyle</item>
+        <item name="android:popupMenuStyle">@style/MyApp.PopupMenu</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
@@ -55,6 +56,10 @@
 
     <style name="CustomButton" parent="ShowcaseButton">
         <item name="android:background">@drawable/bg_rectangle_green</item>
+    </style>
+
+    <style name="MyApp.PopupMenu" parent="android:Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/bg_rectangle_rounded_green</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />

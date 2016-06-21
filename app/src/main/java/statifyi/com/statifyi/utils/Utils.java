@@ -59,7 +59,7 @@ public class Utils {
             e.printStackTrace();
         }
         if (upArrow != null) {
-            upArrow.setColorFilter(mContext.getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            upArrow.mutate().setColorFilter(mContext.getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
         }
         return upArrow;
     }

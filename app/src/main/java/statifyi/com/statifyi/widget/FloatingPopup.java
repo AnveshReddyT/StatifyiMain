@@ -5,6 +5,7 @@ package statifyi.com.statifyi.widget;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -51,6 +52,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private float initialTouchY;
     private TextView statusMessage;
     private TextView statusTime;
+    private ImageView logoIcon;
     private android.widget.TextView closePopup;
     private ImageView statusIcon;
     private CircularImageView avatar;
@@ -99,12 +101,13 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         LinearLayout ll = (LinearLayout) inflate(context, R.layout.popup, this);
         statusMessage = (TextView) findViewById(R.id.popup_status_message);
         statusIcon = (ImageView) findViewById(R.id.popup_status_icon);
-        statusMenu = (ImageView) findViewById(R.id.popup_status_menu);
+        statusMenu = (ImageView) findViewById(R.id.popup_status_menu_icon);
         statusTime = (TextView) findViewById(R.id.popup_status_time);
         avatar = (CircularImageView) findViewById(R.id.popup_status_avatar);
+        logoIcon = (ImageView) findViewById(R.id.popup_status_logo);
         statusIconLayout = (RelativeLayout) findViewById(R.id.popup_status_icon_layout);
         closePopup = (android.widget.TextView) findViewById(R.id.popup_status_close);
-        statusMenu.getDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        statusMenu.getDrawable().mutate().setColorFilter(getResources().getColor(R.color.gray), PorterDuff.Mode.SRC_ATOP);
         closePopup.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,6 +249,10 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         PopupMenu popup = new PopupMenu(ctx.getApplicationContext(), v);
         if (newUser) {
             MenuItem inviteOption = popup.getMenu().add("Invite");
+            TextView tv = new TextView(ctx);
+            tv.setBackgroundColor(Color.RED);
+            tv.setPadding(3, 3, 3, 3);
+//            inviteOption.setActionView(tv);
             inviteOption.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {

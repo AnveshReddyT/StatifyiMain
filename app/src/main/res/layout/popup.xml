@@ -11,7 +11,7 @@
     <RelativeLayout
         android:id="@+id/popup_status_layout"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:orientation="horizontal">
 
@@ -19,7 +19,6 @@
             android:id="@+id/popup_status_avatar"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:src="@drawable/avatar"
@@ -27,12 +26,13 @@
             card_view:shadow="false" />
 
         <LinearLayout
+            android:id="@+id/popup_message_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/popup_status_avatar"
+            android:layout_alignTop="@+id/popup_status_avatar"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="16dp"
             android:layout_toLeftOf="@+id/popup_status_icon_layout"
             android:layout_toRightOf="@+id/popup_status_avatar"
             android:gravity="center"
@@ -57,10 +57,52 @@
         </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/popup_copyright_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/popup_status_avatar"
+            android:background="@color/primaryColor"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
+
+            <ImageView
+                android:id="@+id/popup_status_menu_icon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:src="@android:drawable/ic_menu_info_details"/>
+
+            <ImageView
+                android:id="@+id/popup_status_logo"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/popup_copyright"
+                android:src="@drawable/ic_launcher"/>
+
+            <statifyi.com.statifyi.widget.TextView
+                android:id="@+id/popup_copyright"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="6dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="80dp"
+                android:text="@string/app_name"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="10sp"
+                app:fontStyle="Italic" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/popup_status_icon_layout"
-            android:layout_width="72dp"
-            android:layout_height="match_parent"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/popup_copyright_layout"
             android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:background="@color/accentColor"
             android:orientation="vertical">
 
@@ -77,15 +119,6 @@
         </RelativeLayout>
 
     </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/popup_status_menu"
-        android:layout_width="16dp"
-        android:layout_height="24dp"
-        android:layout_gravity="right"
-        android:scaleType="center"
-        android:src="@drawable/ic_popup_menu"
-        android:visibility="visible" />
 
     <TextView
         android:id="@+id/popup_status_close"
