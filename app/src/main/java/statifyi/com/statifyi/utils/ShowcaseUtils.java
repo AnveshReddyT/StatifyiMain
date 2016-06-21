@@ -33,8 +33,12 @@ public class ShowcaseUtils {
     }
 
     public static boolean getStatusPage(Context mContext) {
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHOWCASEVIEW_PREF, Context.MODE_PRIVATE);
-        return sharedPreferences.getBoolean(KEY_STATUS_PAGE, false);
+        if(mContext != null) {
+            SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHOWCASEVIEW_PREF, Context.MODE_PRIVATE);
+            return sharedPreferences.getBoolean(KEY_STATUS_PAGE, false);
+        } else {
+            return true;
+        }
     }
 
     public static void setDialerPage(Context mContext, boolean set) {

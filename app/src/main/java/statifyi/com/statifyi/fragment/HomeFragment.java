@@ -141,20 +141,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             case 3:
                 showcaseView.hide();
-                setAlpha(1.0f, statusTabBtn, contactsTabBtn, calllogTabBtn, dialPadBtn);
                 LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_SHOWCASEVIEW));
                 ShowcaseUtils.setHomePage(getActivity(), true);
                 break;
         }
         counter++;
-    }
-
-    private void setAlpha(float alpha, View... views) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            for (View view : views) {
-                view.setAlpha(alpha);
-            }
-        }
     }
 
     class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
