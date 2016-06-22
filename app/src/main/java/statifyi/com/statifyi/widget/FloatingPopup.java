@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -76,7 +77,9 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT | WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
                 PixelFormat.TRANSPARENT);
 
         Display display = windowManager.getDefaultDisplay();
@@ -101,13 +104,13 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         LinearLayout ll = (LinearLayout) inflate(context, R.layout.popup, this);
         statusMessage = (TextView) findViewById(R.id.popup_status_message);
         statusIcon = (ImageView) findViewById(R.id.popup_status_icon);
-        statusMenu = (ImageView) findViewById(R.id.popup_status_menu_icon);
+        statusMenu = (ImageView) findViewById(R.id.popup_status_menu);
         statusTime = (TextView) findViewById(R.id.popup_status_time);
         avatar = (CircularImageView) findViewById(R.id.popup_status_avatar);
         logoIcon = (ImageView) findViewById(R.id.popup_status_logo);
         statusIconLayout = (RelativeLayout) findViewById(R.id.popup_status_icon_layout);
         closePopup = (android.widget.TextView) findViewById(R.id.popup_status_close);
-        statusMenu.getDrawable().mutate().setColorFilter(getResources().getColor(R.color.gray), PorterDuff.Mode.SRC_ATOP);
+        statusMenu.getDrawable().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
         closePopup.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -240,7 +243,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         statusMenu.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopup(v, newUser);
+                showPopup(findViewById(R.id.popup_status_menu_icon), newUser);
             }
         });
     }

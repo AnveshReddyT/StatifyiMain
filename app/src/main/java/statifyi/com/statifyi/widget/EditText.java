@@ -76,7 +76,7 @@ public class EditText extends android.widget.EditText {
     private void processAndroidAttributes(final Context context, final AttributeSet attrs) {
         final TypedArray colorA = context.obtainStyledAttributes(attrs, colorAttrs);
         setTextColor(colorA.getColor(0, Color.WHITE));
-        setFilters(new InputFilter[]{new InputFilter.LengthFilter(colorA.getResourceId(2, Integer.MAX_VALUE))});
+//        setFilters(new InputFilter[]{new InputFilter.LengthFilter(colorA.getResourceId(2, Integer.MAX_VALUE))});
         colorA.recycle();
     }
 

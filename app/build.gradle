@@ -2,9 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'statifyi.android'
+            keyPassword 'c3RhdGlmeWk='
+            storeFile file('../../statifyi-release.jks')
+            storePassword 'c3RhdGlmeWk='
+        }
+    }
     compileSdkVersion 24
     buildToolsVersion "24.0.0"
-
     defaultConfig {
         applicationId "statifyi.com.statifyi"
         minSdkVersion 18
@@ -20,11 +27,14 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.release
+        }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     provided 'org.glassfish:javax.annotation:10.0-b28'
     apt 'com.jakewharton:butterknife:5.1.1'
     compile 'com.android.support:appcompat-v7:24.0.0'
