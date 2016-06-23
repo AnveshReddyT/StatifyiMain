@@ -232,7 +232,12 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         setStatusLayoutColor(R.color.accentColor);
         setStatusIcon(R.drawable.ic_status);
         avatar.setImageResource(R.drawable.avatar);
+        statusMenu.setVisibility(View.VISIBLE);
         setTime(null);
+    }
+
+    public void hideMenu() {
+        statusMenu.setVisibility(View.INVISIBLE);
     }
 
     public void setStatusLayoutColor(int res) {

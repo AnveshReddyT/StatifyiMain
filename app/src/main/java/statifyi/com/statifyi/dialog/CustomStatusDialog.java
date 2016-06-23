@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -26,6 +27,11 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class CustomStatusDialog extends Dialog {
 
+    public static final String customStatusIcons[] = {
+            "allday", "board", "chilling", "classroom", "dontknow", "dropmessage", "formaldress",
+            "friends", "music", "out", "pc", "smiley", "star", "tools", "travel"
+    };
+
     @InjectView(R.id.custom_status_btn)
     TextView setBtn;
 
@@ -42,8 +48,6 @@ public class CustomStatusDialog extends Dialog {
     private String icon;
 
     private Context mContext;
-
-    private String[] statusMessages;
 
     public CustomStatusDialog(Context context) {
         super(context);
@@ -72,8 +76,7 @@ public class CustomStatusDialog extends Dialog {
             userAPIService = NetworkUtils.provideUserAPIService(mContext);
         }
 
-        statusMessages = mContext.getResources().getStringArray(R.array.default_status_list);
-        statusIcon.setAdapter(new StatusIconAdapter(mContext, R.layout.custom_status_icon_item, statusMessages));
+        statusIcon.setAdapter(new StatusIconAdapter(mContext, R.layout.custom_status_icon_item, customStatusIcons));
         statusIcon.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -93,7 +96,7 @@ public class CustomStatusDialog extends Dialog {
         lp.width = (int) (width * 0.85);
         lp.height = (int) (height * 0.85);
         getWindow().setAttributes(lp);
-
+        statusMessage.setFilters(new InputFilter[] {new InputFilter.LengthFilter(20)});
     }
 
     public String getMessage() {
@@ -118,7 +121,7 @@ public class CustomStatusDialog extends Dialog {
             statusMessage.setError("Cannot be blank!");
         } else {
             setMessage(statusMessage.getText().toString());
-            setIcon(statusMessages[statusIcon.getSelectedItemPosition()]);
+            setIcon(customStatusIcons[statusIcon.getSelectedItemPosition()]);
             dismiss();
         }
     }

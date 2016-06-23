@@ -3,6 +3,7 @@ package statifyi.com.statifyi.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -64,7 +65,7 @@ public class CustomCallDialog extends Dialog {
         lp.width = (int) (width * 0.85);
         lp.height = (int) (height * 0.6);
         getWindow().setAttributes(lp);
-
+        statusMessage.setFilters(new InputFilter[] {new InputFilter.LengthFilter(20)});
     }
 
     public String getMessage() {

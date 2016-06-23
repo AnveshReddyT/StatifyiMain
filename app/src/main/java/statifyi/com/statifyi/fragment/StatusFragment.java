@@ -367,13 +367,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         if (!TextUtils.isEmpty(statusDialog.getMessage())) {
-//                            updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
-                            Status status = new Status();
-                            status.setStatus(statusDialog.getMessage());
-                            status.setIcon(statusDialog.getIcon());
-                            status.setDate(System.currentTimeMillis());
-                            dbHelper.insertOrUpdateCustomStatus(status);
-                            updateStatus();
+                            updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
                         }
                     }
                 });
@@ -395,6 +389,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                         int ico = Utils.getDrawableResByName(getActivity(), icon);
                         DataUtils.saveIcon(getActivity(), ico == 0 ? R.drawable.ic_launcher : ico);
 
+                        Status mStatus = new Status();
+                        mStatus.setStatus(status);
+                        mStatus.setIcon(icon);
+                        mStatus.setDate(System.currentTimeMillis());
+                        dbHelper.insertOrUpdateCustomStatus(mStatus);
                         updateStatus();
                     } else {
                         Utils.showToast(getActivity(), "Failed to change status");

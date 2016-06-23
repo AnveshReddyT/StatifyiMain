@@ -91,6 +91,9 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     floatingPopup.setMobile(lastTenDigits);
                     floatingPopup.setTime("from " + contactName);
                     String message = customCall == null ? mContext.getString(R.string.normal_call) : customCall.getMessage();
+                    if(customCall == null) {
+                        floatingPopup.hideMenu();
+                    }
                     floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(message, mContext));
                     floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(message, mContext));
                     floatingPopup.setMessage(message);
