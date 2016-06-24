@@ -9,6 +9,7 @@ import android.view.WindowManager;
 
 import statifyi.com.statifyi.fragment.OTPFragment;
 import statifyi.com.statifyi.fragment.ProfileFragment;
+import statifyi.com.statifyi.fragment.RegisterMobileFragment;
 import statifyi.com.statifyi.fragment.WelcomeFragment;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -26,7 +27,7 @@ public class RegistrationActivity extends AppCompatActivity {
         } else if (getIntent().hasExtra("complete")) {
             replaceFragment(ProfileFragment.newInstance(null, null));
         } else {
-            replaceFragment(WelcomeFragment.newInstance(null, null));
+            replaceFragment(RegisterMobileFragment.newInstance(null, null));
         }
     }
 

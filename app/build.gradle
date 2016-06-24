@@ -59,5 +59,4 @@ dependencies {
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'ch.acra:acra:4.6.2'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
-    compile 'com.github.paolorotolo:appintro:4.0.0'
 }

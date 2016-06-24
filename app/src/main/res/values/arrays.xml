@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="landing_bg">
+        <item>@color/light_green</item>
+        <item>@color/light_purple</item>
+        <item>@color/light_orange</item>
+        <item>@color/light_cyan</item>
+
+    </array>
+
+    <array name="icons">
+        <item>@drawable/ic_welcome_statifyi</item>
+        <item>@drawable/ic_manage_status</item>
+        <item>@drawable/ic_status_contacts</item>
+        <item>@drawable/ic_call_with_message</item>
+
+    </array>
+
+    <string-array name="titles" >
+
+        <item>STATIFYI</item>
+        <item>STATUS</item>
+        <item>CONTACTS</item>
+        <item>CUSTOM CALL</item>
+
+    </string-array>
+
+    <string-array name="hints" >
+
+        <item>Welcome to Statifyi</item>
+        <item>Manage your status and aware your well wishers about it</item>
+        <item>Know the current status of your saved contacts</item>
+        <item>Make calls with a text messages to convey the message</item>
+
+    </string-array>
+</resources>

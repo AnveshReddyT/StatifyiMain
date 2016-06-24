@@ -8,7 +8,6 @@ import android.text.TextUtils;
 
 import butterknife.ButterKnife;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.ShowcaseUtils;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -40,7 +39,7 @@ public class SplashScreen extends AppCompatActivity {
                         startActivity(i);
                     }
                 } else {
-                    Intent i = new Intent(SplashScreen.this, RegistrationActivity.class);
+                    Intent i = new Intent(SplashScreen.this, OnBoardingActivity.class);
                     startActivity(i);
                 }
 

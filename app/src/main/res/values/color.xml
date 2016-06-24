@@ -12,4 +12,9 @@
     <color name="list_divider">#77AFAFAF</color>
     <color name="dialer_alphabets">#AFAFAF</color>
 
+    <color name="light_green">#3eb74e</color>
+    <color name="light_purple">#8c61b3</color>
+    <color name="light_orange">#ffb500</color>
+    <color name="light_cyan">#00BCD4</color>
+
 </resources>

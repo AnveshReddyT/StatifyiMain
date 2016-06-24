@@ -52,6 +52,9 @@
         </receiver>
 
         <activity
+            android:name=".OnBoardingActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -132,7 +135,6 @@
             android:name=".service.ActivityRecognizeService"
             android:exported="false" />
 
-        <activity android:name=".AppIntroActivity"></activity>
     </application>
 
 </manifest>
