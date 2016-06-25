@@ -38,7 +38,7 @@ import statifyi.com.statifyi.utils.Utils;
 
 
 public class FloatingPopup extends LinearLayout implements OnTouchListener {
-    public static final int X_MARGIN = 32;
+    public static final int X_MARGIN = 48;
     public static final int Y_MARGIN = 100;
     private int screenWidth;
     private int screenHeight;
@@ -89,7 +89,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
 
-        params.width = screenWidth - 64;
+        params.width = screenWidth - (X_MARGIN * 2);
         params.gravity = Gravity.TOP;
         params.format = PixelFormat.TRANSLUCENT;
 
