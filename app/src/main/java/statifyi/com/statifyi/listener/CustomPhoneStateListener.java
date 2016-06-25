@@ -32,6 +32,8 @@ public class CustomPhoneStateListener extends PhoneStateListener {
 
     private int lastState;
 
+    private boolean isIncoming;
+
     private DBHelper dbHelper;
 
     private UserAPIService userAPIService;
@@ -79,6 +81,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
             case TelephonyManager.CALL_STATE_RINGING:
                 if (lastState == TelephonyManager.CALL_STATE_IDLE || lastState == TelephonyManager.CALL_STATE_OFFHOOK) {
                     // Incolimg call
+                    isIncoming = true;
                     String lastTenDigits = Utils.getLastTenDigits(incomingNumber);
                     CustomCall customCall = dbHelper.getCustomCall(lastTenDigits);
                     if (customCall != null) {
@@ -96,6 +99,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     }
                     floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(message, mContext));
                     floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(message, mContext));
+                    floatingPopup.setName(null);
                     floatingPopup.setMessage(message);
                     dbHelper.deletedCustomCall(lastTenDigits);
                     if (contactName != null && contactName.equals(incomingNumber)) {
@@ -105,6 +109,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
                 if (lastState != TelephonyManager.CALL_STATE_RINGING) {
+                    isIncoming = false;
                     // Out going call
                 }
                 break;
@@ -113,7 +118,14 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     floatingPopup.destroy();
                 }
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
+                    // Missed Call
+                    Utils.showToast(mContext, "Missed call");
+                } else if (isIncoming) {
                     // Incoming Call ended
+                    Utils.showToast(mContext, "Incoming call ended");
+                } else {
+                    // Outgoing Call ended
+                    Utils.showToast(mContext, "Outgoing call ended");
                 }
                 break;
         }
