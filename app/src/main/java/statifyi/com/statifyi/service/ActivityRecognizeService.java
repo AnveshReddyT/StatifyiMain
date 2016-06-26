@@ -19,6 +19,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.fragment.StatusFragment;
@@ -143,6 +144,8 @@ public class ActivityRecognizeService extends IntentService {
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
                         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
+                    } else if (response.code() == 401) {
+                        StatifyiApplication.logout(context);
                     }
                 }
 

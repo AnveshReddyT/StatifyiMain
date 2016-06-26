@@ -10,6 +10,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -150,6 +151,8 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                             long time = s.getUpdatedTime();
                             Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, autoStatus, time, dbHelper);
                             floatingPopup.setTime("from " + name);
+                        } else if (response.code() == 401) {
+                            StatifyiApplication.logout(mContext);
                         }
                     }
                 }

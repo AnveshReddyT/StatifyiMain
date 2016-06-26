@@ -40,6 +40,7 @@ public class GCMRegisterIntentService extends IntentService {
         }
         try {
             InstanceID instanceID = InstanceID.getInstance(this);
+            instanceID.deleteInstanceID();
             String token = instanceID.getToken(getString(R.string.google_project_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             Log.i("STAT", "GCM Registration Token: " + token);
             GCMUtils.storeRegistrationId(this, token);

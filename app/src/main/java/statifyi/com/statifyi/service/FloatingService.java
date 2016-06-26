@@ -24,6 +24,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.model.User;
@@ -154,7 +155,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                     String contactName = mContactName == null ? phoneNumber : mContactName;
                     String statusName = null;
                     if (floatingPopup != null && floatingPopup.isShowing()) {
-                        String statusMessage;
+                        String statusMessage = null;
                         if (response.code() == 200) {
                             StatusResponse s = response.body();
                             String status = s.getStatus().toUpperCase();
@@ -179,6 +180,8 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                             floatingPopup.setPopupMenu(false);
                             floatingPopup.setTime(updatedTime);
                             floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
+                        }  else if (response.code() == 401) {
+                            StatifyiApplication.logout((FloatingService.this));
                         } else {
                             floatingPopup.setPopupMenu(true);
                             floatingPopup.setTime(null);

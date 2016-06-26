@@ -30,6 +30,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.RegistrationActivity;
+import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
@@ -117,6 +118,8 @@ public class OTPFragment extends Fragment {
                                 progressDialog.dismiss();
                                 launchHomeScreen();
                             }
+                        }  else if (response.code() == 401) {
+                            StatifyiApplication.logout(getActivity());
                         }
                     }
 

@@ -46,6 +46,7 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
+import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.adapter.StatusAdapter;
 import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
@@ -339,6 +340,8 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                             DataUtils.saveIcon(getActivity(), ico);
 
                             updateStatus();
+                        }  else if (response.code() == 401) {
+                            StatifyiApplication.logout(getActivity());
                         } else {
                             Utils.showToast(getActivity(), "Failed to change status");
                         }
@@ -395,6 +398,8 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                         mStatus.setDate(System.currentTimeMillis());
                         dbHelper.insertOrUpdateCustomStatus(mStatus);
                         updateStatus();
+                    }  else if (response.code() == 401) {
+                        StatifyiApplication.logout(getActivity());
                     } else {
                         Utils.showToast(getActivity(), "Failed to change status");
                     }

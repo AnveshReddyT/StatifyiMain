@@ -74,8 +74,10 @@ public class GCMIntentService extends GcmListenerService {
         } else {
             try {
                 JSONObject jsonObject = new JSONObject(message);
-                if("logout".equals(message)) {
-                    StatifyiApplication.logout(GCMIntentService.this);
+                if(jsonObject.has("message")) {
+                    if(jsonObject.getString("message").contains("Logout")) {
+                        StatifyiApplication.logout(GCMIntentService.this);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
