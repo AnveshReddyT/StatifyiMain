@@ -120,13 +120,13 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 }
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                     // Missed Call
-                    Utils.showToast(mContext, "Missed call");
+//                    Utils.showToast(mContext, "Missed call");
                 } else if (isIncoming) {
                     // Incoming Call ended
-                    Utils.showToast(mContext, "Incoming call ended");
+//                    Utils.showToast(mContext, "Incoming call ended");
                 } else {
                     // Outgoing Call ended
-                    Utils.showToast(mContext, "Outgoing call ended");
+//                    Utils.showToast(mContext, "Outgoing call ended");
                 }
                 break;
         }
