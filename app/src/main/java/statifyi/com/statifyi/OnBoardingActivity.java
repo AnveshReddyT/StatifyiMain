@@ -62,13 +62,9 @@ public class OnBoardingActivity extends AppCompatActivity{
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(viewPager.getCurrentItem() == 3) {
                     Intent i = new Intent(OnBoardingActivity.this, RegistrationActivity.class);
                     startActivity(i);
                     finish();
-                } else {
-                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                }
             }
         });
 
@@ -93,9 +89,9 @@ public class OnBoardingActivity extends AppCompatActivity{
 
             public void onPageSelected(int position) {
                 if(position != 3) {
-                    nextBtn.setImageResource(R.drawable.ic_arrow_forward_white_24px);
+                    nextBtn.setVisibility(View.INVISIBLE);
                 } else {
-                    nextBtn.setImageResource(R.drawable.ic_done_white_24px);
+                    nextBtn.setVisibility(View.VISIBLE);
                 }
             }
 
