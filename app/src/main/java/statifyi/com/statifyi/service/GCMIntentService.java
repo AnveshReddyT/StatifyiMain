@@ -52,21 +52,7 @@ public class GCMIntentService extends GcmListenerService {
                         e.printStackTrace();
                     }
                 } else {
-                    StatusResponse s = NetworkUtils.provideGson().fromJson(message, StatusResponse.class);
-                    String status = s.getStatus().toUpperCase();
-                    String name = s.getName();
-                    String icon = s.getIcon();
-                    int autoStatus = s.getAutoStatus();
-                    long time = s.getUpdatedTime();
-                    if (!status.isEmpty()) {
-                        String phoneNumber = from.replace(TOPICS, "");
-                        Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, autoStatus, time, dbHelper);
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
-                        if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
-                            sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status to " + status);
-                            StatusUtils.removeNotifyStatus(this, phoneNumber);
-                        }
-                    }
+                    parseStatusMessage(from, message);
                 }
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
@@ -74,15 +60,32 @@ public class GCMIntentService extends GcmListenerService {
         } else {
             try {
                 JSONObject jsonObject = new JSONObject(message);
-                if(jsonObject.has("message")) {
-                    if(jsonObject.getString("message").contains("Logout")) {
+                if(jsonObject.has("logout")) {
                         StatifyiApplication.logout(GCMIntentService.this);
-                    }
+                } else if(jsonObject.has("mobile")){
+                    parseStatusMessage(jsonObject.getString("mobile"), jsonObject.getString("value"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             // normal downstream message.
+        }
+    }
+
+    private void parseStatusMessage(String phoneNumber, String message) {
+        StatusResponse s = NetworkUtils.provideGson().fromJson(message, StatusResponse.class);
+        String status = s.getStatus().toUpperCase();
+        String name = s.getName();
+        String icon = s.getIcon();
+        int autoStatus = s.getAutoStatus();
+        long time = s.getUpdatedTime();
+        if (!status.isEmpty()) {
+            Utils.saveUserStatusToLocal(status, name, icon, phoneNumber, autoStatus, time, dbHelper);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(BROADCAST_ACTION_STATUS_CHANGE));
+            if (StatusUtils.isNotifyEnabled(this, phoneNumber)) {
+                sendNotification(Utils.getContactName(this, phoneNumber) + " updated his/her status to " + status);
+                StatusUtils.removeNotifyStatus(this, phoneNumber);
+            }
         }
     }
 
