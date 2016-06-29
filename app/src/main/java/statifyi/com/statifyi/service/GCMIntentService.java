@@ -40,36 +40,40 @@ public class GCMIntentService extends GcmListenerService {
         String message = data.getString("message");
         if (from.startsWith(TOPICS)) {
             try {
-                if (from.contains("-customCall")) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(message);
-                        CustomCall call = new CustomCall();
-                        call.setMobile(jsonObject.getString("mobile"));
-                        call.setMessage(jsonObject.getString("message"));
-                        call.setTime(System.currentTimeMillis());
-                        dbHelper.insertOrUpdateCustomCall(call);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    parseStatusMessage(from, message);
-                }
-            } catch (JsonSyntaxException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
                 JSONObject jsonObject = new JSONObject(message);
-                if(jsonObject.has("logout")) {
-                        StatifyiApplication.logout(GCMIntentService.this);
-                } else if(jsonObject.has("mobile")){
+                if (jsonObject.has("logout")) {
+                    StatifyiApplication.logout(GCMIntentService.this);
+                } else if (jsonObject.has("customCall")) {
+                    parseCustomCallMessage(jsonObject.getJSONObject("value"));
+                } else if (jsonObject.has("mobile")) {
                     parseStatusMessage(jsonObject.getString("mobile"), jsonObject.getString("value"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else {
             // normal downstream message.
+            try {
+                JSONObject jsonObject = new JSONObject(message);
+                if (jsonObject.has("logout")) {
+                    StatifyiApplication.logout(GCMIntentService.this);
+                } else if (jsonObject.has("customCall")) {
+                    parseCustomCallMessage(jsonObject.getJSONObject("value"));
+                }  else if (jsonObject.has("mobile")) {
+                    parseStatusMessage(jsonObject.getString("mobile"), jsonObject.getString("value"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private void parseCustomCallMessage(JSONObject jsonObject) throws JSONException {
+        CustomCall call = new CustomCall();
+        call.setMobile(jsonObject.getString("mobile"));
+        call.setMessage(jsonObject.getString("message"));
+        call.setTime(System.currentTimeMillis());
+        dbHelper.insertOrUpdateCustomCall(call);
     }
 
     private void parseStatusMessage(String phoneNumber, String message) {
