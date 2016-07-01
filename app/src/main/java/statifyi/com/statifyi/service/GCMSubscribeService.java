@@ -95,8 +95,8 @@ public class GCMSubscribeService extends IntentService {
         contactList.addAll(Utils.get10DigitPhoneNumbersFromContacts(this));
 
         Set<String> subscribeList = new HashSet<>();
-        subscribeList.addAll(contactList);
-        subscribeList.removeAll(gcmTopicSet);
+//        subscribeList.addAll(contactList);
+//        subscribeList.removeAll(gcmTopicSet);
         for (String customTopic : CUSTOM_TOPICS) {
             if (!gcmTopicSet.contains(mobile + customTopic)) {
                 subscribeList.add(mobile + customTopic);
@@ -104,21 +104,21 @@ public class GCMSubscribeService extends IntentService {
         }
 
         Log.d("TAG_STAT", "Subscribed to : " + gcmTopicSet.size());
-        Log.d("TAG_STAT", "Available : " + contactList.size());
+//        Log.d("TAG_STAT", "Available : " + contactList.size());
         Log.d("TAG_STAT", "Remaining: " + subscribeList.size());
         subscribe(subscribeList);
 
         gcmTopicSet.addAll(subscribeList);
         Log.d("TAG_STAT", "Subscribed to : " + gcmTopicSet.size());
 
-        gcmTopicSet.removeAll(contactList);
-        for (String customTopic : CUSTOM_TOPICS) {
-            if (gcmTopicSet.contains(mobile + customTopic)) {
-                gcmTopicSet.remove(mobile + customTopic);
-            }
-        }
-        Log.d("TAG_STAT", "to delete: " + gcmTopicSet.size());
-        unSubscribe(gcmTopicSet);
+//        gcmTopicSet.removeAll(contactList);
+//        for (String customTopic : CUSTOM_TOPICS) {
+//            if (gcmTopicSet.contains(mobile + customTopic)) {
+//                gcmTopicSet.remove(mobile + customTopic);
+//            }
+//        }
+//        Log.d("TAG_STAT", "to delete: " + gcmTopicSet.size());
+//        unSubscribe(gcmTopicSet);
     }
 
     private void subscribe(Set<String> subscribeList) {

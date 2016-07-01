@@ -40,6 +40,9 @@
         </activity>
 
         <service
+            android:name=".service.MqttService" />
+
+        <service
             android:name=".service.FloatingService"
             android:enabled="true" />
 
