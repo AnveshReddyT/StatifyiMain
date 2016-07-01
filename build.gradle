@@ -19,8 +19,5 @@ allprojects {
         maven {
             url 'http://lorenzo.villani.me/android-cropimage/'
         }
-        maven {
-            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
-        }
     }
 }

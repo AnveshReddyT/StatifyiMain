@@ -68,6 +68,4 @@ dependencies {
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'ch.acra:acra:4.6.2'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
-    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
-    compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.0.2'
 }

@@ -144,8 +144,7 @@ public class MqttService extends Service implements MqttCallback {
 
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-        final JSONObject jsonObject = new JSONObject(new String(mqttMessage.getPayload()));
-        Log.e(TAG, "mqtt message arrived" + jsonObject.toString());
+        Log.e(TAG, "mqtt message arrived" + new String(mqttMessage.getPayload()));
     }
 
     @Override
