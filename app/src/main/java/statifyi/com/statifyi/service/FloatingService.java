@@ -24,7 +24,6 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import statifyi.com.statifyi.R;
-import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.CustomCall;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.model.User;
@@ -117,8 +116,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
     }
 
     private void setExistingStatus(String mobile, String contactName, User mUser) {
-        floatingPopup.setName(contactName + " is ");
-        floatingPopup.setMessage(mUser.getStatus().toUpperCase());
+        floatingPopup.setMessage(contactName + " is " + mUser.getStatus().toUpperCase());
         floatingPopup.setMobile(Utils.getLastTenDigits(mobile));
         String updatedTime = Utils.timeAgo(mUser.getUpdated());
         if (mUser.getAutoStatus() > 0) {
@@ -153,9 +151,8 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                 @Override
                 public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
                     String contactName = mContactName == null ? phoneNumber : mContactName;
-                    String statusName = null;
                     if (floatingPopup != null && floatingPopup.isShowing()) {
-                        String statusMessage = null;
+                        String statusMessage;
                         if (response.code() == 200) {
                             StatusResponse s = response.body();
                             String status = s.getStatus().toUpperCase();
@@ -166,12 +163,10 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
 //                        floatingPopup.setMobile(tenDigitNumber);
                             contactName = contactName.equals(phoneNumber) ? name : contactName;
                             if (status.isEmpty()) {
-                                statusName = contactName;
-                                statusMessage = getResources().getString(R.string.status_not_set);
+                                statusMessage = contactName + getResources().getString(R.string.status_not_set);
                             } else {
                                 Utils.saveUserStatusToLocal(status, name, icon, tenDigitNumber, autoStatus, time, dbHelper);
-                                statusName = contactName + " is ";
-                                statusMessage = status;
+                                statusMessage = contactName + " is " + status;
                             }
                             String updatedTime = Utils.timeAgo(s.getUpdatedTime());
                             if (s.getAutoStatus() > 0) {
@@ -180,16 +175,12 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                             floatingPopup.setPopupMenu(false);
                             floatingPopup.setTime(updatedTime);
                             floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
-                        }  else if (response.code() == 401) {
-                            StatifyiApplication.logout((FloatingService.this));
                         } else {
                             floatingPopup.setPopupMenu(true);
                             floatingPopup.setTime(null);
-                            statusName = contactName;
-                            statusMessage = getResources().getString(R.string.status_user_not_found);
+                            statusMessage = contactName + getResources().getString(R.string.status_user_not_found);
                             floatingPopup.setStatusIcon(R.drawable.ic_status);
                         }
-                        floatingPopup.setName(statusName);
                         floatingPopup.setMessage(statusMessage);
                     }
                 }
@@ -198,17 +189,14 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                 public void onFailure(Throwable t) {
                     String contactName = mContactName == null ? phoneNumber : mContactName;
                     String statusMessage;
-                    String statusName = null;
                     User user = dbHelper.getUser(tenDigitNumber);
                     if (user != null) {
                         String status = user.getStatus().toUpperCase();
                         String icon = user.getIcon();
                         if (status.isEmpty()) {
-                            statusName = contactName;
-                            statusMessage = getResources().getString(R.string.status_not_set);
+                            statusMessage = contactName + getResources().getString(R.string.status_not_set);
                         } else {
-                            statusName = contactName + " is ";
-                            statusMessage = status;
+                            statusMessage = contactName + " is " + status/* + "(" + Utils.timeAgo(s.getUpdatedTime()) + ")"*/;
                         }
 //                    floatingPopup.setMobile(tenDigitNumber);
                         floatingPopup.setPopupMenu(false);
@@ -216,11 +204,9 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                         floatingPopup.setStatusIcon(Utils.getDrawableResByName(FloatingService.this, icon));
                     } else {
                         floatingPopup.setTime(null);
-                        statusName = null;
                         statusMessage = getResources().getString(R.string.status_no_network);
                         floatingPopup.setStatusIcon(R.drawable.ic_status);
                     }
-                    floatingPopup.setName(statusName);
                     floatingPopup.setMessage(statusMessage);
                 }
             });

@@ -100,7 +100,6 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                     }
                     floatingPopup.setStatusIcon(StatusUtils.getCustomCallIcon(message, mContext));
                     floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(message, mContext));
-                    floatingPopup.setName(null);
                     floatingPopup.setMessage(message);
                     dbHelper.deletedCustomCall(lastTenDigits);
                     if (contactName != null && contactName.equals(incomingNumber)) {

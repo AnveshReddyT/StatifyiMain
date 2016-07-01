@@ -38,7 +38,7 @@ import statifyi.com.statifyi.utils.Utils;
 
 
 public class FloatingPopup extends LinearLayout implements OnTouchListener {
-    public static final int X_MARGIN = 48;
+    public static final int X_MARGIN = 32;
     public static final int Y_MARGIN = 100;
     private int screenWidth;
     private int screenHeight;
@@ -51,7 +51,6 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     private int initialY;
     private float initialTouchX;
     private float initialTouchY;
-    private TextView name;
     private TextView statusMessage;
     private TextView statusTime;
     private ImageView logoIcon;
@@ -79,8 +78,8 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT | WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
                 PixelFormat.TRANSPARENT);
 
         Display display = windowManager.getDefaultDisplay();
@@ -89,13 +88,13 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
 
-        params.width = screenWidth - (X_MARGIN * 2);
+        params.width = screenWidth - 64;
         params.gravity = Gravity.TOP;
         params.format = PixelFormat.TRANSLUCENT;
 
         params.gravity = Gravity.TOP | Gravity.LEFT; // setting the gravity of the imageView
         params.windowAnimations = android.R.style.Animation_Toast; // adding an animation to it.
-        params.x = Utils.dpToPx(X_MARGIN); // horizontal location of imageView
+        params.x = X_MARGIN; // horizontal location of imageView
         params.y = screenHeight / 2 - 100; // vertical location of imageView
 //        params.height = 120; // given it a fixed height in case of large image
 //        params.width = 120; // given it a fixed width in case of large image
@@ -103,7 +102,6 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
 
         setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout ll = (LinearLayout) inflate(context, R.layout.popup, this);
-        name = (TextView) findViewById(R.id.popup_status_name);
         statusMessage = (TextView) findViewById(R.id.popup_status_message);
         statusIcon = (ImageView) findViewById(R.id.popup_status_icon);
         statusMenu = (ImageView) findViewById(R.id.popup_status_menu);
@@ -145,10 +143,6 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
             windowManager.addView(this, params); // adding the imageView & the  params to the WindowsManger.
             setIsShowing(true);
         }
-    }
-
-    public void setName(String username) {
-        this.name.setText(username);
     }
 
     public void setMessage(String message) {
@@ -234,7 +228,6 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     }
 
     public void resetPopup() {
-        setName(null);
         setMessage(getResources().getString(R.string.please_wait));
         setStatusLayoutColor(R.color.accentColor);
         setStatusIcon(R.drawable.ic_status);

@@ -39,19 +39,10 @@
             android:orientation="vertical">
 
             <statifyi.com.statifyi.widget.TextView
-                android:id="@+id/popup_status_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/please_wait"
-                android:textColor="#888888"
-                android:textSize="12sp" />
-
-            <statifyi.com.statifyi.widget.TextView
                 android:id="@+id/popup_status_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/please_wait"
-                android:textAllCaps="true"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -60,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/darker_gray"
-                android:textSize="8sp"
+                android:textSize="10sp"
                 app:fontStyle="Italic" />
 
         </LinearLayout>
