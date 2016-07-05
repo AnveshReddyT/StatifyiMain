@@ -26,7 +26,7 @@ public interface UserAPIService {
 
     Call<Void> uploadImage(String gcmId, File file);
 
-    Call<List<MultiStatusResponse>> getAllStatus(List<String> mobiles);
+    Call<List<MultiStatusResponse>> getAllStatus(String gcmId, List<String> mobiles);
 
     Call<Void> registerUser(RegisterUserRequest request);
 

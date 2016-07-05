@@ -33,7 +33,6 @@ import statifyi.com.statifyi.fragment.HomeFragment;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.service.GCMSubscribeService;
-import statifyi.com.statifyi.service.MqttService;
 import statifyi.com.statifyi.utils.BlurBuilder;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
@@ -76,10 +75,6 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         registerGCM();
-
-        if(!Utils.isMyServiceRunning(this, MqttService.class)) {
-            startService(new Intent(this, MqttService.class));
-        }
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         ButterKnife.inject(this);

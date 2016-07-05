@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.JsonSyntaxException;
 
@@ -30,14 +31,14 @@ public class GCMIntentService extends GcmListenerService {
     public static final int NOTIFICATION_ID = 1;
     public static final String BROADCAST_ACTION_STATUS_CHANGE = "statifyi.broadcast.status_change";
     public static final String TOPICS = "/topics/";
-    DBHelper dbHelper;
+    private DBHelper dbHelper;
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
         if (dbHelper == null) {
             dbHelper = DBHelper.getInstance(this);
         }
-        String message = data.getString("message");
+         String message = data.getString("message");
         if (from.startsWith(TOPICS)) {
             try {
                 JSONObject jsonObject = new JSONObject(message);
@@ -50,6 +51,7 @@ public class GCMIntentService extends GcmListenerService {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e.fillInStackTrace());
             }
         } else {
             // normal downstream message.
@@ -64,6 +66,7 @@ public class GCMIntentService extends GcmListenerService {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e.fillInStackTrace());
             }
         }
     }

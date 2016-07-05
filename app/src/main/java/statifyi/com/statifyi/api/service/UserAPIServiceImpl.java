@@ -55,8 +55,8 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Call<List<MultiStatusResponse>> getAllStatus(List<String> mobiles) {
-        return remoteServerAPI.getAllStatus(mobiles);
+    public Call<List<MultiStatusResponse>> getAllStatus(String gcmId, List<String> mobiles) {
+        return remoteServerAPI.getAllStatus(gcmId, mobiles);
     }
 
     @Override

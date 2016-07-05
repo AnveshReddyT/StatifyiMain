@@ -7,12 +7,11 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.iid.InstanceID;
 import com.squareup.picasso.Picasso;
 
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
-import org.acra.sender.HttpSender;
+import io.fabric.sdk.android.Fabric;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +28,6 @@ import statifyi.com.statifyi.utils.Utils;
  * Created by KT on 23/12/15.
  */
 
-@ReportsCrashes(
-        httpMethod = HttpSender.Method.PUT,
-        reportType = HttpSender.Type.JSON,
-        formUri = "http://54.201.38.232:5984/acra-statifyi/_design/acra-storage/_update/report",
-        formUriBasicAuthLogin = "android",
-        formUriBasicAuthPassword = "android"
-)
 public class StatifyiApplication extends Application {
 
     public static boolean deleteFile(File file) {
@@ -61,7 +53,7 @@ public class StatifyiApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ACRA.init(this);
+        Fabric.with(this, new Crashlytics());
         Picasso picasso = new Picasso.Builder(this)
                 .loggingEnabled(BuildConfig.DEBUG)
                 .indicatorsEnabled(BuildConfig.DEBUG)

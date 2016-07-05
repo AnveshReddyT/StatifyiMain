@@ -40,9 +40,6 @@
         </activity>
 
         <service
-            android:name=".service.MqttService" />
-
-        <service
             android:name=".service.FloatingService"
             android:enabled="true" />
 
@@ -138,6 +135,9 @@
             android:name=".service.ActivityRecognizeService"
             android:exported="false" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ad32b175b1c27effa5486be892dc28661f31501f" />
     </application>
 
 </manifest>

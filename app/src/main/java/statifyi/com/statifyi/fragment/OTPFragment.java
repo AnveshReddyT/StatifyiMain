@@ -102,6 +102,7 @@ public class OTPFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isOnline()) {
+                getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
                 final String mobileNumber = DataUtils.getMobileNumber(getActivity());
                 userAPIService.getUserStatus(GCMUtils.getRegistrationId(getActivity()), mobileNumber).enqueue(new Callback<StatusResponse>() {
                     @Override
@@ -200,7 +201,6 @@ public class OTPFragment extends Fragment {
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
                         getActivity().startService(new Intent(getActivity(), GCMRegisterIntentService.class));
-                        getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
                     } else {
                         progressDialog.dismiss();
                         Utils.showToast(getActivity(), "Failed to activate");

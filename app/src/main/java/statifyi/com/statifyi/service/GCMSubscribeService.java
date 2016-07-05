@@ -91,8 +91,8 @@ public class GCMSubscribeService extends IntentService {
     }
 
     private void verifySubscriptions(Set<String> gcmTopicSet) {
-        Set<String> contactList = new HashSet<>();
-        contactList.addAll(Utils.get10DigitPhoneNumbersFromContacts(this));
+//        Set<String> contactList = new HashSet<>();
+//        contactList.addAll(Utils.get10DigitPhoneNumbersFromContacts(this));
 
         Set<String> subscribeList = new HashSet<>();
 //        subscribeList.addAll(contactList);

@@ -44,7 +44,7 @@ public interface RemoteServerAPI {
     Call<Void> uploadImage(@Header("token") String gcmId, @Part("file") RequestBody request);
 
     @POST(BASE_CONTEXT + "/multiStatus")
-    Call<List<MultiStatusResponse>> getAllStatus(@Body List<String> mobiles);
+    Call<List<MultiStatusResponse>> getAllStatus(@Header("token") String gcmId, @Body List<String> mobiles);
 
     @POST(BASE_CONTEXT + "/register")
     Call<Void> registerUser(@Body RegisterUserRequest request);
