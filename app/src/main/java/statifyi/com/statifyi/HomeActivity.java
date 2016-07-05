@@ -74,19 +74,45 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        registerGCM();
+        if(verifyProfileComplete()) {
+            registerGCM();
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-        ButterKnife.inject(this);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+            ButterKnife.inject(this);
 
-        if (toolbar != null) {
-            toolbar.setTitle(null);
-            setSupportActionBar(toolbar);
+            if (toolbar != null) {
+                toolbar.setTitle(null);
+                setSupportActionBar(toolbar);
+            }
+            initDrawer();
+            setContent(HomeFragment.newInstance(null, null));
+            Intent serviceIntent = new Intent(this, FloatingService.class);
+            startService(serviceIntent);
+        } else {
+            finish();
         }
-        initDrawer();
-        setContent(HomeFragment.newInstance(null, null));
-        Intent serviceIntent = new Intent(this, FloatingService.class);
-        startService(serviceIntent);
+    }
+
+    private boolean verifyProfileComplete() {
+        if (!TextUtils.isEmpty(DataUtils.getMobileNumber(HomeActivity.this))) {
+            if (DataUtils.isActivated(HomeActivity.this)) {
+                if (TextUtils.isEmpty(DataUtils.getName(HomeActivity.this))) {
+                    Intent i = new Intent(HomeActivity.this, RegistrationActivity.class);
+                    i.putExtra("complete", false);
+                    startActivity(i);
+                } else {
+                    return true;
+                }
+            } else {
+                Intent i = new Intent(HomeActivity.this, RegistrationActivity.class);
+                i.putExtra("active", false);
+                startActivity(i);
+            }
+        } else {
+            Intent i = new Intent(HomeActivity.this, OnBoardingActivity.class);
+            startActivity(i);
+        }
+        return false;
     }
 
     private void setContent(Fragment fragment) {

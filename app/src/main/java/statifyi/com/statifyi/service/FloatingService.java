@@ -133,6 +133,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         }
         final String mContactName = Utils.getContactName(FloatingService.this, tenDigitNumber);
         floatingPopup.show();
+        floatingPopup.resetPopup();
         if (customCall != null) {
             floatingPopup.setStatusLayoutColor(StatusUtils.getCustomCallLayoutColor(customCall.getMessage(), FloatingService.this));
         } else {
@@ -142,7 +143,6 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         if (mUser != null) {
             setExistingStatus(phoneNumber, mContactName, mUser);
         } else {
-            floatingPopup.resetPopup();
             floatingPopup.setMobile(tenDigitNumber);
         }
         if (NetworkUtils.isOnline()) {
