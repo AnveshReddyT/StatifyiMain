@@ -159,8 +159,9 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
             @Override
             public void onClick(View view) {
                 swipeLayout.close();
-                if(hasCustomMessage) {
+                if (hasCustomMessage) {
                     dbHelper.deleteCustomCallLog(callLog.getDate());
+                    filteredData.get(position).setMessage(null);
                     notifyDataSetChanged();
                     Utils.showToast(mContext, "Deleted custom call message");
                 } else {

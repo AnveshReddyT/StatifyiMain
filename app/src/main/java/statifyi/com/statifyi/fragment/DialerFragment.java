@@ -26,6 +26,9 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.squareup.okhttp.ResponseBody;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -246,7 +249,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(!ShowcaseUtils.getDialerPage(getActivity())) {
+        if (!ShowcaseUtils.getDialerPage(getActivity())) {
             showcaseView = new ShowcaseView.Builder(getActivity())
                     .setTarget(new ViewTarget(emergencyBtn))
                     .setStyle(R.style.CustomShowcaseTheme)
@@ -572,7 +575,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     }
 
     private void makeCustomCallRequest(final String message) {
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isConnectingToInternet(getActivity())) {
             final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
 
             User user = dbHelper.getUser(lastTenDigits);
@@ -583,7 +586,13 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 TopicMessageRequest topicRequest = new TopicMessageRequest();
                 topicRequest.setTo(GCMIntentService.TOPICS + lastTenDigits + "-customCall");
                 TopicMessageData data = new TopicMessageData();
-                data.setMessage(customCall.toString());
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("customCall", customCall);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                data.setMessage(jsonObject.toString());
                 topicRequest.setData(data);
 
                 GCMAPIService gcmapiService = NetworkUtils.provideGCMAPIService(getActivity(), true);
@@ -591,13 +600,12 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onResponse(Response<ResponseBody> response, Retrofit retrofit) {
                         if (!response.isSuccess()) {
-                            Utils.showToast(getActivity(), "Failed! Please make a normal call");
+                            Utils.showToast(getActivity(), "Failed! Making a normal call");
                         }
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-                        progressDialog.dismiss();
                         Utils.showToast(getActivity(), "Failed! Please try again.");
                     }
                 });

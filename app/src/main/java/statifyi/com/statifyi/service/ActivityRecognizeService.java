@@ -57,7 +57,7 @@ public class ActivityRecognizeService extends IntentService {
             switch (activity.getType()) {
                 case DetectedActivity.IN_VEHICLE: {
                     Log.e("STAT", "In Vehicle: " + activity.getConfidence());
-                    if (activity.getConfidence() >= 75) {
+                    if (activity.getConfidence() >= 90) {
                         showNotification("Are you driving?");
                         changeStatus("DRIVING");
                     }
@@ -65,7 +65,7 @@ public class ActivityRecognizeService extends IntentService {
                 }
                 case DetectedActivity.ON_BICYCLE: {
                     Log.e("STAT", "On Bicycle: " + activity.getConfidence());
-                    if (activity.getConfidence() >= 75) {
+                    if (activity.getConfidence() >= 90) {
                         showNotification("Are you driving?");
                         changeStatus("DRIVING");
                     }

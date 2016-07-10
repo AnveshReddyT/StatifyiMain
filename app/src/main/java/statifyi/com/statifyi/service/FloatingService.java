@@ -145,7 +145,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
         } else {
             floatingPopup.setMobile(tenDigitNumber);
         }
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isConnectingToInternet(FloatingService.this)) {
             userAPIService.getUserStatus(GCMUtils.getRegistrationId(FloatingService.this), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
                 @Override
@@ -161,7 +161,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
                             int autoStatus = s.getAutoStatus();
                             long time = s.getUpdatedTime();
 //                        floatingPopup.setMobile(tenDigitNumber);
-                            contactName = contactName.equals(phoneNumber) ? name : contactName;
+                            contactName = name;
                             if (status.isEmpty()) {
                                 statusMessage = contactName + getResources().getString(R.string.status_not_set);
                             } else {

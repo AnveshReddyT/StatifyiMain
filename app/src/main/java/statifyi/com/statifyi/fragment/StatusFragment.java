@@ -329,7 +329,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
             StatusRequest request = new StatusRequest();
             request.setStatus(status.getStatus());
             request.setIcon(status.getIcon());
-            if (NetworkUtils.isOnline()) {
+            if (NetworkUtils.isConnectingToInternet(getActivity())) {
                 progressDialog.show();
                 userAPIService.setUserStatus(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                     @Override
@@ -382,7 +382,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         StatusRequest request = new StatusRequest();
         request.setStatus(status);
         request.setIcon(icon);
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isConnectingToInternet(getActivity())) {
             progressDialog.show();
             userAPIService.setUserStatus(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                 @Override

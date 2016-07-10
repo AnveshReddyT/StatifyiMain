@@ -142,7 +142,7 @@ public class ProfileFragment extends Fragment {
     private void doUpdateProfile(final String name) {
         UserNameRequest request = new UserNameRequest();
         request.setName(name);
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isConnectingToInternet(getActivity())) {
             if (!progressDialog.isShowing()) {
                 progressDialog.show();
             }

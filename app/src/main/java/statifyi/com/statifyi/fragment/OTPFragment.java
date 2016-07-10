@@ -101,7 +101,7 @@ public class OTPFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (NetworkUtils.isOnline()) {
+            if (NetworkUtils.isConnectingToInternet(getActivity())) {
                 getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
                 final String mobileNumber = DataUtils.getMobileNumber(getActivity());
                 userAPIService.getUserStatus(GCMUtils.getRegistrationId(getActivity()), mobileNumber).enqueue(new Callback<StatusResponse>() {
@@ -194,7 +194,7 @@ public class OTPFragment extends Fragment {
         final String mobileNumber = DataUtils.getMobileNumber(getActivity());
         request.setMobile(mobileNumber);
 
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isConnectingToInternet(getActivity())) {
             progressDialog.show();
             userAPIService.activateUser(request).enqueue(new Callback<Void>() {
                 @Override
@@ -223,7 +223,7 @@ public class OTPFragment extends Fragment {
         request.setMobile(DataUtils.getMobileNumber(getActivity()));
         request.setCountryCode(DataUtils.getCountryCode(getActivity()));
 
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isConnectingToInternet(getActivity())) {
             progressDialog.show();
             userAPIService.resendOtp(request).enqueue(new Callback<Void>() {
                 @Override

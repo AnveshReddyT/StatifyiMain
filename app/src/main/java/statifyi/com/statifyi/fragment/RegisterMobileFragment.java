@@ -145,7 +145,7 @@ public class RegisterMobileFragment extends Fragment {
             request.setMobile(mobile);
             request.setCountryCode(countryCode);
 
-            if (NetworkUtils.isOnline()) {
+            if (NetworkUtils.isConnectingToInternet(getActivity())) {
                 progressDialog.show();
                 userAPIService.registerUser(request).enqueue(new Callback<Void>() {
                     @Override

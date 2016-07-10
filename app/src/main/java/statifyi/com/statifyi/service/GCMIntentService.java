@@ -38,14 +38,14 @@ public class GCMIntentService extends GcmListenerService {
         if (dbHelper == null) {
             dbHelper = DBHelper.getInstance(this);
         }
-         String message = data.getString("message");
+        String message = data.getString("message");
         if (from.startsWith(TOPICS)) {
             try {
                 JSONObject jsonObject = new JSONObject(message);
                 if (jsonObject.has("logout")) {
                     StatifyiApplication.logout(GCMIntentService.this);
                 } else if (jsonObject.has("customCall")) {
-                    parseCustomCallMessage(jsonObject.getJSONObject("value"));
+                    parseCustomCallMessage(jsonObject.getString("customCall"));
                 } else if (jsonObject.has("mobile")) {
                     parseStatusMessage(jsonObject.getString("mobile"), jsonObject.getString("value"));
                 }
@@ -60,8 +60,8 @@ public class GCMIntentService extends GcmListenerService {
                 if (jsonObject.has("logout")) {
                     StatifyiApplication.logout(GCMIntentService.this);
                 } else if (jsonObject.has("customCall")) {
-                    parseCustomCallMessage(jsonObject.getJSONObject("value"));
-                }  else if (jsonObject.has("mobile")) {
+                    parseCustomCallMessage(jsonObject.getString("customCall"));
+                } else if (jsonObject.has("mobile")) {
                     parseStatusMessage(jsonObject.getString("mobile"), jsonObject.getString("value"));
                 }
             } catch (JSONException e) {
@@ -71,7 +71,8 @@ public class GCMIntentService extends GcmListenerService {
         }
     }
 
-    private void parseCustomCallMessage(JSONObject jsonObject) throws JSONException {
+    private void parseCustomCallMessage(String customCallString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(customCallString);
         CustomCall call = new CustomCall();
         call.setMobile(jsonObject.getString("mobile"));
         call.setMessage(jsonObject.getString("message"));

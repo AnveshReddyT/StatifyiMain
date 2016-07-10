@@ -15,85 +15,103 @@
         android:background="@color/white"
         android:orientation="horizontal">
 
-        <com.mikhaellopez.circularimageview.CircularImageView
-            android:id="@+id/popup_status_avatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/avatar"
-            card_view:border="false"
-            card_view:shadow="false" />
-
         <LinearLayout
-            android:id="@+id/popup_message_layout"
-            android:layout_width="match_parent"
+            android:id="@+id/popup_status_avatar_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/popup_status_avatar"
-            android:layout_alignTop="@+id/popup_status_avatar"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_toLeftOf="@+id/popup_status_icon_layout"
-            android:layout_toRightOf="@+id/popup_status_avatar"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
 
-            <statifyi.com.statifyi.widget.TextView
-                android:id="@+id/popup_status_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/please_wait"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-            <statifyi.com.statifyi.widget.TextView
-                android:id="@+id/popup_status_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="10sp"
-                app:fontStyle="Italic" />
-
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/popup_status_avatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/avatar"
+                card_view:border="false"
+                card_view:shadow="false" />
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/popup_copyright_layout"
+            android:id="@+id/popup_message_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/popup_status_avatar"
-            android:background="@color/primaryColor"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp">
+            android:layout_alignBottom="@+id/popup_status_avatar_layout"
+            android:layout_alignTop="@+id/popup_status_avatar_layout"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@+id/popup_status_icon_layout"
+            android:layout_toRightOf="@+id/popup_status_avatar_layout"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/popup_status_menu_icon"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="8dp"
-                android:visibility="invisible"
-                android:src="@android:drawable/ic_menu_info_details"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/popup_copyright_layout"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/popup_status_logo"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/popup_copyright"
-                android:src="@drawable/ic_launcher"/>
+                <statifyi.com.statifyi.widget.TextView
+                    android:id="@+id/popup_status_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/please_wait"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
 
-            <statifyi.com.statifyi.widget.TextView
-                android:id="@+id/popup_copyright"
-                android:layout_width="wrap_content"
+                <statifyi.com.statifyi.widget.TextView
+                    android:id="@+id/popup_status_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="10sp"
+                    app:fontStyle="Italic" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/popup_copyright_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="6dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="80dp"
-                android:text="@string/app_name"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="10sp"
-                app:fontStyle="Italic" />
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="2dp"
+                android:paddingTop="4dp"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/popup_status_menu_icon"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:src="@android:drawable/ic_menu_info_details"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/popup_status_logo"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/popup_copyright"
+                    android:src="@drawable/ic_launcher" />
+
+                <statifyi.com.statifyi.widget.TextView
+                    android:id="@+id/popup_copyright"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="6dp"
+                    android:text="@string/app_name"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="10sp"
+                    app:fontStyle="Italic" />
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
@@ -101,7 +119,7 @@
             android:id="@+id/popup_status_icon_layout"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/popup_copyright_layout"
+            android:layout_alignBottom="@+id/popup_message_layout"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:background="@color/accentColor"
