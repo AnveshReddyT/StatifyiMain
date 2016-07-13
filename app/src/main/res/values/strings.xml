@@ -27,7 +27,7 @@
     <string name="hint_enter_otp">Enter it here</string>
     <string name="hint_country">Choose your Country</string>
     <string name="hint_avatar">Click to change avatar</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="status">Status</string>
     <string name="home">HOME</string>
     <string name="next">NEXT</string>
     <string name="close">DONE</string>

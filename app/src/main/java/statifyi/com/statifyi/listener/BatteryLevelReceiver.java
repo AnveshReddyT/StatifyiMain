@@ -59,27 +59,24 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
     }
 
     private void updateStatus(final Context context, String status) {
-        String mStatus = DataUtils.getStatus(context);
-        if (!mStatus.equals(status)) {
-            StatusRequest request = new StatusRequest();
-            request.setStatus(status);
-            request.setIcon(status);
-            request.setAutoStatus(1);
-            userAPIService.setUserStatus(GCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Response<Void> response, Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
-                    } else if (response.code() == 401) {
-                        StatifyiApplication.logout(context);
-                    }
+        StatusRequest request = new StatusRequest();
+        request.setStatus(status);
+        request.setIcon(status);
+        request.setAutoStatus(1);
+        userAPIService.setUserStatus(GCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
+                } else if (response.code() == 401) {
+                    StatifyiApplication.logout(context);
                 }
+            }
 
-                @Override
-                public void onFailure(Throwable t) {
+            @Override
+            public void onFailure(Throwable t) {
 
-                }
-            });
-        }
+            }
+        });
     }
 }

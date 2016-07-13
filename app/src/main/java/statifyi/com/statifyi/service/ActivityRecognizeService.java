@@ -100,24 +100,22 @@ public class ActivityRecognizeService extends IntentService {
     }
 
     private void changeStatus(String activity) {
-        if(sharedPreferences == null) {
+        if (sharedPreferences == null) {
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         }
         if (!sharedPreferences.getBoolean(getString(R.string.key_auto_status), false)) {
             return;
         }
         if (sharedPreferences.getBoolean(getResources().getString(R.string.key_driving_mode), false)) {
+            String autoStatus = DataUtils.getAutoStatus(this);
             if ("DRIVING".equals(activity)) {
                 String status = IN_DRIVING;
-                DataUtils.saveAutoStatus(this, status);
-                DataUtils.saveAutoStatusIcon(this, Utils.getDrawableResByName(this, status));
-                updateStatus(this, status);
+                if (!status.equals(autoStatus)) {
+                    updateStatus(this, status, true);
+                }
             } else if ("STILL".equals(activity)) {
-                String autoStatus = DataUtils.getAutoStatus(this);
                 if (autoStatus != null && IN_DRIVING.equals(autoStatus)) {
-                    DataUtils.saveAutoStatus(this, null);
-                    DataUtils.saveAutoStatusIcon(this, 0);
-                    updateStatus(this, DataUtils.getStatus(this));
+                    updateStatus(this, DataUtils.getStatus(this), false);
                 }
             }
         }
@@ -132,7 +130,8 @@ public class ActivityRecognizeService extends IntentService {
         NotificationManagerCompat.from(this).notify(0, builder.build());
     }
 
-    private void updateStatus(final Context context, String status) {
+    private void updateStatus(final Context context, final String status, final boolean autoStatus) {
+        userAPIService = NetworkUtils.provideUserAPIService(context);
         String mStatus = DataUtils.getStatus(context);
         if (!mStatus.equals(status)) {
             StatusRequest request = new StatusRequest();
@@ -143,6 +142,13 @@ public class ActivityRecognizeService extends IntentService {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
+                        if (autoStatus) {
+                            DataUtils.saveAutoStatus(ActivityRecognizeService.this, status);
+                            DataUtils.saveAutoStatusIcon(ActivityRecognizeService.this, Utils.getDrawableResByName(ActivityRecognizeService.this, status));
+                        } else {
+                            DataUtils.saveAutoStatus(ActivityRecognizeService.this, null);
+                            DataUtils.saveAutoStatusIcon(ActivityRecognizeService.this, 0);
+                        }
                         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
                     } else if (response.code() == 401) {
                         StatifyiApplication.logout(context);

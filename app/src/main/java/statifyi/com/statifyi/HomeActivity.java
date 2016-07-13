@@ -74,7 +74,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        if(verifyProfileComplete()) {
+        if (verifyProfileComplete()) {
             registerGCM();
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
@@ -162,7 +162,7 @@ public class HomeActivity extends AppCompatActivity {
                 drawerLayout.closeDrawers();
                 switch (menuItem.getItemId()) {
                     case R.id.nav_home:
-                        setTitle(getString(R.string.app_name));
+                        setTitle(getString(R.string.status));
                         return true;
                     case R.id.nav_auto_status:
                         setContent(SingleFragmentActivity.FragmentName.AUTO_STATUS, getString(R.string.menu_auto_status));
