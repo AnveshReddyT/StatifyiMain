@@ -34,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import java.util.ArrayList;
@@ -323,7 +322,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private void executeUpdateStatus(final Status status) {
         String mStatus = DataUtils.getStatus(getActivity());
-        if (mStatus.equals(status.getStatus())) {
+        if (DataUtils.getAutoStatus(getActivity()) == null && mStatus.equals(status.getStatus())) {
             Utils.showToast(getActivity(), "Status already set!");
         } else {
             StatusRequest request = new StatusRequest();

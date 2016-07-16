@@ -75,10 +75,12 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
+                WindowManager.LayoutParams.TYPE_TOAST,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 PixelFormat.TRANSPARENT);
 
         Display display = windowManager.getDefaultDisplay();
@@ -87,17 +89,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
 
-        params.width = screenWidth - 64;
-        params.gravity = Gravity.TOP;
-        params.format = PixelFormat.TRANSLUCENT;
-
-        params.gravity = Gravity.TOP | Gravity.LEFT; // setting the gravity of the imageView
-        params.windowAnimations = android.R.style.Animation_Toast; // adding an animation to it.
-        params.x = X_MARGIN; // horizontal location of imageView
-        params.y = screenHeight / 2 - 100; // vertical location of imageView
-//        params.height = 120; // given it a fixed height in case of large image
-//        params.width = 120; // given it a fixed width in case of large image
-        params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
+        setWindowParams();
 
         setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout ll = (LinearLayout) inflate(context, R.layout.popup, this);
@@ -133,6 +125,18 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
      */
     public FloatingPopup(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    private void setWindowParams() {
+        params.width = screenWidth - 64;
+        params.format = PixelFormat.TRANSLUCENT;
+
+        params.gravity = Gravity.TOP | Gravity.LEFT; // setting the gravity of the imageView
+        params.windowAnimations = android.R.style.Animation_Toast; // adding an animation to it.
+        params.x = X_MARGIN; // horizontal location of imageView
+        params.y = screenHeight / 2 - 100; // vertical location of imageView
+//        params.height = 120; // given it a fixed height in case of large image
+//        params.width = 120; // given it a fixed width in case of large image
     }
 
     public void show() {
@@ -227,6 +231,7 @@ public class FloatingPopup extends LinearLayout implements OnTouchListener {
     }
 
     public void resetPopup() {
+        setWindowParams();
         setMessage(getResources().getString(R.string.please_wait));
         setStatusLayoutColor(R.color.accentColor);
         setStatusIcon(R.drawable.ic_status);

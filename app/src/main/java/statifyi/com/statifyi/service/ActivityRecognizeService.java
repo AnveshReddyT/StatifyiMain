@@ -81,6 +81,9 @@ public class ActivityRecognizeService extends IntentService {
                 }
                 case DetectedActivity.STILL: {
                     Log.e("STAT", "Still: " + activity.getConfidence());
+                    if (activity.getConfidence() >= 90) {
+                        changeStatus("STILL");
+                    }
                     break;
                 }
                 case DetectedActivity.TILTING: {
@@ -132,34 +135,31 @@ public class ActivityRecognizeService extends IntentService {
 
     private void updateStatus(final Context context, final String status, final boolean autoStatus) {
         userAPIService = NetworkUtils.provideUserAPIService(context);
-        String mStatus = DataUtils.getStatus(context);
-        if (!mStatus.equals(status)) {
-            StatusRequest request = new StatusRequest();
-            request.setStatus(status);
-            request.setIcon(status);
-            request.setAutoStatus(1);
-            userAPIService.setUserStatus(GCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Response<Void> response, Retrofit retrofit) {
-                    if (response.isSuccess()) {
-                        if (autoStatus) {
-                            DataUtils.saveAutoStatus(ActivityRecognizeService.this, status);
-                            DataUtils.saveAutoStatusIcon(ActivityRecognizeService.this, Utils.getDrawableResByName(ActivityRecognizeService.this, status));
-                        } else {
-                            DataUtils.saveAutoStatus(ActivityRecognizeService.this, null);
-                            DataUtils.saveAutoStatusIcon(ActivityRecognizeService.this, 0);
-                        }
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
-                    } else if (response.code() == 401) {
-                        StatifyiApplication.logout(context);
+        StatusRequest request = new StatusRequest();
+        request.setStatus(status);
+        request.setIcon(status);
+        request.setAutoStatus(1);
+        userAPIService.setUserStatus(GCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    if (autoStatus) {
+                        DataUtils.saveAutoStatus(ActivityRecognizeService.this, status);
+                        DataUtils.saveAutoStatusIcon(ActivityRecognizeService.this, Utils.getDrawableResByName(ActivityRecognizeService.this, status));
+                    } else {
+                        DataUtils.saveAutoStatus(ActivityRecognizeService.this, null);
+                        DataUtils.saveAutoStatusIcon(ActivityRecognizeService.this, 0);
                     }
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(StatusFragment.BROADCAST_ACTION_STATUS_UPDATE));
+                } else if (response.code() == 401) {
+                    StatifyiApplication.logout(context);
                 }
+            }
 
-                @Override
-                public void onFailure(Throwable t) {
+            @Override
+            public void onFailure(Throwable t) {
 
-                }
-            });
-        }
+            }
+        });
     }
 }
