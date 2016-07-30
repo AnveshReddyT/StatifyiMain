@@ -179,6 +179,9 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.nav_rate:
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.gazelle.anvesh.colortickler")));
                         return true;
+                    case R.id.nav_about:
+                        setContent(SingleFragmentActivity.FragmentName.ABOUT, getString(R.string.menu_about));
+                        return true;
                     default:
                         Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
                         return true;

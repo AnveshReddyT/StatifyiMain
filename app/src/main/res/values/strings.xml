@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">StatiFYI</string>
+    <string name="app_version">Version v1.0.0</string>
     <string name="copyright">Copyright &#169; Statifyi, Inc</string>
     <string name="app_welcome">Welcome to StatiFYI</string>
+    <string name="statifyi.com">http://statifyi.com</string>
     <string name="google_api_key">AIzaSyAsL02Jd_f_Yduy3M6qKbJUZdEmGANVJaI</string>
     <string name="google_project_id">733817804371</string>
 
@@ -84,6 +86,11 @@
         <item>Watching TV</item>
         <item>With Family</item>
     </string-array>
+
+    <string name="faq">FAQ</string>
+    <string name="terms_policy">Terms and Privacy Policy</string>
+    <string name="contact_us">Contact us</string>
+    <string name="contact_us_summary">Feel free to reach us 24 x 7</string>
 
     <string name="emergency_call">Emergency Call</string>
     <string name="business_call">Business Call</string>

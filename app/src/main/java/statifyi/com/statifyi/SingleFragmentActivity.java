@@ -10,6 +10,7 @@ import android.view.View;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import statifyi.com.statifyi.fragment.AboutFragment;
 import statifyi.com.statifyi.fragment.AutoStatusSettingsFragment;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.fragment.PrivacySettingsFragment;
@@ -64,6 +65,8 @@ public class SingleFragmentActivity extends AppCompatActivity {
                 return TimelyStatusSettingsFragment.newInstance(null, null);
             case PROFILE:
                 return ProfileFragment.newInstance(null, null);
+            case ABOUT:
+                return AboutFragment.newInstance(null, null);
             default:
                 return null;
         }
@@ -74,6 +77,7 @@ public class SingleFragmentActivity extends AppCompatActivity {
         AUTO_STATUS,
         PRIVACY,
         TIMELY_STATUS,
-        PROFILE
+        PROFILE,
+        ABOUT
     }
 }

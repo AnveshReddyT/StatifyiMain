@@ -32,7 +32,7 @@ public class ActivityRecognizeService extends IntentService {
 
     private static final String IN_DRIVING = "Driving";
 
-    private UserAPIService userAPIService;
+    private int stillCount = 0;
 
     private SharedPreferences sharedPreferences;
 
@@ -114,10 +114,13 @@ public class ActivityRecognizeService extends IntentService {
             if ("DRIVING".equals(activity)) {
                 String status = IN_DRIVING;
                 if (!status.equals(autoStatus)) {
+                    stillCount = 0;
                     updateStatus(this, status, true);
                 }
             } else if ("STILL".equals(activity)) {
-                if (autoStatus != null && IN_DRIVING.equals(autoStatus)) {
+                stillCount++;
+                if (autoStatus != null && IN_DRIVING.equals(autoStatus) && stillCount == 3) {
+                    stillCount = 0;
                     updateStatus(this, DataUtils.getStatus(this), false);
                 }
             }
@@ -134,7 +137,7 @@ public class ActivityRecognizeService extends IntentService {
     }
 
     private void updateStatus(final Context context, final String status, final boolean autoStatus) {
-        userAPIService = NetworkUtils.provideUserAPIService(context);
+        UserAPIService userAPIService = NetworkUtils.provideUserAPIService(context);
         StatusRequest request = new StatusRequest();
         request.setStatus(status);
         request.setIcon(status);

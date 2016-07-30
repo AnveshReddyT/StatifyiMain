@@ -53,12 +53,6 @@
             android:title="@string/menu_rate" />
 
         <item
-            android:id="@+id/nav_support"
-            android:checkable="false"
-            android:checked="false"
-            android:icon="@drawable/ic_menu_support"
-            android:title="@string/menu_support" />
-        <item
             android:id="@+id/nav_about"
             android:checkable="false"
             android:checked="false"
