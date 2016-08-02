@@ -8,15 +8,15 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
 import com.squareup.picasso.Picasso;
-
-import io.fabric.sdk.android.Fabric;
 
 import java.io.File;
 import java.io.IOException;
 
-import statifyi.com.statifyi.model.TimelyStatus;
+import io.fabric.sdk.android.Fabric;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -29,6 +29,8 @@ import statifyi.com.statifyi.utils.Utils;
  */
 
 public class StatifyiApplication extends Application {
+
+    private Tracker mTracker;
 
     public static boolean deleteFile(File file) {
         boolean deletedAll = true;
@@ -48,17 +50,6 @@ public class StatifyiApplication extends Application {
     public static void clearSharedPreferences(Context mContext, String file) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(file, MODE_PRIVATE);
         sharedPreferences.edit().clear().apply();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        Picasso picasso = new Picasso.Builder(this)
-                .loggingEnabled(BuildConfig.DEBUG)
-                .indicatorsEnabled(BuildConfig.DEBUG)
-                .downloader(NetworkUtils.createBigCacheDownloader(this)).build();
-        Picasso.setSingletonInstance(picasso);
     }
 
     private static void clearApplicationData(Context mContext) {
@@ -106,5 +97,29 @@ public class StatifyiApplication extends Application {
                 }
             }
         }.execute();
+    }
+
+    /**
+     * Gets the default {@link Tracker} for this {@link Application}.
+     *
+     * @return tracker
+     */
+    synchronized public Tracker getDefaultTracker() {
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            mTracker = analytics.newTracker("UA-81704105-1");
+        }
+        return mTracker;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Fabric.with(this, new Crashlytics());
+        Picasso picasso = new Picasso.Builder(this)
+                .loggingEnabled(BuildConfig.DEBUG)
+                .indicatorsEnabled(BuildConfig.DEBUG)
+                .downloader(NetworkUtils.createBigCacheDownloader(this)).build();
+        Picasso.setSingletonInstance(picasso);
     }
 }

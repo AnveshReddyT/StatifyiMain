@@ -4,7 +4,6 @@ package statifyi.com.statifyi.fragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -16,13 +15,13 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
+import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.widget.RadioButton;
 
@@ -62,6 +61,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), HomeFragment.class.getName());
     }
 
     @Override

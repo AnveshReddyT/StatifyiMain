@@ -39,6 +39,7 @@ import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.service.SyncAllStatusService;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -147,6 +148,7 @@ public class OTPFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), OTPFragment.class.getName());
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);

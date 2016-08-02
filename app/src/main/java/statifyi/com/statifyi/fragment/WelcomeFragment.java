@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.RegistrationActivity;
+import statifyi.com.statifyi.utils.GAUtils;
 
 public class WelcomeFragment extends Fragment {
 
@@ -25,6 +26,7 @@ public class WelcomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), WelcomeFragment.class.getName());
     }
 
     @Override

@@ -4,7 +4,6 @@
     <string name="copyright">Copyright &#169; Statifyi, Inc</string>
     <string name="app_welcome">Welcome to StatiFYI</string>
     <string name="statifyi.com">http://statifyi.com</string>
-    <string name="google_api_key">AIzaSyAsL02Jd_f_Yduy3M6qKbJUZdEmGANVJaI</string>
     <string name="google_project_id">733817804371</string>
 
     <string name="welcome_message1">Know the status of your call recipient as you dial</string>

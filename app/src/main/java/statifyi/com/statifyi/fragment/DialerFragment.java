@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -56,6 +55,7 @@ import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMIntentService;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.DialerUtils;
+import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
@@ -163,6 +163,31 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     private ShowcaseView showcaseView;
 
     private int counter;
+    View.OnClickListener showcaseViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (counter) {
+                case 0:
+                    showcaseView.setShowcase(new ViewTarget(customBtn), true);
+                    showcaseView.setContentTitle("Custom Call");
+                    showcaseView.setContentText("Make a custom call with a message of your choice");
+                    break;
+
+                case 1:
+                    showcaseView.setShowcase(new ViewTarget(dialpadCallLayout), true);
+                    showcaseView.setContentTitle("Normal Call");
+                    showcaseView.setContentText("Make a normal call if the person is not on Statifyi!");
+                    showcaseView.setButtonText(getString(R.string.close));
+                    break;
+
+                case 2:
+                    showcaseView.hide();
+                    ShowcaseUtils.setDialerPage(getActivity(), true);
+                    break;
+            }
+            counter++;
+        }
+    };
 
     public DialerFragment() {
         // Required empty public constructor
@@ -181,6 +206,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), DialerFragment.class.getName());
     }
 
     @Override
@@ -260,32 +286,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             showcaseView.setButtonText(getString(R.string.next));
         }
     }
-
-    View.OnClickListener showcaseViewClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (counter) {
-                case 0:
-                    showcaseView.setShowcase(new ViewTarget(customBtn), true);
-                    showcaseView.setContentTitle("Custom Call");
-                    showcaseView.setContentText("Make a custom call with a message of your choice");
-                    break;
-
-                case 1:
-                    showcaseView.setShowcase(new ViewTarget(dialpadCallLayout), true);
-                    showcaseView.setContentTitle("Normal Call");
-                    showcaseView.setContentText("Make a normal call if the person is not on Statifyi!");
-                    showcaseView.setButtonText(getString(R.string.close));
-                    break;
-
-                case 2:
-                    showcaseView.hide();
-                    ShowcaseUtils.setDialerPage(getActivity(), true);
-                    break;
-            }
-            counter++;
-        }
-    };
 
     private void startSuggestionsThread() {
         if (contactsThread != null) {

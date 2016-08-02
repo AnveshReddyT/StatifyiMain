@@ -22,6 +22,7 @@ import java.io.IOException;
 import statifyi.com.statifyi.utils.CirclePageIndicator;
 import statifyi.com.statifyi.utils.ColorShades;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GAUtils;
 
 
 public class OnBoardingActivity extends AppCompatActivity{
@@ -33,6 +34,8 @@ public class OnBoardingActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        GAUtils.sendScreenView(getApplicationContext(), OnBoardingActivity.class.getName());
 
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -102,6 +105,49 @@ public class OnBoardingActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * Sets the alpha for the view. The alpha will be applied only if the running android device OS is greater than honeycomb.
+     *
+     * @param view  - view to which alpha to be applied.
+     * @param alpha - alpha value.
+     */
+    private void setAlpha(View view, float alpha) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && !isSliderAnimation) {
+            view.setAlpha(alpha);
+        }
+    }
+
+    /**
+     * Sets the translationX for the view. The translation value will be applied only if the running android device OS is greater than honeycomb.
+     *
+     * @param view         - view to which alpha to be applied.
+     * @param translationX - translationX value.
+     */
+    private void setTranslationX(View view, float translationX) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && !isSliderAnimation) {
+            view.setTranslationX(translationX);
+        }
+    }
+
+    public void onSaveInstanceState(Bundle outstate) {
+
+        if (outstate != null) {
+            outstate.putBoolean(SAVING_STATE_SLIDER_ANIMATION,isSliderAnimation);
+        }
+
+        super.onSaveInstanceState(outstate);
+    }
+
+    public void onRestoreInstanceState(Bundle inState) {
+
+        if (inState != null) {
+            isSliderAnimation = inState.getBoolean(SAVING_STATE_SLIDER_ANIMATION, false);
+        }
+        super.onRestoreInstanceState(inState);
+
+    }
+
     public class ViewPagerAdapter extends PagerAdapter {
 
         private int iconResId, titleArrayResId, hintArrayResId;
@@ -135,8 +181,8 @@ public class OnBoardingActivity extends AppCompatActivity{
 
 
             ImageView iconView = (ImageView) itemView.findViewById(R.id.landing_img_slide);
-            TextView titleView = (TextView)itemView.findViewById(R.id.landing_txt_title);
-            TextView hintView = (TextView)itemView.findViewById(R.id.landing_txt_hint);
+            TextView titleView = (TextView) itemView.findViewById(R.id.landing_txt_title);
+            TextView hintView = (TextView) itemView.findViewById(R.id.landing_txt_hint);
 
 
             iconView.setImageDrawable(icon);
@@ -172,19 +218,19 @@ public class OnBoardingActivity extends AppCompatActivity{
                 // This page is moving out to the left
 
                 // Counteract the default swipe
-                setTranslationX(view,pageWidth * -position);
+                setTranslationX(view, pageWidth * -position);
                 if (contentView != null) {
                     // But swipe the contentView
-                    setTranslationX(contentView,pageWidth * position);
-                    setTranslationX(txt_title,pageWidth * position);
+                    setTranslationX(contentView, pageWidth * position);
+                    setTranslationX(txt_title, pageWidth * position);
 
-                    setAlpha(contentView,1 + position);
-                    setAlpha(txt_title,1 + position);
+                    setAlpha(contentView, 1 + position);
+                    setAlpha(txt_title, 1 + position);
                 }
 
                 if (imageView != null) {
                     // Fade the image in
-                    setAlpha(imageView,1 + position);
+                    setAlpha(imageView, 1 + position);
                 }
 
                 imageView.setScaleX(1 + position);
@@ -197,8 +243,8 @@ public class OnBoardingActivity extends AppCompatActivity{
                 setTranslationX(view, pageWidth * -position);
                 if (contentView != null) {
                     // But swipe the contentView
-                    setTranslationX(contentView,pageWidth * position);
-                    setTranslationX(txt_title,pageWidth * position);
+                    setTranslationX(contentView, pageWidth * position);
+                    setTranslationX(txt_title, pageWidth * position);
 
                     setAlpha(contentView, 1 - position);
                     setAlpha(txt_title, 1 - position);
@@ -206,7 +252,7 @@ public class OnBoardingActivity extends AppCompatActivity{
                 }
                 if (imageView != null) {
                     // Fade the image out
-                    setAlpha(imageView,1 - position);
+                    setAlpha(imageView, 1 - position);
                 }
 
                 imageView.setScaleX(1 - position);
@@ -214,46 +260,5 @@ public class OnBoardingActivity extends AppCompatActivity{
 
             }
         }
-    }
-
-    /**
-     * Sets the alpha for the view. The alpha will be applied only if the running android device OS is greater than honeycomb.
-     * @param view - view to which alpha to be applied.
-     * @param alpha - alpha value.
-     */
-    private void setAlpha(View view, float alpha) {
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && ! isSliderAnimation) {
-            view.setAlpha(alpha);
-        }
-    }
-
-    /**
-     * Sets the translationX for the view. The translation value will be applied only if the running android device OS is greater than honeycomb.
-     * @param view - view to which alpha to be applied.
-     * @param translationX - translationX value.
-     */
-    private void setTranslationX(View view, float translationX) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && ! isSliderAnimation) {
-            view.setTranslationX(translationX);
-        }
-    }
-
-    public void onSaveInstanceState(Bundle outstate) {
-
-        if(outstate != null) {
-            outstate.putBoolean(SAVING_STATE_SLIDER_ANIMATION,isSliderAnimation);
-        }
-
-        super.onSaveInstanceState(outstate);
-    }
-
-    public void onRestoreInstanceState(Bundle inState) {
-
-        if(inState != null) {
-            isSliderAnimation = inState.getBoolean(SAVING_STATE_SLIDER_ANIMATION,false);
-        }
-        super.onRestoreInstanceState(inState);
-
     }
 }

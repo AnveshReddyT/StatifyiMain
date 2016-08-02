@@ -30,6 +30,7 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.utils.DataUtils;
+import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -71,6 +72,7 @@ public class ProfileFragment extends Fragment {
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), ProfileFragment.class.getName());
     }
 
     @Override
