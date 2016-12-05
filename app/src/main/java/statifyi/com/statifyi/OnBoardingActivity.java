@@ -185,6 +185,9 @@ public class OnBoardingActivity extends AppCompatActivity{
             TextView hintView = (TextView) itemView.findViewById(R.id.landing_txt_hint);
 
 
+            hintView.setTextColor(getColor(R.color.gray_text_hint));
+            titleView.setTextColor(getColor(R.color.light_green));
+
             iconView.setImageDrawable(icon);
             titleView.setText(title);
             hintView.setText(hint);

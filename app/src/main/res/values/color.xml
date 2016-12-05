@@ -16,5 +16,6 @@
     <color name="light_purple">#8c61b3</color>
     <color name="light_orange">#ffb500</color>
     <color name="light_cyan">#00BCD4</color>
+    <color name="gray_text_hint">#86888A</color>
 
 </resources>
