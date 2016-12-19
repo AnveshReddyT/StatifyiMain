@@ -11,12 +11,14 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 
 import io.fabric.sdk.android.Fabric;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -31,6 +33,8 @@ import statifyi.com.statifyi.utils.Utils;
 public class StatifyiApplication extends Application {
 
     private Tracker mTracker;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public static boolean deleteFile(File file) {
         boolean deletedAll = true;
@@ -112,6 +116,16 @@ public class StatifyiApplication extends Application {
         return mTracker;
     }
 
+    synchronized public FirebaseAnalytics getFirebaseAnalytics() {
+        if (mFirebaseAnalytics == null) {
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+            mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
+            mFirebaseAnalytics.setMinimumSessionDuration(20000);
+            mFirebaseAnalytics.setSessionTimeoutDuration(1000000);
+        }
+        return mFirebaseAnalytics;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -121,5 +135,7 @@ public class StatifyiApplication extends Application {
                 .indicatorsEnabled(BuildConfig.DEBUG)
                 .downloader(NetworkUtils.createBigCacheDownloader(this)).build();
         Picasso.setSingletonInstance(picasso);
+
+        AnalyticsProviderImpl.build(this);
     }
 }

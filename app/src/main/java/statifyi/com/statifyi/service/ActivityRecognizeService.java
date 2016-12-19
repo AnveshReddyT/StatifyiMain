@@ -32,8 +32,6 @@ public class ActivityRecognizeService extends IntentService {
 
     private static final String IN_DRIVING = "Driving";
 
-    private int stillCount = 0;
-
     private SharedPreferences sharedPreferences;
 
     public ActivityRecognizeService() {
@@ -114,13 +112,10 @@ public class ActivityRecognizeService extends IntentService {
             if ("DRIVING".equals(activity)) {
                 String status = IN_DRIVING;
                 if (!status.equals(autoStatus)) {
-                    stillCount = 0;
                     updateStatus(this, status, true);
                 }
             } else if ("STILL".equals(activity)) {
-                stillCount++;
-                if (autoStatus != null && IN_DRIVING.equals(autoStatus) && stillCount == 3) {
-                    stillCount = 0;
+                if (autoStatus != null && IN_DRIVING.equals(autoStatus)) {
                     updateStatus(this, DataUtils.getStatus(this), false);
                 }
             }

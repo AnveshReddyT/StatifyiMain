@@ -140,8 +140,12 @@
             android:name=".service.ActivityRecognizeService"
             android:exported="false" />
         <service
+            android:name=".service.MqttService"
+            android:exported="false" />
+        <service
             android:name=".service.GeofenceTransitionsIntentService"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="" />
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="ad32b175b1c27effa5486be892dc28661f31501f" />

@@ -2,71 +2,154 @@ package statifyi.com.statifyi;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import statifyi.com.statifyi.model.SimpleGeofence;
 import statifyi.com.statifyi.service.GeofenceTransitionsIntentService;
+import statifyi.com.statifyi.utils.Constants;
+import statifyi.com.statifyi.utils.SimpleGeofenceStore;
 
-public class GeofenceActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        ResultCallback<Status> {
+public class GeofenceActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
-    protected ArrayList<Geofence> mGeofenceList;
-    protected GoogleApiClient mGoogleApiClient;
-    private Button mAddGeofencesButton;
+    // Internal List of Geofence objects. In a real app, these might be provided by an API based on
+    // locations within the user's proximity.
+    List<Geofence> mGeofenceList;
+
+    // These will store hard-coded geofences in this sample app.
+    private SimpleGeofence mAndroidBuildingGeofence;
+    private SimpleGeofence mYerbaBuenaGeofence;
+
+    // Persistent storage for geofences.
+    private SimpleGeofenceStore mGeofenceStorage;
+
+    private LocationServices mLocationService;
+    // Stores the PendingIntent used to request geofence monitoring.
+    private PendingIntent mGeofenceRequestIntent;
+    private GoogleApiClient mApiClient;
+    private REQUEST_TYPE mRequestType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_geofence);
+        // Rather than displayng this activity, simply display a toast indicating that the geofence
+        // service is being created. This should happen in less than a second.
+        if (!isGooglePlayServicesAvailable()) {
+            Log.e(Constants.TAG, "Google Play services unavailable.");
+            finish();
+            return;
+        }
 
-        mAddGeofencesButton = (Button) findViewById(R.id.add_geofences_button);
-        mAddGeofencesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addGeofencesButtonHandler(v);
-            }
-        });
-        // Empty list for storing geofences.
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mApiClient.connect();
+
+        // Instantiate a new geofence storage area.
+        mGeofenceStorage = new SimpleGeofenceStore(this);
+        // Instantiate the current List of geofences.
         mGeofenceList = new ArrayList<Geofence>();
+        createGeofences();
+    }
 
-        // Get the geofences used. Geofence data is hard coded in this sample.
-        populateGeofenceList();
+    /**
+     * In this sample, the geofences are predetermined and are hard-coded here. A real app might
+     * dynamically create geofences based on the user's location.
+     */
+    public void createGeofences() {
+        // Create internal "flattened" objects containing the geofence data.
+        mAndroidBuildingGeofence = new SimpleGeofence(
+                Constants.ANDROID_BUILDING_ID,                // geofenceId.
+                Constants.ANDROID_BUILDING_LATITUDE,
+                Constants.ANDROID_BUILDING_LONGITUDE,
+                Constants.ANDROID_BUILDING_RADIUS_METERS,
+                Constants.GEOFENCE_EXPIRATION_TIME,
+                Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT
+        );
+        mYerbaBuenaGeofence = new SimpleGeofence(
+                Constants.YERBA_BUENA_ID,                // geofenceId.
+                Constants.YERBA_BUENA_LATITUDE,
+                Constants.YERBA_BUENA_LONGITUDE,
+                Constants.YERBA_BUENA_RADIUS_METERS,
+                Constants.GEOFENCE_EXPIRATION_TIME,
+                Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT
+        );
 
-        // Kick off the request to build GoogleApiClient.
-        buildGoogleApiClient();
+        // Store these flat versions in SharedPreferences and add them to the geofence list.
+        mGeofenceStorage.setGeofence(Constants.ANDROID_BUILDING_ID, mAndroidBuildingGeofence);
+        mGeofenceStorage.setGeofence(Constants.YERBA_BUENA_ID, mYerbaBuenaGeofence);
+        mGeofenceList.add(mAndroidBuildingGeofence.toGeofence());
+        mGeofenceList.add(mYerbaBuenaGeofence.toGeofence());
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (!mGoogleApiClient.isConnecting() || !mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.connect();
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // If the error has a resolution, start a Google Play services activity to resolve it.
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this,
+                        Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                Log.e(Constants.TAG, "Exception while resolving connection error.", e);
+            }
+        } else {
+            int errorCode = connectionResult.getErrorCode();
+            Log.e(Constants.TAG, "Connection to Google Play services failed with error code " + errorCode);
         }
     }
 
+    /**
+     * Once the connection is available, send a request to add the Geofences.
+     */
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+    public void onConnected(Bundle connectionHint) {
+        // Get the PendingIntent for the geofence monitoring request.
+        // Send a request to add the current geofences.
+        mGeofenceRequestIntent = getGeofenceTransitionPendingIntent();
+        LocationServices.GeofencingApi.addGeofences(mApiClient, getGeofencingRequest(),
+                mGeofenceRequestIntent);
+        Toast.makeText(this, "Start Geofence Service", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        if (null != mGeofenceRequestIntent) {
+            LocationServices.GeofencingApi.removeGeofences(mApiClient, mGeofenceRequestIntent);
+        }
+    }
+
+    /**
+     * Checks if Google Play services is available.
+     * @return true if it is.
+     */
+    private boolean isGooglePlayServicesAvailable() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == resultCode) {
+            if (Log.isLoggable(Constants.TAG, Log.DEBUG)) {
+                Log.d(Constants.TAG, "Google Play services is available.");
+            }
+            return true;
+        } else {
+            Log.e(Constants.TAG, "Google Play services is unavailable.");
+            return false;
         }
     }
 
@@ -77,89 +160,15 @@ public class GeofenceActivity extends AppCompatActivity implements
         return builder.build();
     }
 
-    private PendingIntent getGeofencePendingIntent() {
+    /**
+     * Create a PendingIntent that triggers GeofenceTransitionIntentService when a geofence
+     * transition occurs.
+     */
+    private PendingIntent getGeofenceTransitionPendingIntent() {
         Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    public void populateGeofenceList() {
-        for (Map.Entry<String, LatLng> entry : Constants.LANDMARKS.entrySet()) {
-            mGeofenceList.add(new Geofence.Builder()
-                    .setRequestId(entry.getKey())
-                    .setCircularRegion(
-                            entry.getValue().latitude,
-                            entry.getValue().longitude,
-                            Constants.GEOFENCE_RADIUS_IN_METERS
-                    )
-                    .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                            Geofence.GEOFENCE_TRANSITION_EXIT)
-                    .build());
-        }
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    public void addGeofencesButtonHandler(View view) {
-        if (!mGoogleApiClient.isConnected()) {
-            Toast.makeText(this, "Google API Client not connected!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        try {
-            LocationServices.GeofencingApi.addGeofences(
-                    mGoogleApiClient,
-                    getGeofencingRequest(),
-                    getGeofencePendingIntent()
-            ).setResultCallback(this); // Result processed in onResult().
-        } catch (SecurityException securityException) {
-            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // Do something with result.getErrorCode());
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onResult(Status status) {
-        status.getStatusMessage();
-    }
-}
-
-class Constants {
-
-    public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = 12 * 60 * 60 * 1000;
-    public static final float GEOFENCE_RADIUS_IN_METERS = 100;
-
-    public static final HashMap<String, LatLng> LANDMARKS = new HashMap<String, LatLng>();
-
-    static {
-        // San Francisco International Airport.
-        LANDMARKS.put("MySmartPrice", new LatLng(17.450514, 78.385750));
-
-        // Googleplex.
-        LANDMARKS.put("RemaxPlus", new LatLng(17.443901, 78.387259));
-
-        // Test
-        LANDMARKS.put("HOME", new LatLng(37.621313, -122.378955));
-    }
+    // Defines the allowable request types (in this example, we only add geofences).
+    private enum REQUEST_TYPE {ADD}
 }

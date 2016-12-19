@@ -21,12 +21,15 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.widget.RadioButton;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
+    private static final String SCREEN = "Home Screen";
     private static final String[] TAB_NAMES = {"STATUS", "CONTACTS", "CALL LOG", "DIAL"};
     @InjectView(R.id.home_pager)
     ViewPager mPager;
@@ -42,6 +45,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     RadioButton calllogTabBtn;
     @InjectView(R.id.home_radio_dialpad)
     RadioButton dialPadBtn;
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private ShowcaseView showcaseView;
     private int counter;
 
@@ -95,12 +99,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 if (checkedId == R.id.home_radio_status) {
                     mPager.setCurrentItem(0);
                     getActivity().setTitle("STATUS");
+                    analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "STATUS");
                 } else if (checkedId == R.id.home_radio_contacts) {
                     mPager.setCurrentItem(1);
                     getActivity().setTitle("CONTACTS");
+                    analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "CONTACTS");
                 } else if (checkedId == R.id.home_radio_calllog) {
                     mPager.setCurrentItem(2);
                     getActivity().setTitle("CALL LOG");
+                    analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "CALL LOG");
                 }
             }
         });
@@ -112,6 +119,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra(SingleFragmentActivity.KEY_SINGLE_FRAGMENT, SingleFragmentActivity.FragmentName.DIALER);
                 intent.putExtra("title", "DIAL");
                 startActivity(intent);
+                analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "DIAL");
             }
         });
 

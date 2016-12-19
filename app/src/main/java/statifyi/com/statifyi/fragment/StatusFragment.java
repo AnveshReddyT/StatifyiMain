@@ -53,6 +53,8 @@ import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.CustomStatusDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Status;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -67,33 +69,26 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     public static final String BROADCAST_ACTION_SHOWCASEVIEW = "statifyi.broadcast.showcaseview";
 
+    private static final String SCREEN = "Status Screen";
     @InjectView(R.id.status_add_text_layout)
     RelativeLayout addStatusLayout;
-
     @InjectView(R.id.status_current_text_layout)
     LinearLayout currentStatusLayout;
-
     @InjectView(R.id.status_auto_text_layout)
     RelativeLayout autoStatusLayout;
-
     @InjectView(R.id.status_add_text)
     TextView addStatusText;
-
     @InjectView(R.id.status_current_text)
     TextView currentStatusText;
-
     @InjectView(R.id.status_auto_text)
     TextView autoStatusText;
-
     @InjectView(R.id.status_current_icon)
     ImageView currentStatusIcon;
-
     @InjectView(R.id.status_auto_text_checkbox)
     CheckBox autoStatusCheckbox;
-
     @InjectView(R.id.status_grid)
     GridView statusGrid;
-
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private UserAPIService userAPIService;
 
     private ProgressDialog progressDialog;
@@ -322,6 +317,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
 
     private void executeUpdateStatus(final Status status) {
         String mStatus = DataUtils.getStatus(getActivity());
+        analyticsProvider.logEvent(SCREEN, "Existing Status", "Click Change", status.getStatus());
         if (DataUtils.getAutoStatus(getActivity()) == null && mStatus.equals(status.getStatus())) {
             Utils.showToast(getActivity(), "Status already set!");
         } else {
@@ -370,9 +366,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                     public void onDismiss(DialogInterface dialog) {
                         if (!TextUtils.isEmpty(statusDialog.getMessage())) {
                             updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
+                            analyticsProvider.logEvent(SCREEN, "Custom Status Dialog", "Update", statusDialog.getMessage());
                         }
                     }
                 });
+                analyticsProvider.logEvent(SCREEN, "Custom Status", "Click", null);
                 break;
         }
     }
