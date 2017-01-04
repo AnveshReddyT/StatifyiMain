@@ -27,6 +27,10 @@ import statifyi.com.statifyi.api.model.User;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.CallLog;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
+import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -37,6 +41,8 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
 
+    private static final String SCREEN = "CallLog Screen";
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private DBHelper dbHelper;
     private Context mContext;
     private List<CallLog> originalData = null;
@@ -164,6 +170,7 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
                     filteredData.get(position).setMessage(null);
                     notifyDataSetChanged();
                     Utils.showToast(mContext, "Deleted custom call message");
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CALLLOG_LIST_ITEM, AnalyticsConstants.ACTION_SWIPE_CLICK, "Delete Custom Message: " + callLog.getMessage());
                 } else {
 
                 }
@@ -177,6 +184,8 @@ public class CallLogAdapter extends BaseSwipeAdapter implements Filterable {
                 intent.putExtra("title", "Dial");
                 intent.putExtra(DialerFragment.PARAM_MOBILE_NUM, callLog.getPhone());
                 mContext.startActivity(intent);
+                String userMobile = DataUtils.getMobileNumber(mContext);
+                analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CALLLOG_LIST_ITEM, AnalyticsConstants.ACTION_CALL_CLICK, userMobile + " --> " + callLog.getPhone());
             }
         });
 

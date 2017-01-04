@@ -72,7 +72,7 @@ public class ProfileFragment extends Fragment {
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), ProfileFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), ProfileFragment.class.getSimpleName());
     }
 
     @Override

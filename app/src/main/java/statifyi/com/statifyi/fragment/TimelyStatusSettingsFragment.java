@@ -40,7 +40,7 @@ public class TimelyStatusSettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), TimelyStatusSettingsFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), TimelyStatusSettingsFragment.class.getSimpleName());
     }
 
     @Override

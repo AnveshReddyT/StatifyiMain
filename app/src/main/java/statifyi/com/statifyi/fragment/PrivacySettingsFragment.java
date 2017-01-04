@@ -22,7 +22,7 @@ public class PrivacySettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), PrivacySettingsFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), PrivacySettingsFragment.class.getSimpleName());
         addPreferencesFromResource(R.xml.pref_privacy);
     }
 }

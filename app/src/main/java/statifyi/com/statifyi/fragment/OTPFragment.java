@@ -148,7 +148,7 @@ public class OTPFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), OTPFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), OTPFragment.class.getSimpleName());
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);

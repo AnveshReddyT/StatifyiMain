@@ -30,6 +30,10 @@ import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.ContactsSuggestionDialog;
 import statifyi.com.statifyi.fragment.DialerFragment;
 import statifyi.com.statifyi.model.Contact;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
+import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.StringMatcher;
@@ -41,6 +45,8 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, SectionIndexer {
 
+    private static final String SCREEN = "Contacts Screen";
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private DBHelper dbHelper;
     private Activity mContext;
     private String mSections = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -142,9 +148,11 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
                 swipeLayout.close();
                 if (isStatifyiUser) {
                     Utils.inviteFriends(mContext);
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CONTACT_LIST_ITEM, AnalyticsConstants.ACTION_SWIPE_CLICK, "Invite Friends");
                 } else {
                     StatusUtils.addNotifyStatus(mContext, tenDigitNumber);
                     Toast.makeText(mContext, "Reminder added!", Toast.LENGTH_LONG).show();
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_EXISTING_STATUS, AnalyticsConstants.ACTION_CLICK_CHANGE_STATUS, "Notify Status Change");
                 }
             }
         });
@@ -160,6 +168,8 @@ public class ContactsAdapter extends BaseSwipeAdapter implements Filterable, Sec
                     intent.putExtra("title", "Dial");
                     intent.putExtra(DialerFragment.PARAM_MOBILE_NUM, mobile);
                     mContext.startActivity(intent);
+                    String userMobile = DataUtils.getMobileNumber(mContext);
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CONTACT_LIST_ITEM, AnalyticsConstants.ACTION_CALL_CLICK, userMobile + " --> " + mobile);
                 }
             }
         });

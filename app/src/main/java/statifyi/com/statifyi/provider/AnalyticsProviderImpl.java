@@ -3,6 +3,8 @@ package statifyi.com.statifyi.provider;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import statifyi.com.statifyi.StatifyiApplication;
@@ -14,12 +16,14 @@ public class AnalyticsProviderImpl implements AnalyticsProvider {
 
     private static AnalyticsProvider analyticsProvider;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private Tracker mTracker;
     private Context context;
 
     public AnalyticsProviderImpl(Context context) {
         this.context = context;
         if (mFirebaseAnalytics == null) {
             mFirebaseAnalytics = ((StatifyiApplication) context.getApplicationContext()).getFirebaseAnalytics();
+            this.mTracker = ((StatifyiApplication) context.getApplicationContext()).getDefaultTracker();
         }
     }
 
@@ -40,11 +44,17 @@ public class AnalyticsProviderImpl implements AnalyticsProvider {
 
     @Override
     public void logEvent(String screen, String category, String action, String label) {
-        Bundle bundle = new Bundle();
-        bundle.putString("ScreenName", screen);
-        bundle.putString("EventCategory", category);
-        bundle.putString("EventAction", action);
-        bundle.putString("EventLabel", label);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("ScreenName", screen);
+//        bundle.putString("EventCategory", category);
+//        bundle.putString("EventAction", action);
+//        bundle.putString("EventLabel", label);
+//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        mTracker.setScreenName(screen);
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .setLabel(label)
+                .build());
     }
 }

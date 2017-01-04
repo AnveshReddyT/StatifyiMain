@@ -30,9 +30,12 @@ import java.io.File;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import statifyi.com.statifyi.fragment.HomeFragment;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.service.GCMSubscribeService;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.BlurBuilder;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
@@ -40,15 +43,14 @@ import statifyi.com.statifyi.utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private static final String SCREEN = "Home Screen";
     @InjectView(R.id.drawerLayout)
     DrawerLayout drawerLayout;
-
     @InjectView(R.id.navigation_view)
     NavigationView navigationView;
-
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
-
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private ActionBarDrawerToggle drawerToggle;
 
     private HomeFragment homeFragment;
@@ -163,27 +165,35 @@ public class HomeActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_home:
                         setTitle(getString(R.string.status));
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, getString(R.string.status));
                         return true;
                     case R.id.nav_auto_status:
                         setContent(SingleFragmentActivity.FragmentName.AUTO_STATUS, getString(R.string.menu_auto_status));
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, getString(R.string.menu_auto_status));
                         return true;
                     case R.id.nav_timely_status:
                         setContent(SingleFragmentActivity.FragmentName.TIMELY_STATUS, getString(R.string.menu_timely_status));
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, getString(R.string.menu_timely_status));
                         return true;
                     case R.id.nav_privacy:
                         setContent(SingleFragmentActivity.FragmentName.PRIVACY, getString(R.string.menu_privacy));
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, getString(R.string.menu_privacy));
                         return true;
                     case R.id.nav_invite:
                         Utils.inviteFriends(HomeActivity.this);
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, "Invite");
                         return true;
                     case R.id.nav_rate:
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.gazelle.anvesh.colortickler")));
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, "Rate");
                         return true;
                     case R.id.nav_about:
                         setContent(SingleFragmentActivity.FragmentName.ABOUT, getString(R.string.menu_about));
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, getString(R.string.menu_about));
                         return true;
                     default:
                         Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
+                        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NAV_DRAWER, AnalyticsConstants.ACTION_SELECT, "Unknown");
                         return true;
                 }
             }

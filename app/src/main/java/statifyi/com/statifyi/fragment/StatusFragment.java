@@ -55,6 +55,7 @@ import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Status;
 import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.GCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
@@ -68,7 +69,6 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     public static final String BROADCAST_ACTION_STATUS_UPDATE = "statifyi.broadcast.status_update";
 
     public static final String BROADCAST_ACTION_SHOWCASEVIEW = "statifyi.broadcast.showcaseview";
-
     private static final String SCREEN = "Status Screen";
     @InjectView(R.id.status_add_text_layout)
     RelativeLayout addStatusLayout;
@@ -212,6 +212,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean(getString(R.string.key_auto_status), isChecked);
                 editor.apply();
+                analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_AUTO_STATUS, isChecked ? AnalyticsConstants.ACTION_SELECT : AnalyticsConstants.ACTION_UNSELECT, null);
             }
         });
 
@@ -316,8 +317,8 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     }
 
     private void executeUpdateStatus(final Status status) {
-        String mStatus = DataUtils.getStatus(getActivity());
-        analyticsProvider.logEvent(SCREEN, "Existing Status", "Click Change", status.getStatus());
+        final String mStatus = DataUtils.getStatus(getActivity());
+        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_EXISTING_STATUS, AnalyticsConstants.ACTION_CLICK_CHANGE_STATUS, status.getStatus());
         if (DataUtils.getAutoStatus(getActivity()) == null && mStatus.equals(status.getStatus())) {
             Utils.showToast(getActivity(), "Status already set!");
         } else {
@@ -330,6 +331,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                     @Override
                     public void onResponse(Response<Void> response, Retrofit retrofit) {
                         if (response.isSuccess()) {
+                            analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CHANGE_STATUS, AnalyticsConstants.ACTION_CLICK_CHANGE_STATUS, mStatus + " --> " + status.getStatus());
                             DataUtils.saveStatus(getActivity(), status.getStatus());
                             int ico = Utils.getDrawableResByName(getActivity(), status.getIcon());
                             DataUtils.saveIcon(getActivity(), ico);
@@ -366,11 +368,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
                     public void onDismiss(DialogInterface dialog) {
                         if (!TextUtils.isEmpty(statusDialog.getMessage())) {
                             updateCustomStatus(statusDialog.getMessage(), statusDialog.getIcon());
-                            analyticsProvider.logEvent(SCREEN, "Custom Status Dialog", "Update", statusDialog.getMessage());
+                            analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CUSTOM_STATUS_DIALOG, AnalyticsConstants.ACTION_CLICK_UPDATE_BTN, statusDialog.getMessage());
                         }
                     }
                 });
-                analyticsProvider.logEvent(SCREEN, "Custom Status", "Click", null);
+                analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CUSTOM_STATUS, AnalyticsConstants.ACTION_CLICK, null);
                 break;
         }
     }

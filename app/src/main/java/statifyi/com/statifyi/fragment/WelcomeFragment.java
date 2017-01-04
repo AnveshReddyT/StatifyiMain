@@ -26,7 +26,7 @@ public class WelcomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), WelcomeFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), WelcomeFragment.class.getSimpleName());
     }
 
     @Override

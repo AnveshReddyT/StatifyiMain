@@ -35,7 +35,7 @@ public class OnBoardingActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        GAUtils.sendScreenView(getApplicationContext(), OnBoardingActivity.class.getName());
+        GAUtils.sendScreenView(getApplicationContext(), OnBoardingActivity.class.getSimpleName());
 
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

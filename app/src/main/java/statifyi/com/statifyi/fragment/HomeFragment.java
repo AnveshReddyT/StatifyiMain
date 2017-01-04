@@ -23,6 +23,7 @@ import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.SingleFragmentActivity;
 import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.widget.RadioButton;
@@ -65,7 +66,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), HomeFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), HomeFragment.class.getSimpleName());
     }
 
     @Override
@@ -99,15 +100,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 if (checkedId == R.id.home_radio_status) {
                     mPager.setCurrentItem(0);
                     getActivity().setTitle("STATUS");
-                    analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "STATUS");
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_BOTTOM_BAR, AnalyticsConstants.ACTION_CLICK, "STATUS");
                 } else if (checkedId == R.id.home_radio_contacts) {
                     mPager.setCurrentItem(1);
                     getActivity().setTitle("CONTACTS");
-                    analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "CONTACTS");
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_BOTTOM_BAR, AnalyticsConstants.ACTION_CLICK, "CONTACTS");
                 } else if (checkedId == R.id.home_radio_calllog) {
                     mPager.setCurrentItem(2);
                     getActivity().setTitle("CALL LOG");
-                    analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "CALL LOG");
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_BOTTOM_BAR, AnalyticsConstants.ACTION_CLICK, "CALL LOG");
                 }
             }
         });
@@ -119,7 +120,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra(SingleFragmentActivity.KEY_SINGLE_FRAGMENT, SingleFragmentActivity.FragmentName.DIALER);
                 intent.putExtra("title", "DIAL");
                 startActivity(intent);
-                analyticsProvider.logEvent(SCREEN, "Bottom Bar", "Click", "DIAL");
+                analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_BOTTOM_BAR, AnalyticsConstants.ACTION_CLICK, "DIAL");
             }
         });
 

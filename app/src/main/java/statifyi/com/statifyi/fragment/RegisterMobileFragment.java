@@ -71,7 +71,7 @@ public class RegisterMobileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), RegisterMobileFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), RegisterMobileFragment.class.getSimpleName());
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);

@@ -51,8 +51,11 @@ import statifyi.com.statifyi.dialog.CustomCallDialog;
 import statifyi.com.statifyi.dialog.InfoDialog;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Contact;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.service.FloatingService;
 import statifyi.com.statifyi.service.GCMIntentService;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.DialerUtils;
 import statifyi.com.statifyi.utils.GAUtils;
@@ -67,85 +70,60 @@ import statifyi.com.statifyi.widget.TextView;
 public class DialerFragment extends Fragment implements View.OnClickListener {
 
     public static final String PARAM_MOBILE_NUM = "MOBILE_NUMBER";
-
+    private static final String SCREEN = "Dialer Screen";
     @InjectView(R.id.dialpad_0_layout)
     LinearLayout dialpad0Layout;
-
     @InjectView(R.id.dialpad_1_layout)
     LinearLayout dialpad1Layout;
-
     @InjectView(R.id.dialpad_2_layout)
     LinearLayout dialpad2Layout;
-
     @InjectView(R.id.dialpad_3_layout)
     LinearLayout dialpad3Layout;
-
     @InjectView(R.id.dialpad_4_layout)
     LinearLayout dialpad4Layout;
-
     @InjectView(R.id.dialpad_5_layout)
     LinearLayout dialpad5Layout;
-
     @InjectView(R.id.dialpad_6_layout)
     LinearLayout dialpad6Layout;
-
     @InjectView(R.id.dialpad_7_layout)
     LinearLayout dialpad7Layout;
-
     @InjectView(R.id.dialpad_8_layout)
     LinearLayout dialpad8Layout;
-
     @InjectView(R.id.dialpad_9_layout)
     LinearLayout dialpad9Layout;
-
     @InjectView(R.id.dialpad_star_layout)
     LinearLayout dialpadStarLayout;
-
     @InjectView(R.id.dialpad_hash_layout)
     LinearLayout dialpadHashLayout;
-
     @InjectView(R.id.dialpad_message_layout)
     LinearLayout dialpadMessageLayout;
-
     @InjectView(R.id.dialpad_call_layout)
     LinearLayout dialpadCallLayout;
-
     @InjectView(R.id.dialpad_delete_layout)
     LinearLayout dialpadDeleteLayout;
-
     @InjectView(R.id.dialer_text)
     TextView dialerText;
-
     @InjectView(R.id.dialer_button_emergency)
     Button emergencyBtn;
-
     @InjectView(R.id.dialer_button_business)
     Button businessBtn;
-
     @InjectView(R.id.dialer_button_casual)
     Button casualbtn;
-
     @InjectView(R.id.dialer_button_custom)
     Button customBtn;
-
     @InjectView(R.id.dialpad_contact_name)
     TextView contactName;
-
     @InjectView(R.id.dialpad_status)
     TextView contactStatus;
-
     @InjectView(R.id.dialpad_status_icon)
     ImageView contactStatusIcon;
-
     @InjectView(R.id.dialpad_status_layout)
     RelativeLayout contactStatusLayout;
-
     @InjectView(R.id.dialpad_contact_layout)
     RelativeLayout contactLayout;
-
     @InjectView(R.id.dialpad_more_contacts)
     ImageView moreContacts;
-
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private UserAPIService userAPIService;
 
     private ProgressDialog progressDialog;
@@ -206,7 +184,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), DialerFragment.class.getName());
+        GAUtils.sendScreenView(getActivity().getApplicationContext(), DialerFragment.class.getSimpleName());
     }
 
     @Override
@@ -347,6 +325,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     Intent intent = new Intent(Intent.ACTION_CALL);
                     intent.setData(Uri.parse("tel:" + phone.toString()));
                     startActivity(intent);
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_NORMAL_CALL, AnalyticsConstants.ACTION_CLICK, phone.toString());
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
@@ -357,12 +336,14 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     String text = editable.toString();
                     dialerText.setText(text.substring(0, text.length() - 1));
                     startSuggestionsThread();
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_DIALPAD, AnalyticsConstants.ACTION_DELETE_DIGITS_CLICK, editable.toString());
                 }
                 break;
             case R.id.dialpad_message_layout:
                 CharSequence mobile = dialerText.getText();
                 if (Patterns.PHONE.matcher(mobile).matches()) {
                     Utils.sendSMS(getActivity(), mobile.toString());
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_DIALPAD, AnalyticsConstants.ACTION_MESSAGE_CLICK, mobile.toString());
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
@@ -370,6 +351,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             case R.id.dialer_button_emergency:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
                     makeCustomCallRequest(getString(R.string.emergency_call));
+                    final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_EMERGENCY_CALL, AnalyticsConstants.ACTION_CLICK, lastTenDigits);
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
@@ -377,6 +360,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             case R.id.dialer_button_business:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
                     makeCustomCallRequest(getString(R.string.business_call));
+                    final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_BUSINESS_CALL, AnalyticsConstants.ACTION_CLICK, lastTenDigits);
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
@@ -384,6 +369,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             case R.id.dialer_button_casual:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
                     makeCustomCallRequest(getString(R.string.casual_call));
+                    final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CASUAL_CALL, AnalyticsConstants.ACTION_CLICK, lastTenDigits);
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_LONG).show();
                 }
@@ -391,6 +378,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
             case R.id.dialer_button_custom:
                 if (Patterns.PHONE.matcher(dialerText.getText()).matches()) {
                     final CustomCallDialog customCallDialog = new CustomCallDialog(getActivity());
+                    final String lastTenDigits = Utils.getLastTenDigits(dialerText.getText().toString());
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_CUSTOM_CALL, AnalyticsConstants.ACTION_CLICK, lastTenDigits);
                     customCallDialog.show();
                     customCallDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @Override
@@ -416,6 +405,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
 
     @OnClick(R.id.dialpad_more_contacts)
     public void showContactsDialog() {
+        analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_DIALPAD, AnalyticsConstants.ACTION_MORE_CONTACTS_CLICK, dialerText.getText().toString());
         if (contactList != null && !contactList.isEmpty()) {
             final ContactsSuggestionDialog contactsSuggestionDialog = new ContactsSuggestionDialog(getActivity(), contactList);
             contactsSuggestionDialog.show();

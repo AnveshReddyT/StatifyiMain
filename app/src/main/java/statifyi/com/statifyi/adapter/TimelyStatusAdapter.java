@@ -23,6 +23,9 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.listener.AlarmReceiver;
 import statifyi.com.statifyi.model.TimelyStatus;
+import statifyi.com.statifyi.provider.AnalyticsProvider;
+import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.TimelyStatusUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.TextView;
@@ -32,6 +35,8 @@ import statifyi.com.statifyi.widget.TextView;
  */
 public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapter.CustomViewHolder> {
 
+    private static final String SCREEN = "TimelyStatus Screen";
+    private AnalyticsProvider analyticsProvider = AnalyticsProviderImpl.getInstance();
     private TimelyStatus[] itemList;
 
     private Context mContext;
@@ -181,6 +186,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
                                 itemList[position].setStartMin(minute);
                                 TimelyStatusUtils.saveTimelyStatusList(mContext, itemList);
                                 end.performClick();
+                                analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_TIMELY_STATUS, AnalyticsConstants.ACTION_START_TIMELY_CLICK, itemList[position].getName());
                             }
                         }, "start");
                     } else {
@@ -200,6 +206,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
                                 itemList[position].setEndHour(hourOfDay);
                                 itemList[position].setEndMin(minute);
                                 TimelyStatusUtils.saveTimelyStatusList(mContext, itemList);
+                                analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_TIMELY_STATUS, AnalyticsConstants.ACTION_END_TIMELY_CLICK, itemList[position].getName());
                             }
                         }, "end");
                     } else {
@@ -214,6 +221,7 @@ public class TimelyStatusAdapter extends RecyclerView.Adapter<TimelyStatusAdapte
                     buttonView.setChecked(isChecked);
                     itemList[position].setEnabled(isChecked);
                     TimelyStatusUtils.saveTimelyStatusList(mContext, itemList);
+                    analyticsProvider.logEvent(SCREEN, AnalyticsConstants.CATEGORY_TIMELY_STATUS, isChecked ? AnalyticsConstants.ACTION_ENABLE_TIMELY_CLICK : AnalyticsConstants.ACTION_DISABLE_TIMELY_CLICK, itemList[position].getName());
                 }
             });
         }
