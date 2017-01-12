@@ -119,13 +119,7 @@
         <service
             android:name=".service.SyncAllStatusService"
             android:exported="false" />
-        <service
-            android:name=".service.GCMIntentService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
+
         <service
             android:name=".service.GCMInstanceIDListenerService"
             android:exported="false">
@@ -133,6 +127,20 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+        <!-- [START firebase_service] -->
+        <service android:name=".service.FCMListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- [END firebase_service] -->
+        <!-- [START firebase_iid_service] -->
+        <service android:name=".service.FCMInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- [END firebase_iid_service] -->
         <service
             android:name=".service.GCMSubscribeService"
             android:exported="false" />

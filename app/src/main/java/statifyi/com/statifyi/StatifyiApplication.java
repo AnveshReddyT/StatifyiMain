@@ -111,7 +111,7 @@ public class StatifyiApplication extends Application {
     synchronized public Tracker getDefaultTracker() {
         if (mTracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            mTracker = analytics.newTracker("UA-81704105-1");
+            mTracker = analytics.newTracker("UA-90025179-1");
         }
         return mTracker;
     }

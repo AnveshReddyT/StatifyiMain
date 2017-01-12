@@ -20,11 +20,11 @@ public interface GCMServerAPI {
 
     String HTTP_CONTEXT = "/gcm/send";
 
-    @Headers("Authorization:key=" + "AIzaSyD8COPh617MLAv78-5uB_kOn7Ll8NTswKo")
+    @Headers("Authorization:key=" + "AIzaSyDJtCaZyuwh8nknfXos1sJQk1_TJcRc5YA")
     @GET(BASE_CONTEXT + "/{token}")
     Call<ResponseBody> getGcmInfo(@Path("token") String token, @Query("details") boolean details);
 
-    @Headers("Authorization:key=" + "AIzaSyD8COPh617MLAv78-5uB_kOn7Ll8NTswKo")
+    @Headers("Authorization:key=" + "AIzaSyDJtCaZyuwh8nknfXos1sJQk1_TJcRc5YA")
     @POST(HTTP_CONTEXT)
     Call<ResponseBody> sendGcmMessageToTopic(@Body TopicMessageRequest request);
 }

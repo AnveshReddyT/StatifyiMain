@@ -33,7 +33,6 @@ import statifyi.com.statifyi.fragment.HomeFragment;
 import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.service.FloatingService;
-import statifyi.com.statifyi.service.GCMRegisterIntentService;
 import statifyi.com.statifyi.service.GCMSubscribeService;
 import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.BlurBuilder;
@@ -246,8 +245,8 @@ public class HomeActivity extends AppCompatActivity {
     public void registerGCM() {
         String regId = GCMUtils.getRegistrationId(this);
         if (TextUtils.isEmpty(regId)) {
-            Intent intent = new Intent(this, GCMRegisterIntentService.class);
-            startService(intent);
+//            Intent intent = new Intent(this, GCMRegisterIntentService.class);
+//            startService(intent);
         } else {
             if (!Utils.isMyServiceRunning(this, GCMSubscribeService.class)) {
                 startService(new Intent(this, GCMSubscribeService.class));
