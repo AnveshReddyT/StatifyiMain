@@ -44,12 +44,12 @@ public class AnalyticsProviderImpl implements AnalyticsProvider {
 
     @Override
     public void logEvent(String screen, String category, String action, String label) {
-//        Bundle bundle = new Bundle();
-//        bundle.putString("ScreenName", screen);
-//        bundle.putString("EventCategory", category);
-//        bundle.putString("EventAction", action);
-//        bundle.putString("EventLabel", label);
-//        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        Bundle bundle = new Bundle();
+        bundle.putString("ScreenName", screen);
+        bundle.putString("EventCategory", category);
+        bundle.putString("EventAction", action);
+        bundle.putString("EventLabel", label);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         mTracker.setScreenName(screen);
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory(category)
