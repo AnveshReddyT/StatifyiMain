@@ -32,8 +32,8 @@ android {
         applicationId "statifyi.com.statifyi"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 4
-        versionName "1"
+        versionCode 1
+        versionName "1.0a"
 
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
