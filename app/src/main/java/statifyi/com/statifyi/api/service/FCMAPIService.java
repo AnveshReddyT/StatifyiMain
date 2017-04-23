@@ -8,9 +8,9 @@ import statifyi.com.statifyi.api.model.TopicMessageRequest;
 /**
  * Created by KT on 13/04/16.
  */
-public interface GCMAPIService {
+public interface FCMAPIService {
 
-    Call<ResponseBody> getGcmInfo(String token);
+    Call<ResponseBody> getFcmInfo(String token);
 
-    Call<ResponseBody> sendGcmMessaheToTopic(TopicMessageRequest request);
+    Call<ResponseBody> sendFcmMessaheToTopic(TopicMessageRequest request);
 }

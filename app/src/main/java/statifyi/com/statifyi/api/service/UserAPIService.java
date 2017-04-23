@@ -6,7 +6,7 @@ import java.util.List;
 import retrofit.Call;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
-import statifyi.com.statifyi.api.model.GCMRequest;
+import statifyi.com.statifyi.api.model.FCMRequest;
 import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
@@ -18,15 +18,15 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
  */
 public interface UserAPIService {
 
-    Call<StatusResponse> getUserStatus(String gcmId, String mobile);
+    Call<StatusResponse> getUserStatus(String fcmId, String mobile);
 
-    Call<Void> setUserStatus(String gcmId, StatusRequest request);
+    Call<Void> setUserStatus(String fcmId, StatusRequest request);
 
-    Call<Void> setUserName(String gcmId, UserNameRequest request);
+    Call<Void> setUserName(String fcmId, UserNameRequest request);
 
-    Call<Void> uploadImage(String gcmId, File file);
+    Call<Void> uploadImage(String fcmId, File file);
 
-    Call<List<MultiStatusResponse>> getAllStatus(String gcmId, List<String> mobiles);
+    Call<List<MultiStatusResponse>> getAllStatus(String fcmId, List<String> mobiles);
 
     Call<Void> registerUser(RegisterUserRequest request);
 
@@ -34,7 +34,7 @@ public interface UserAPIService {
 
     Call<Void> activateUser(ActivateUserRequest request);
 
-    Call<Boolean> customCall(String gcmId, CustomCallRequest request);
+    Call<Boolean> customCall(String fcmId, CustomCallRequest request);
 
-    Call<Void> registerGCM(GCMRequest request);
+    Call<Void> registerFCM(FCMRequest request);
 }

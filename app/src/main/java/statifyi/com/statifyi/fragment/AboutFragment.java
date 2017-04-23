@@ -6,7 +6,6 @@ import android.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
 
 import statifyi.com.statifyi.R;
-import statifyi.com.statifyi.utils.GAUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +24,5 @@ public class AboutFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_about);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), AboutFragment.class.getSimpleName());
     }
 }

@@ -16,7 +16,7 @@ import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.model.CallLog;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -136,7 +136,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
     private void fetchStatus(final String phoneNumber) {
         final String tenDigitNumber = Utils.getLastTenDigits(phoneNumber);
         if (NetworkUtils.isConnectingToInternet(mContext)) {
-            userAPIService.getUserStatus(GCMUtils.getRegistrationId(mContext), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+            userAPIService.getUserStatus(FCMUtils.getRegistrationId(mContext), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
                 @Override
                 public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {

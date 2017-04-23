@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,15 +33,16 @@ import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.RegistrationActivity;
 import statifyi.com.statifyi.StatifyiApplication;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
+import statifyi.com.statifyi.api.model.FCMRequest;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.ProgressDialog;
-import statifyi.com.statifyi.service.GCMRegisterIntentService;
+import statifyi.com.statifyi.service.FCMInstanceIDService;
+import statifyi.com.statifyi.service.FCMSubscribeService;
 import statifyi.com.statifyi.service.SyncAllStatusService;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GAUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -98,14 +100,14 @@ public class OTPFragment extends Fragment {
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
     };
-    private BroadcastReceiver onGCMRegisterReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver onFCMRegisterReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtils.isConnectingToInternet(getActivity())) {
                 getActivity().startService(new Intent(getActivity(), SyncAllStatusService.class));
                 final String mobileNumber = DataUtils.getMobileNumber(getActivity());
-                userAPIService.getUserStatus(GCMUtils.getRegistrationId(getActivity()), mobileNumber).enqueue(new Callback<StatusResponse>() {
+                userAPIService.getUserStatus(FCMUtils.getRegistrationId(getActivity()), mobileNumber).enqueue(new Callback<StatusResponse>() {
                     @Override
                     public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {
                         if (response.isSuccess()) {
@@ -120,7 +122,7 @@ public class OTPFragment extends Fragment {
                                 progressDialog.dismiss();
                                 launchHomeScreen();
                             }
-                        }  else if (response.code() == 401) {
+                        } else if (response.code() == 401) {
                             StatifyiApplication.logout(getActivity());
                         }
                     }
@@ -137,6 +139,29 @@ public class OTPFragment extends Fragment {
         }
     };
 
+    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle myBundle = intent.getExtras();
+            SmsMessage[] messages = null;
+            if (myBundle != null) {
+                Object[] pdus = (Object[]) myBundle.get("pdus");
+                messages = new SmsMessage[pdus.length];
+
+                for (int i = 0; i < messages.length; i++) {
+                    messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                    String fromAddress = messages[i].getOriginatingAddress();
+                    String messageBody = messages[i].getMessageBody();
+                    if (fromAddress.contains("STATFY")) {
+                        otpText.setText(messageBody.replace("StatiFYI verification code :", "").trim());
+                        doActivateUser();
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
     public OTPFragment() {
         // Required empty public constructor
     }
@@ -148,7 +173,6 @@ public class OTPFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), OTPFragment.class.getSimpleName());
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
@@ -175,14 +199,16 @@ public class OTPFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        IntentFilter filter = new IntentFilter(GCMRegisterIntentService.BROADCAST_ACTION_GCM_REGISTER);
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onGCMRegisterReceiver, filter);
+        IntentFilter filter = new IntentFilter(FCMInstanceIDService.BROADCAST_ACTION_FCM_REGISTER);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onFCMRegisterReceiver, filter);
+        getActivity().registerReceiver(smsReceiver, new IntentFilter("android.provider.Telephony.SMS_RECEIVED"));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onGCMRegisterReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(onFCMRegisterReceiver);
+        getActivity().unregisterReceiver(smsReceiver);
     }
 
     @OnClick(R.id.register_otp_btn)
@@ -202,7 +228,11 @@ public class OTPFragment extends Fragment {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
-                        getActivity().startService(new Intent(getActivity(), GCMRegisterIntentService.class));
+                        String token = FCMUtils.getRegistrationId(getActivity());
+                        sendRegistrationToServer(token);
+                        if (!Utils.isMyServiceRunning(getActivity(), FCMSubscribeService.class)) {
+                            getActivity().startService(new Intent(getActivity(), FCMSubscribeService.class));
+                        }
                     } else {
                         progressDialog.dismiss();
                         Utils.showToast(getActivity(), "Failed to activate");
@@ -261,4 +291,24 @@ public class OTPFragment extends Fragment {
         ((RegistrationActivity) getActivity()).replaceFragment(ProfileFragment.newInstance(null, null));
     }
 
+    private void sendRegistrationToServer(String token) {
+        FCMRequest request = new FCMRequest();
+        request.setFcmId(token);
+        request.setMobile(DataUtils.getMobileNumber(getActivity()));
+
+        userAPIService.registerFCM(request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Response<Void> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(FCMInstanceIDService.BROADCAST_ACTION_FCM_REGISTER));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+        FCMUtils.sendFcmToServerStatus(getActivity(), true);
+    }
 }

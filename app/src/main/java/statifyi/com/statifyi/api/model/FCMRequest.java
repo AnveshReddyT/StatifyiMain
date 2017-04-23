@@ -7,13 +7,13 @@ import statifyi.com.statifyi.utils.NetworkUtils;
 /**
  * Created by KT on 06/04/16.
  */
-public class GCMRequest {
+public class FCMRequest {
 
     @SerializedName("mobile")
     private String mobile;
 
     @SerializedName("gcmId")
-    private String gcmId;
+    private String fcmId;
 
     public String getMobile() {
         return mobile;
@@ -23,12 +23,12 @@ public class GCMRequest {
         this.mobile = mobile;
     }
 
-    public String getGcmId() {
-        return gcmId;
+    public String getFcmId() {
+        return fcmId;
     }
 
-    public void setGcmId(String gcmId) {
-        this.gcmId = gcmId;
+    public void setFcmId(String fcmId) {
+        this.fcmId = fcmId;
     }
 
     @Override

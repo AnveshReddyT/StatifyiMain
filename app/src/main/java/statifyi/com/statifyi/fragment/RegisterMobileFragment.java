@@ -35,7 +35,6 @@ import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.CountryCode;
 import statifyi.com.statifyi.model.CountryCodes;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -71,7 +70,6 @@ public class RegisterMobileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), RegisterMobileFragment.class.getSimpleName());
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);

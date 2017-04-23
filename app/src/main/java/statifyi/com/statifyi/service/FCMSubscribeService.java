@@ -16,11 +16,10 @@ import java.util.Iterator;
 import java.util.Set;
 
 import retrofit.Response;
-import statifyi.com.statifyi.api.service.GCMAPIService;
+import statifyi.com.statifyi.api.service.FCMAPIService;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
-import statifyi.com.statifyi.utils.Utils;
 
 
 /**
@@ -28,7 +27,7 @@ import statifyi.com.statifyi.utils.Utils;
  * a service on a separate handler thread.
  * <p/>
  */
-public class GCMSubscribeService extends IntentService {
+public class FCMSubscribeService extends IntentService {
 
     public static final String[] CUSTOM_TOPICS = {"", "-customCall"};
     private static final int NOTIFICATION_ID = 101;
@@ -36,8 +35,8 @@ public class GCMSubscribeService extends IntentService {
 
     private String mobile;
 
-    public GCMSubscribeService() {
-        super("GCMSubscribeService");
+    public FCMSubscribeService() {
+        super("FCMSubscribeService");
     }
 
     @Override
@@ -46,23 +45,23 @@ public class GCMSubscribeService extends IntentService {
             isRunning = true;
             mobile = DataUtils.getMobileNumber(this);
             try {
-                GCMAPIService gcmapiService = NetworkUtils.provideGCMAPIService(this, false);
-                Response<ResponseBody> response = gcmapiService.getGcmInfo(GCMUtils.getRegistrationId(this)).execute();
+                FCMAPIService FCMAPIService = NetworkUtils.provideFCMAPIService(this, false);
+                Response<ResponseBody> response = FCMAPIService.getFcmInfo(FCMUtils.getRegistrationId(this)).execute();
                 ResponseBody responseBody = response.body();
                 if (responseBody != null) {
-                    JSONObject gcmInfo = new JSONObject(new String(responseBody.bytes()));
-                    if (gcmInfo.has("rel")) {
-                        JSONObject gcmRelations = gcmInfo.getJSONObject("rel");
-                        if (gcmRelations != null && gcmRelations.has("topics")) {
-                            JSONObject gcmTopics = gcmRelations.getJSONObject("topics");
-                            if (gcmTopics != null) {
-                                Iterator<String> topics = gcmTopics.keys();
-                                Set<String> gcmTopicSet = new HashSet<>();
+                    JSONObject fcmInfo = new JSONObject(new String(responseBody.bytes()));
+                    if (fcmInfo.has("rel")) {
+                        JSONObject fcmRelations = fcmInfo.getJSONObject("rel");
+                        if (fcmRelations != null && fcmRelations.has("topics")) {
+                            JSONObject fcmTopics = fcmRelations.getJSONObject("topics");
+                            if (fcmTopics != null) {
+                                Iterator<String> topics = fcmTopics.keys();
+                                Set<String> fcmTopicSet = new HashSet<>();
                                 while (topics.hasNext()) {
                                     String mTopic = topics.next();
-                                    gcmTopicSet.add(mTopic);
+                                    fcmTopicSet.add(mTopic);
                                 }
-                                verifySubscriptions(gcmTopicSet);
+                                verifySubscriptions(fcmTopicSet);
                             }
                         }
                     } else {
@@ -90,42 +89,42 @@ public class GCMSubscribeService extends IntentService {
         super.onDestroy();
     }
 
-    private void verifySubscriptions(Set<String> gcmTopicSet) {
+    private void verifySubscriptions(Set<String> fcmTopicSet) {
 //        Set<String> contactList = new HashSet<>();
 //        contactList.addAll(Utils.get10DigitPhoneNumbersFromContacts(this));
 
         Set<String> subscribeList = new HashSet<>();
 //        subscribeList.addAll(contactList);
-//        subscribeList.removeAll(gcmTopicSet);
+//        subscribeList.removeAll(fcmTopicSet);
         for (String customTopic : CUSTOM_TOPICS) {
-            if (!gcmTopicSet.contains(mobile + customTopic)) {
+            if (!fcmTopicSet.contains(mobile + customTopic)) {
                 subscribeList.add(mobile + customTopic);
             }
         }
 
-        Log.d("TAG_STAT", "Subscribed to : " + gcmTopicSet.size());
+        Log.d("TAG_STAT", "Subscribed to : " + fcmTopicSet.size());
 //        Log.d("TAG_STAT", "Available : " + contactList.size());
         Log.d("TAG_STAT", "Remaining: " + subscribeList.size());
         subscribe(subscribeList);
 
-        gcmTopicSet.addAll(subscribeList);
-        Log.d("TAG_STAT", "Subscribed to : " + gcmTopicSet.size());
+        fcmTopicSet.addAll(subscribeList);
+        Log.d("TAG_STAT", "Subscribed to : " + fcmTopicSet.size());
 
-//        gcmTopicSet.removeAll(contactList);
+//        fcmTopicSet.removeAll(contactList);
 //        for (String customTopic : CUSTOM_TOPICS) {
-//            if (gcmTopicSet.contains(mobile + customTopic)) {
-//                gcmTopicSet.remove(mobile + customTopic);
+//            if (fcmTopicSet.contains(mobile + customTopic)) {
+//                fcmTopicSet.remove(mobile + customTopic);
 //            }
 //        }
-//        Log.d("TAG_STAT", "to delete: " + gcmTopicSet.size());
-//        unSubscribe(gcmTopicSet);
+//        Log.d("TAG_STAT", "to delete: " + fcmTopicSet.size());
+//        unSubscribe(fcmTopicSet);
     }
 
     private void subscribe(Set<String> subscribeList) {
         GcmPubSub pubSub = GcmPubSub.getInstance(this);
         for (String topic : subscribeList) {
             try {
-                pubSub.subscribe(GCMUtils.getRegistrationId(this), GCMIntentService.TOPICS + topic, null);
+                pubSub.subscribe(FCMUtils.getRegistrationId(this), FCMListenerService.TOPICS + topic, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -136,7 +135,7 @@ public class GCMSubscribeService extends IntentService {
         GcmPubSub pubSub = GcmPubSub.getInstance(this);
         for (String topic : unSubscribeList) {
             try {
-                pubSub.unsubscribe(GCMUtils.getRegistrationId(this), GCMIntentService.TOPICS + topic);
+                pubSub.unsubscribe(FCMUtils.getRegistrationId(this), FCMListenerService.TOPICS + topic);
             } catch (IOException e) {
                 e.printStackTrace();
             }

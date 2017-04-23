@@ -20,7 +20,7 @@ import java.io.IOException;
 import io.fabric.sdk.android.Fabric;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.TimelyStatusUtils;
@@ -70,7 +70,7 @@ public class StatifyiApplication extends Application {
     }
 
     private static void clearAllSharedPreferences(Context mContext) {
-        String[] files = {DataUtils.USER_PREF, GCMUtils.GCM_PREF, StatusUtils.STATUS_PREF, TimelyStatusUtils.PREF_TIMELY_STATUS};
+        String[] files = {DataUtils.USER_PREF, FCMUtils.FCM_PREF, StatusUtils.STATUS_PREF, TimelyStatusUtils.PREF_TIMELY_STATUS};
         for (String file : files) {
             clearSharedPreferences(mContext, file);
         }

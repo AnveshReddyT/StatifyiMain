@@ -32,12 +32,12 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.fragment.HomeFragment;
 import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.service.FCMSubscribeService;
 import statifyi.com.statifyi.service.FloatingService;
-import statifyi.com.statifyi.service.GCMSubscribeService;
 import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.BlurBuilder;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
@@ -76,7 +76,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         if (verifyProfileComplete()) {
-            registerGCM();
+            subscribeFCM();
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
             ButterKnife.inject(this);
@@ -242,16 +242,12 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     }
 
-    public void registerGCM() {
-        String regId = GCMUtils.getRegistrationId(this);
-        if (TextUtils.isEmpty(regId)) {
-//            Intent intent = new Intent(this, GCMRegisterIntentService.class);
-//            startService(intent);
-        } else {
-            if (!Utils.isMyServiceRunning(this, GCMSubscribeService.class)) {
-                startService(new Intent(this, GCMSubscribeService.class));
+    public void subscribeFCM() {
+        String regId = FCMUtils.getRegistrationId(this);
+        if (!TextUtils.isEmpty(regId)) {
+            if (!Utils.isMyServiceRunning(this, FCMSubscribeService.class)) {
+                startService(new Intent(this, FCMSubscribeService.class));
             }
-//            Toast.makeText(getApplicationContext(), "RegId already available. RegId: " + regId, Toast.LENGTH_LONG).show();
         }
     }
 }

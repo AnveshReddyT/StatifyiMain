@@ -10,7 +10,7 @@ import retrofit.Response;
 import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 
@@ -27,13 +27,13 @@ public class SyncAllStatusService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         UserAPIService userAPIService = NetworkUtils.provideUserAPIService(this);
         try {
-            Response<List<MultiStatusResponse>> response = userAPIService.getAllStatus(GCMUtils.getRegistrationId(this), Utils.get10DigitPhoneNumbersFromContacts(this)).execute();
+            Response<List<MultiStatusResponse>> response = userAPIService.getAllStatus(FCMUtils.getRegistrationId(this), Utils.get10DigitPhoneNumbersFromContacts(this)).execute();
             List<MultiStatusResponse> multiStatusResponseList = response.body();
             DBHelper dbHelper = DBHelper.getInstance(SyncAllStatusService.this);
             for (MultiStatusResponse multiStatusResponse : multiStatusResponseList) {
                 dbHelper.insertOrUpdateUser(multiStatusResponse.toUser());
             }
-            LocalBroadcastManager.getInstance(SyncAllStatusService.this).sendBroadcast(new Intent(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE));
+            LocalBroadcastManager.getInstance(SyncAllStatusService.this).sendBroadcast(new Intent(FCMListenerService.BROADCAST_ACTION_STATUS_CHANGE));
         } catch (Exception e) {
             e.printStackTrace();
         }

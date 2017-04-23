@@ -24,7 +24,6 @@ import statifyi.com.statifyi.SingleFragmentActivity;
 import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.utils.AnalyticsConstants;
-import statifyi.com.statifyi.utils.GAUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.widget.RadioButton;
 
@@ -66,7 +65,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), HomeFragment.class.getSimpleName());
     }
 
     @Override

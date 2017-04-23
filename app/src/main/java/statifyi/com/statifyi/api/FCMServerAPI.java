@@ -14,7 +14,7 @@ import statifyi.com.statifyi.api.model.TopicMessageRequest;
 /**
  * Created by KT on 23/12/15.
  */
-public interface GCMServerAPI {
+public interface FCMServerAPI {
 
     String BASE_CONTEXT = "/iid/info";
 
@@ -22,9 +22,9 @@ public interface GCMServerAPI {
 
     @Headers("Authorization:key=" + "AIzaSyDJtCaZyuwh8nknfXos1sJQk1_TJcRc5YA")
     @GET(BASE_CONTEXT + "/{token}")
-    Call<ResponseBody> getGcmInfo(@Path("token") String token, @Query("details") boolean details);
+    Call<ResponseBody> getFcmInfo(@Path("token") String token, @Query("details") boolean details);
 
     @Headers("Authorization:key=" + "AIzaSyDJtCaZyuwh8nknfXos1sJQk1_TJcRc5YA")
     @POST(HTTP_CONTEXT)
-    Call<ResponseBody> sendGcmMessageToTopic(@Body TopicMessageRequest request);
+    Call<ResponseBody> sendFcmMessageToTopic(@Body TopicMessageRequest request);
 }

@@ -31,7 +31,7 @@ import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.listener.CustomPhoneStateListener;
 import statifyi.com.statifyi.model.CallLog;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.StatusUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -146,7 +146,7 @@ public class FloatingService extends Service implements SharedPreferences.OnShar
             floatingPopup.setMobile(tenDigitNumber);
         }
         if (NetworkUtils.isConnectingToInternet(FloatingService.this)) {
-            userAPIService.getUserStatus(GCMUtils.getRegistrationId(FloatingService.this), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
+            userAPIService.getUserStatus(FCMUtils.getRegistrationId(FloatingService.this), tenDigitNumber).enqueue(new Callback<StatusResponse>() {
 
                 @Override
                 public void onResponse(Response<StatusResponse> response, Retrofit retrofit) {

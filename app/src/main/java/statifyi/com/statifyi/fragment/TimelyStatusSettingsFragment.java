@@ -17,7 +17,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.TimelyStatusAdapter;
-import statifyi.com.statifyi.utils.GAUtils;
 
 public class TimelyStatusSettingsFragment extends Fragment {
 
@@ -40,7 +39,6 @@ public class TimelyStatusSettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), TimelyStatusSettingsFragment.class.getSimpleName());
     }
 
     @Override

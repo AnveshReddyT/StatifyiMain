@@ -32,7 +32,7 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.CallLogAdapter;
 import statifyi.com.statifyi.model.CallLog;
-import statifyi.com.statifyi.service.GCMIntentService;
+import statifyi.com.statifyi.service.FCMListenerService;
 import statifyi.com.statifyi.utils.Utils;
 
 
@@ -145,7 +145,7 @@ public class CallLogFragment extends Fragment implements SearchView.OnQueryTextL
         if (isCallLogUpdated) {
             loadContent();
         }
-        IntentFilter filter = new IntentFilter(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE);
+        IntentFilter filter = new IntentFilter(FCMListenerService.BROADCAST_ACTION_STATUS_CHANGE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
     }
 

@@ -43,7 +43,7 @@ import statifyi.com.statifyi.api.model.CustomCallRequest;
 import statifyi.com.statifyi.api.model.TopicMessageData;
 import statifyi.com.statifyi.api.model.TopicMessageRequest;
 import statifyi.com.statifyi.api.model.User;
-import statifyi.com.statifyi.api.service.GCMAPIService;
+import statifyi.com.statifyi.api.service.FCMAPIService;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.data.DBHelper;
 import statifyi.com.statifyi.dialog.ContactsSuggestionDialog;
@@ -53,13 +53,12 @@ import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.model.Contact;
 import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
+import statifyi.com.statifyi.service.FCMListenerService;
 import statifyi.com.statifyi.service.FloatingService;
-import statifyi.com.statifyi.service.GCMIntentService;
 import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.DataUtils;
 import statifyi.com.statifyi.utils.DialerUtils;
-import statifyi.com.statifyi.utils.GAUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -184,7 +183,6 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), DialerFragment.class.getSimpleName());
     }
 
     @Override
@@ -574,7 +572,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 customCall.setMessage(message);
                 customCall.setMobile(DataUtils.getMobileNumber(getActivity()));
                 TopicMessageRequest topicRequest = new TopicMessageRequest();
-                topicRequest.setTo(GCMIntentService.TOPICS + lastTenDigits + "-customCall");
+                topicRequest.setTo(FCMListenerService.TOPICS + lastTenDigits + "-customCall");
                 TopicMessageData data = new TopicMessageData();
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -585,8 +583,8 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                 data.setMessage(jsonObject.toString());
                 topicRequest.setData(data);
 
-                GCMAPIService gcmapiService = NetworkUtils.provideGCMAPIService(getActivity(), true);
-                gcmapiService.sendGcmMessaheToTopic(topicRequest).enqueue(new Callback<ResponseBody>() {
+                FCMAPIService FCMAPIService = NetworkUtils.provideFCMAPIService(getActivity(), true);
+                FCMAPIService.sendFcmMessaheToTopic(topicRequest).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Response<ResponseBody> response, Retrofit retrofit) {
                         if (!response.isSuccess()) {
@@ -609,7 +607,7 @@ public class DialerFragment extends Fragment implements View.OnClickListener {
                     CustomCallRequest request = new CustomCallRequest();
                     request.setMobile(lastTenDigits);
                     request.setMessage(message);
-                    userAPIService.customCall(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Boolean>() {
+                    userAPIService.customCall(FCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Boolean>() {
                         @Override
                         public void onResponse(Response<Boolean> response, Retrofit retrofit) {
                             progressDialog.dismiss();

@@ -17,16 +17,16 @@ import java.util.Set;
 /**
  * Created by KT on 02/04/16.
  */
-public class GCMUtils {
+public class FCMUtils {
 
-    public static final String GCM_PREF = "gcm_pref";
+    public static final String FCM_PREF = "fcm_pref";
     private static final String REG_ID = "regId";
-    private static final String GCM_SEND_SERVER = "gcm_send_server";
-    private static final String GCM_TOPICS = "gcm_topics";
+    private static final String FCM_SEND_SERVER = "fcm_send_server";
+    private static final String FCM_TOPICS = "fcm_topics";
     private static final String APP_VERSION = "appVersion";
 
     public static String getRegistrationId(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
+        final SharedPreferences prefs = context.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
         String registrationId = prefs.getString(REG_ID, "");
         if (registrationId.isEmpty()) {
             return "";
@@ -49,7 +49,7 @@ public class GCMUtils {
     }
 
     public static void storeRegistrationId(Context context, String regId) {
-        final SharedPreferences prefs = context.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
+        final SharedPreferences prefs = context.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
         int appVersion = getAppVersion(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(REG_ID, regId);
@@ -57,22 +57,22 @@ public class GCMUtils {
         editor.apply();
     }
 
-    public static void sendGcmToServerStatus(Context context, boolean status) {
-        final SharedPreferences prefs = context.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
+    public static void sendFcmToServerStatus(Context context, boolean status) {
+        final SharedPreferences prefs = context.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(GCM_SEND_SERVER, status);
+        editor.putBoolean(FCM_SEND_SERVER, status);
         editor.apply();
     }
 
-    public static boolean getGcmToServerStatus(Context context, boolean status) {
-        final SharedPreferences prefs = context.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
-        return prefs.getBoolean(GCM_SEND_SERVER, false);
+    public static boolean getFcmToServerStatus(Context context, boolean status) {
+        final SharedPreferences prefs = context.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
+        return prefs.getBoolean(FCM_SEND_SERVER, false);
     }
 
     public static void saveSubscriptions(Context mContext, Set topics) {
-        final SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
+        final SharedPreferences prefs = mContext.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet(GCM_TOPICS, topics);
+        editor.putStringSet(FCM_TOPICS, topics);
         editor.apply();
     }
 
@@ -83,8 +83,8 @@ public class GCMUtils {
             protected Void doInBackground(Void... params) {
                 List<String> currentContacts = Utils.get10DigitPhoneNumbersFromContacts(mContext);
                 List<String> savedTopics = new ArrayList<>();
-                final SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
-                savedTopics.addAll(prefs.getStringSet(GCM_TOPICS, new HashSet<String>()));
+                final SharedPreferences prefs = mContext.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
+                savedTopics.addAll(prefs.getStringSet(FCM_TOPICS, new HashSet<String>()));
                 final GcmPubSub pubSub = GcmPubSub.getInstance(mContext);
                 for (int i = 0; i < savedTopics.size(); i++) {
                     final String topic = savedTopics.get(i);
@@ -100,7 +100,7 @@ public class GCMUtils {
                 Set<String> topics = new HashSet<>();
                 topics.addAll(savedTopics);
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putStringSet(GCM_TOPICS, topics);
+                editor.putStringSet(FCM_TOPICS, topics);
                 editor.apply();
                 return null;
             }
@@ -116,8 +116,8 @@ public class GCMUtils {
             protected Void doInBackground(Void... params) {
                 List<String> currentContacts = Utils.get10DigitPhoneNumbersFromContacts(mContext);
                 List<String> savedTopics = new ArrayList<>();
-                SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
-                savedTopics.addAll(prefs.getStringSet(GCM_TOPICS, new HashSet<String>()));
+                SharedPreferences prefs = mContext.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
+                savedTopics.addAll(prefs.getStringSet(FCM_TOPICS, new HashSet<String>()));
                 GcmPubSub pubSub = GcmPubSub.getInstance(mContext);
                 for (int i = 0; i < currentContacts.size(); i++) {
                     String contact = currentContacts.get(i);
@@ -133,7 +133,7 @@ public class GCMUtils {
                 Set<String> topics = new HashSet<>();
                 topics.addAll(savedTopics);
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putStringSet(GCM_TOPICS, topics);
+                editor.putStringSet(FCM_TOPICS, topics);
                 editor.apply();
                 return null;
             }
@@ -141,13 +141,13 @@ public class GCMUtils {
     }
 
     public static Set<String> getSubscriptions(Context mContext) {
-        final SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
-        return prefs.getStringSet(GCM_TOPICS, new HashSet<String>());
+        final SharedPreferences prefs = mContext.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
+        return prefs.getStringSet(FCM_TOPICS, new HashSet<String>());
     }
 
     public static boolean isAlreadySubscribed(Context mContext, String topic) {
-        final SharedPreferences prefs = mContext.getSharedPreferences(GCM_PREF, Context.MODE_PRIVATE);
-        Set<String> stringSet = prefs.getStringSet(GCM_TOPICS, null);
+        final SharedPreferences prefs = mContext.getSharedPreferences(FCM_PREF, Context.MODE_PRIVATE);
+        Set<String> stringSet = prefs.getStringSet(FCM_TOPICS, null);
         return stringSet != null && stringSet.contains(topic);
     }
 }

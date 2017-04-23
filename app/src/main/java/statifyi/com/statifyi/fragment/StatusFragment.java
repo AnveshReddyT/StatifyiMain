@@ -57,7 +57,7 @@ import statifyi.com.statifyi.provider.AnalyticsProvider;
 import statifyi.com.statifyi.provider.AnalyticsProviderImpl;
 import statifyi.com.statifyi.utils.AnalyticsConstants;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.ShowcaseUtils;
 import statifyi.com.statifyi.utils.Utils;
@@ -327,7 +327,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
             request.setIcon(status.getIcon());
             if (NetworkUtils.isConnectingToInternet(getActivity())) {
                 progressDialog.show();
-                userAPIService.setUserStatus(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
+                userAPIService.setUserStatus(FCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Response<Void> response, Retrofit retrofit) {
                         if (response.isSuccess()) {
@@ -383,7 +383,7 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
         request.setIcon(icon);
         if (NetworkUtils.isConnectingToInternet(getActivity())) {
             progressDialog.show();
-            userAPIService.setUserStatus(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
+            userAPIService.setUserStatus(FCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {

@@ -27,10 +27,10 @@ import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
-import statifyi.com.statifyi.api.GCMServerAPI;
+import statifyi.com.statifyi.api.FCMServerAPI;
 import statifyi.com.statifyi.api.RemoteServerAPI;
-import statifyi.com.statifyi.api.service.GCMAPIService;
-import statifyi.com.statifyi.api.service.GCMAPIServiceImpl;
+import statifyi.com.statifyi.api.service.FCMAPIService;
+import statifyi.com.statifyi.api.service.FCMAPIServiceImpl;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.api.service.UserAPIServiceImpl;
 
@@ -39,10 +39,10 @@ import statifyi.com.statifyi.api.service.UserAPIServiceImpl;
  */
 public class NetworkUtils {
 
-    public static final String SERVER_IP = "54.201.38.232";
+    public static final String SERVER_IP = "54.191.93.33";
     private static final String BASE_URL = "http://" + SERVER_IP + ":8080";
-    private static final String GCM_INFO_URL = "https://iid.googleapis.com";
-    private static final String GCM_HTTP_URL = "https://gcm-http.googleapis.com";
+    private static final String FCM_INFO_URL = "https://iid.googleapis.com";
+    private static final String FCM_HTTP_URL = "https://gcm-http.googleapis.com";
     private static final String BASE_CONTEXT = "/Statifyi/src/users";
     private static final String BIG_CACHE_PATH = "picasso-big-cache";
     private static final int MIN_DISK_CACHE_SIZE = 32 * 1024 * 1024;       // 32MB
@@ -106,8 +106,8 @@ public class NetworkUtils {
         return Picasso.with(mContext);
     }
 
-    public static GCMServerAPI provideGCMServerAPI(Context mContext, boolean http) {
-        return provideRetrofit(mContext, http ? GCM_HTTP_URL : GCM_INFO_URL, true).create(GCMServerAPI.class);
+    public static FCMServerAPI provideFCMServerAPI(Context mContext, boolean http) {
+        return provideRetrofit(mContext, http ? FCM_HTTP_URL : FCM_INFO_URL, true).create(FCMServerAPI.class);
     }
 
     public static RemoteServerAPI provideServerAPI(Context mContext) {
@@ -118,8 +118,8 @@ public class NetworkUtils {
         return new UserAPIServiceImpl(provideServerAPI(mContext));
     }
 
-    public static GCMAPIService provideGCMAPIService(Context mContext, boolean http) {
-        return new GCMAPIServiceImpl(provideGCMServerAPI(mContext, http));
+    public static FCMAPIService provideFCMAPIService(Context mContext, boolean http) {
+        return new FCMAPIServiceImpl(provideFCMServerAPI(mContext, http));
     }
 
     public static String provideAvatarUrl(String mobile) {
@@ -149,7 +149,7 @@ public class NetworkUtils {
                 Response originalResponse = chain.proceed(chain.request());
                 return originalResponse.newBuilder()
                         .header("Cache-Control", "max-age=" + (60 * 60 * 24 * 365))
-                        .header("token", GCMUtils.getRegistrationId(ctx))
+                        .header("token", FCMUtils.getRegistrationId(ctx))
                         .build();
             }
         });
@@ -157,7 +157,7 @@ public class NetworkUtils {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request newRequest = chain.request().newBuilder()
-                        .addHeader("token", GCMUtils.getRegistrationId(ctx))
+                        .addHeader("token", FCMUtils.getRegistrationId(ctx))
                         .build();
                 return chain.proceed(newRequest);
             }

@@ -15,14 +15,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.iid.InstanceID;
-
-import java.io.IOException;
-
 import statifyi.com.statifyi.utils.CirclePageIndicator;
 import statifyi.com.statifyi.utils.ColorShades;
-import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GAUtils;
 
 
 public class OnBoardingActivity extends AppCompatActivity{
@@ -35,24 +29,9 @@ public class OnBoardingActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        GAUtils.sendScreenView(getApplicationContext(), OnBoardingActivity.class.getSimpleName());
-
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setContentView(R.layout.activity_onboarding);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if(DataUtils.getMobileNumber(OnBoardingActivity.this) == null) {
-                    try {
-                        InstanceID.getInstance(OnBoardingActivity.this).deleteInstanceID();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 

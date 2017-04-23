@@ -12,11 +12,10 @@ import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Part;
-import retrofit.http.Path;
 import retrofit.http.Query;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
-import statifyi.com.statifyi.api.model.GCMRequest;
+import statifyi.com.statifyi.api.model.FCMRequest;
 import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
@@ -31,20 +30,20 @@ public interface RemoteServerAPI {
     String BASE_CONTEXT = "/Statifyi/src/users";
 
     @GET(BASE_CONTEXT + "/status")
-    Call<StatusResponse> getUserStatus(@Header("token") String gcmId, @Query("mobile") String mobile);
+    Call<StatusResponse> getUserStatus(@Header("token") String fcmId, @Query("mobile") String mobile);
 
     @PUT(BASE_CONTEXT + "/status")
-    Call<Void> setUserStatus(@Header("token") String gcmId, @Body StatusRequest request);
+    Call<Void> setUserStatus(@Header("token") String fcmId, @Body StatusRequest request);
 
     @PUT(BASE_CONTEXT + "/name")
-    Call<Void> setUserName(@Header("token") String gcmId, @Body UserNameRequest request);
+    Call<Void> setUserName(@Header("token") String fcmId, @Body UserNameRequest request);
 
     @Multipart
     @POST(BASE_CONTEXT + "/image")
-    Call<Void> uploadImage(@Header("token") String gcmId, @Part("file") RequestBody request);
+    Call<Void> uploadImage(@Header("token") String fcmId, @Part("file") RequestBody request);
 
     @POST(BASE_CONTEXT + "/multiStatus")
-    Call<List<MultiStatusResponse>> getAllStatus(@Header("token") String gcmId, @Body List<String> mobiles);
+    Call<List<MultiStatusResponse>> getAllStatus(@Header("token") String fcmId, @Body List<String> mobiles);
 
     @POST(BASE_CONTEXT + "/register")
     Call<Void> registerUser(@Body RegisterUserRequest request);
@@ -56,8 +55,8 @@ public interface RemoteServerAPI {
     Call<Void> activateUser(@Body ActivateUserRequest request);
 
     @POST(BASE_CONTEXT + "/custom")
-    Call<Boolean> customCall(@Header("token") String gcmId, @Body CustomCallRequest request);
+    Call<Boolean> customCall(@Header("token") String fcmId, @Body CustomCallRequest request);
 
     @POST(BASE_CONTEXT + "/gcmId")
-    Call<Void> registerGCM(@Body GCMRequest request);
+    Call<Void> registerFCM(@Body FCMRequest request);
 }

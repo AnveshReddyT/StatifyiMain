@@ -24,7 +24,7 @@ import statifyi.com.statifyi.api.model.StatusRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.fragment.StatusFragment;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 
@@ -137,7 +137,7 @@ public class ActivityRecognizeService extends IntentService {
         request.setStatus(status);
         request.setIcon(status);
         request.setAutoStatus(1);
-        userAPIService.setUserStatus(GCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
+        userAPIService.setUserStatus(FCMUtils.getRegistrationId(context), request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {

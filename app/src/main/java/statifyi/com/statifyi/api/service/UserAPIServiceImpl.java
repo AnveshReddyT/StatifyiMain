@@ -11,7 +11,7 @@ import retrofit.Call;
 import statifyi.com.statifyi.api.RemoteServerAPI;
 import statifyi.com.statifyi.api.model.ActivateUserRequest;
 import statifyi.com.statifyi.api.model.CustomCallRequest;
-import statifyi.com.statifyi.api.model.GCMRequest;
+import statifyi.com.statifyi.api.model.FCMRequest;
 import statifyi.com.statifyi.api.model.MultiStatusResponse;
 import statifyi.com.statifyi.api.model.RegisterUserRequest;
 import statifyi.com.statifyi.api.model.StatusRequest;
@@ -30,33 +30,33 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Call<StatusResponse> getUserStatus(String gcmId, String mobile) {
-        return remoteServerAPI.getUserStatus(gcmId, mobile);
+    public Call<StatusResponse> getUserStatus(String fcmId, String mobile) {
+        return remoteServerAPI.getUserStatus(fcmId, mobile);
     }
 
     @Override
-    public Call<Void> setUserStatus(String gcmId, StatusRequest request) {
-        return remoteServerAPI.setUserStatus(gcmId, request);
+    public Call<Void> setUserStatus(String fcmId, StatusRequest request) {
+        return remoteServerAPI.setUserStatus(fcmId, request);
     }
 
     @Override
-    public Call<Void> setUserName(String gcmId, UserNameRequest request) {
-        return remoteServerAPI.setUserName(gcmId, request);
+    public Call<Void> setUserName(String fcmId, UserNameRequest request) {
+        return remoteServerAPI.setUserName(fcmId, request);
     }
 
     @Override
-    public Call<Void> uploadImage(String gcmId, File file) {
+    public Call<Void> uploadImage(String fcmId, File file) {
         RequestBody photo = RequestBody.create(MediaType.parse("image/*"), file);
         RequestBody body = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("file", file.getName(), photo)
                 .build();
-        return remoteServerAPI.uploadImage(gcmId, photo);
+        return remoteServerAPI.uploadImage(fcmId, photo);
     }
 
     @Override
-    public Call<List<MultiStatusResponse>> getAllStatus(String gcmId, List<String> mobiles) {
-        return remoteServerAPI.getAllStatus(gcmId, mobiles);
+    public Call<List<MultiStatusResponse>> getAllStatus(String fcmId, List<String> mobiles) {
+        return remoteServerAPI.getAllStatus(fcmId, mobiles);
     }
 
     @Override
@@ -75,13 +75,13 @@ public class UserAPIServiceImpl implements UserAPIService {
     }
 
     @Override
-    public Call<Boolean> customCall(String gcmId, CustomCallRequest request) {
-        return remoteServerAPI.customCall(gcmId, request);
+    public Call<Boolean> customCall(String fcmId, CustomCallRequest request) {
+        return remoteServerAPI.customCall(fcmId, request);
     }
 
     @Override
-    public Call<Void> registerGCM(GCMRequest request) {
-        return remoteServerAPI.registerGCM(request);
+    public Call<Void> registerFCM(FCMRequest request) {
+        return remoteServerAPI.registerFCM(request);
     }
 
 }

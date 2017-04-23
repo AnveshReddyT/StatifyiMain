@@ -30,8 +30,7 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
 import statifyi.com.statifyi.api.service.UserAPIService;
 import statifyi.com.statifyi.dialog.ProgressDialog;
 import statifyi.com.statifyi.utils.DataUtils;
-import statifyi.com.statifyi.utils.GAUtils;
-import statifyi.com.statifyi.utils.GCMUtils;
+import statifyi.com.statifyi.utils.FCMUtils;
 import statifyi.com.statifyi.utils.NetworkUtils;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.Button;
@@ -72,7 +71,6 @@ public class ProfileFragment extends Fragment {
         userAPIService = NetworkUtils.provideUserAPIService(getActivity());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), ProfileFragment.class.getSimpleName());
     }
 
     @Override
@@ -148,7 +146,7 @@ public class ProfileFragment extends Fragment {
             if (!progressDialog.isShowing()) {
                 progressDialog.show();
             }
-            userAPIService.setUserName(GCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
+            userAPIService.setUserName(FCMUtils.getRegistrationId(getActivity()), request).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Response<Void> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
@@ -192,9 +190,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void doUploadImage() {
-        String gcmId = GCMUtils.getRegistrationId(getActivity());
+        String fcmId = FCMUtils.getRegistrationId(getActivity());
         File file = new File(getActivity().getFilesDir(), "user.jpg");
-        userAPIService.uploadImage(gcmId, file).enqueue(new Callback<Void>() {
+        userAPIService.uploadImage(fcmId, file).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Response<Void> response, Retrofit retrofit) {
                 if (response.isSuccess()) {

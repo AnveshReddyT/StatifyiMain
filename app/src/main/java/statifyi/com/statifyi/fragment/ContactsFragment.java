@@ -33,7 +33,7 @@ import butterknife.InjectView;
 import statifyi.com.statifyi.R;
 import statifyi.com.statifyi.adapter.ContactsAdapter;
 import statifyi.com.statifyi.model.Contact;
-import statifyi.com.statifyi.service.GCMIntentService;
+import statifyi.com.statifyi.service.FCMListenerService;
 import statifyi.com.statifyi.utils.Utils;
 import statifyi.com.statifyi.widget.IndexableListView;
 
@@ -153,7 +153,7 @@ public class ContactsFragment extends Fragment implements SearchView.OnQueryText
         if (isContactsUpdated) {
             loadContent();
         }
-        IntentFilter filter = new IntentFilter(GCMIntentService.BROADCAST_ACTION_STATUS_CHANGE);
+        IntentFilter filter = new IntentFilter(FCMListenerService.BROADCAST_ACTION_STATUS_CHANGE);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(onStatusChangeReceiver, filter);
     }
 

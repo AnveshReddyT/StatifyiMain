@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
 import statifyi.com.statifyi.R;
-import statifyi.com.statifyi.utils.GAUtils;
 
 /**
  * Created by KT on 03/02/16.
@@ -23,6 +22,5 @@ public class AutoStatusSettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_auto_status);
-        GAUtils.sendScreenView(getActivity().getApplicationContext(), AutoStatusSettingsFragment.class.getSimpleName());
     }
 }
