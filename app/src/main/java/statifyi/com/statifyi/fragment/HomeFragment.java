@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
@@ -33,8 +32,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String[] TAB_NAMES = {"STATUS", "CONTACTS", "CALL LOG", "DIAL"};
     @InjectView(R.id.home_pager)
     ViewPager mPager;
-    @InjectView(R.id.tab_layout)
-    TabLayout tabLayout;
     @InjectView(R.id.home_radio_group)
     RadioGroup radioGroup;
     @InjectView(R.id.home_radio_status)

@@ -71,11 +71,11 @@ public class StatusFragment extends Fragment implements SearchView.OnQueryTextLi
     public static final String BROADCAST_ACTION_SHOWCASEVIEW = "statifyi.broadcast.showcaseview";
     private static final String SCREEN = "Status Screen";
     @InjectView(R.id.status_add_text_layout)
-    RelativeLayout addStatusLayout;
+    LinearLayout addStatusLayout;
     @InjectView(R.id.status_current_text_layout)
     LinearLayout currentStatusLayout;
     @InjectView(R.id.status_auto_text_layout)
-    RelativeLayout autoStatusLayout;
+    LinearLayout autoStatusLayout;
     @InjectView(R.id.status_add_text)
     TextView addStatusText;
     @InjectView(R.id.status_current_text)

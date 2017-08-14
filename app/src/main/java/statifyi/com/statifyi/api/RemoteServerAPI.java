@@ -27,7 +27,7 @@ import statifyi.com.statifyi.api.model.UserNameRequest;
  */
 public interface RemoteServerAPI {
 
-    String BASE_CONTEXT = "/Statifyi/src/users";
+    String BASE_CONTEXT = "/src/users";
 
     @GET(BASE_CONTEXT + "/status")
     Call<StatusResponse> getUserStatus(@Header("token") String fcmId, @Query("mobile") String mobile);

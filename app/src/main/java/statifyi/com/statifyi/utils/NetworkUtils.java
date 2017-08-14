@@ -39,8 +39,8 @@ import statifyi.com.statifyi.api.service.UserAPIServiceImpl;
  */
 public class NetworkUtils {
 
-    public static final String SERVER_IP = "54.191.93.33";
-    private static final String BASE_URL = "http://" + SERVER_IP + ":8080";
+    public static final String SERVER_IP = "54.202.154.236";
+    private static final String BASE_URL = "https://statifyi.herokuapp.com/";
     private static final String FCM_INFO_URL = "https://iid.googleapis.com";
     private static final String FCM_HTTP_URL = "https://gcm-http.googleapis.com";
     private static final String BASE_CONTEXT = "/Statifyi/src/users";

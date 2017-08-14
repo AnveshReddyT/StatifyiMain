@@ -25,19 +25,19 @@
             android:text="ADD STATUS"
             android:textSize="10sp" />
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/status_add_text_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@drawable/bg_circle"
+            android:gravity="center"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/add_status" />
 
             <statifyi.com.statifyi.widget.TextView
@@ -46,11 +46,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:text="ADD"
                 android:textSize="10sp" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
         <statifyi.com.statifyi.widget.TextView
             android:layout_width="wrap_content"
@@ -75,8 +76,8 @@
 
             <ImageView
                 android:id="@+id/status_current_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginTop="4dp"
                 android:src="@drawable/driving" />
 
@@ -102,33 +103,33 @@
             android:text="AUTO STATUS"
             android:textSize="10sp" />
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/status_auto_text_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/status_current_text_layout"
             android:background="@drawable/bg_circle"
+            android:gravity="center"
             android:orientation="vertical">
 
             <CheckBox
                 android:id="@+id/status_auto_text_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:button="@drawable/radio_auto_status" />
 
             <statifyi.com.statifyi.widget.TextView
                 android:id="@+id/status_auto_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:text="ON"
                 android:textSize="10sp" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
     </RelativeLayout>

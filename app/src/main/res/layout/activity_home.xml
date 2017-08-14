@@ -14,9 +14,11 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/primaryColor">
+            android:background="#FAFAFA">
 
-            <include layout="@layout/toolbar" />
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
 
             <FrameLayout
                 android:id="@+id/home_container"
